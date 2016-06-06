@@ -8,6 +8,26 @@ var vertexPositionAttribute;
 var vertexColorAttribute;
 var perspectiveMatrix;
 
+var mouseDown=false;
+var lastMouseX;
+var lastMouseY;
+
+//Color stuffs
+var colorMaps = [];//2d array of objects which stores the colors
+var iconHeight = 50;
+var iconWidth = 50;
+var iconX = 600;
+var iconY = 50;
+var receiveX = 50;
+var receiveY = 100;
+var receiveDelta = 300;
+var dragIcon=-1;
+var mapCIndices = [0,1];
+var setColorIndices = [];
+var iconViewOffset = 0;
+var iconViewWidth = 400;
+var iconViewHeight = 70;
+
 var img_data=[];
 var scales=[];
 var img_panels=[];
@@ -296,6 +316,10 @@ function start() {
 	  // Only continue if WebGL is available and working
 
 	  if (gl) {
+	  
+		canvas.onmousedown = handleMouseDown;
+		document.onmouseup = handleMouseUp;
+		document.onmousemove = handleMouseMove;
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
 		gl.clearDepth(1.0);                 // Clear everything
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -338,6 +362,120 @@ function initWebGL() {
   }
 }
 
+function testIconViewHit(mouseX,mouseY){
+	if(mouseX>iconX&&mouseX<iconX+iconViewWidth){
+		if(mouseY>iconY&&mouseY<iconY+iconViewHeight){
+			return true;
+		}
+	}
+	return false;
+}
+
+//Returns the index of the receiver at the coords or -1 if there is no receiver at location
+function testreceiverHit(mouseX,mouseY){
+	//Receivers will always be in the same x value
+	if(mouseX<receiveX-iconWidth/2||mouseX>receiveX+iconWidth+iconWidth/2){
+		return -1;
+	}
+	//Test y values
+	for(var i=0;i<receiverBuffers.length;i++){
+		if(mouseY>receiveY+i*receiveDelta-iconHeight/2&&mouseY<receiveY+iconHeight+i*receiveDelta+iconHeight/2){
+			return i;
+		}
+	}
+}
+
+//Returns which index of the color map the icon represents or -1 if no icon was hit
+function testIconHit(mouseX,mouseY){
+	//First test y value
+	if(mouseY<iconY+10||mouseY>iconY+10+iconHeight){
+		return -1;
+	}
+	//Test x values
+	for(var i=0;i<colorMaps.length;i++){
+		if(mouseX>iconX+10+i*(iconWidth+10)-iconViewOffset&&mouseX<iconX+10+iconWidth+i*(iconWidth+10)-iconViewOffset){
+			return i;
+		}
+	}
+	return -1;
+}
+
+function getMousePos(canvas, evt) {
+	var rect = canvas.getBoundingClientRect();
+	return {
+	  x: Math.round((evt.clientX-rect.left)/(rect.right-rect.left)*canvas.width),
+	  y: Math.round((evt.clientY-rect.top)/(rect.bottom-rect.top)*canvas.height)
+	};
+}
+
+function handleMouseDown(event){
+	if(mouseDown){
+		return;
+	}
+	mouseDown=true;
+	//Get the mouse x and y
+	var mouse = getMousePos(canvas, event);
+	//Test if the icon view box was hit
+	if(testIconViewHit(mouse.x,mouse.y)){
+		
+		dragIcon=testIconHit(mouse.x,mouse.y);
+		if(dragIcon==-1){
+			dragIcon=-2;
+		}
+	}
+	lastMouseX=mouse.x;
+	lastMouseY=mouse.y;
+	console.log(dragIcon);
+}
+
+
+//Called when the mouse is released
+function handleMouseUp(event){
+	var mouse = getMousePos(canvas, event);
+	mouseDown = false;
+	return;
+	if(dragIcon>=0){
+		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
+		if(receiveIndex!=-1){
+			mapCIndices[receiveIndex]=dragIcon;
+			//updatereceiveIcons();
+		}
+	};
+	dragIcon=-1;
+	drawScene();
+}
+
+//Called when the mouse moves
+function handleMouseMove(event){
+	if(!mouseDown){
+		return;
+	}
+	return;
+	
+	var mouse = getMousePos(canvas, event);
+	
+	//updateDrag(mouse.x,mouse.y);
+	
+	if(dragIcon==-2){
+		//updateIconViewOffset(mouse.x,mouse.y);
+		//updateIcons();
+	}
+	
+	drawScene();
+	lastMouseX=mouse.x;
+	lastMouseY=mouse.y;
+}
+
+function updateIconViewOffset(mouseX,mouseY){
+	var dx=lastMouseX-mouseX;
+	iconViewOffset = iconViewOffset+dx;
+	if(iconViewOffset<0||0>colorMaps.length*60-iconViewWidth){
+		iconViewOffset=0;
+	}
+	if(0<colorMaps.length*60-iconViewWidth+10&&iconViewOffset>colorMaps.length*60-iconViewWidth+10){
+		iconViewOffset=colorMaps.length*60-iconViewWidth+10;
+	}
+}
 
 //
 // drawScene
@@ -350,11 +488,12 @@ function drawScene() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	//this draws a rectangle
+	/*
 	var rectangle=Shape.rectangle;
 	rectangle.scale(100,100);
 	rectangle.move(300,300,0.5);
 	rectangle.changeColor(0.5,0.5,0.5);
-	rectangle.draw();
+	rectangle.draw();*/
 	
 	var l=img_panels.length;
 	if(l>0){
