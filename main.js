@@ -434,7 +434,6 @@ function handleMouseUp(event){
 	var mouse = getMousePos(canvas, event);
 	mouseDown = false;
 	dragIcon=-1;
-	return;
 	if(dragIcon>=0){
 		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
 		if(receiveIndex!=-1){
