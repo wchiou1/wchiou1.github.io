@@ -392,7 +392,7 @@ function testIconHit(mouseX,mouseY){
 		return -1;
 	}
 	//Test x values
-	for(var i=0;i<colorMaps.length;i++){
+	for(var i=0;i<scales.length;i++){
 		if(mouseX>iconX+10+i*(iconWidth+10)-iconViewOffset&&mouseX<iconX+10+iconWidth+i*(iconWidth+10)-iconViewOffset){
 			return i;
 		}
