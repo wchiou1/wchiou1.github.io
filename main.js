@@ -416,13 +416,13 @@ function handleMouseDown(event){
 	//Get the mouse x and y
 	var mouse = getMousePos(canvas, event);
 	//Test if the icon view box was hit
-	if(testIconViewHit(mouse.x,mouse.y)){
+	//if(testIconViewHit(mouse.x,mouse.y)){
 		
-		dragIcon=testIconHit(mouse.x,mouse.y);
-		if(dragIcon==-1){
-			dragIcon=-2;
-		}
-	}
+	dragIcon=testIconHit(mouse.x,mouse.y);
+		//if(dragIcon==-1){
+			//dragIcon=-2;
+		//}
+	//}
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
 	console.log(dragIcon);
@@ -433,6 +433,7 @@ function handleMouseDown(event){
 function handleMouseUp(event){
 	var mouse = getMousePos(canvas, event);
 	mouseDown = false;
+	dragIcon=-1;
 	return;
 	if(dragIcon>=0){
 		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
