@@ -509,17 +509,22 @@ function drawScene() {
 		
 	}
 	
-	//this draw colormap as thumbnails;
-	for(var i=0;i<color_panels.length;i++){
-		color_panels[i].scale(50,50);
-		color_panels[i].move(200+60*i,50);
-		color_panels[i].draw();
-	}
+	drawColorThumbnails();
 	
 	//can also make it longer
 	color_panels[0].scale(200,50);
 	color_panels[0].move(0,350);
 	color_panels[0].draw();
+}
+
+
+function drawColorThumbnails(){
+	//this draw colormap as thumbnails;
+	for(var i=0;i<color_panels.length;i++){
+		color_panels[i].scale(iconWidth,iconHeight);
+		color_panels[i].move(iconX+(iconWidth+10)*i,iconY);
+		color_panels[i].draw();
+	}
 }
 
 //
