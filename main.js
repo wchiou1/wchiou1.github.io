@@ -521,6 +521,9 @@ function drawScene() {
 }
 
 function drawDraggedThumbnail(){
+	if(dragIcon<0){
+		return;
+	}
 	color_panels[dragIcon].scale(iconWidth,iconHeight);
 	color_panels[dragIcon].move(lastMouseX,lastMouseY);
 	color_panels[dragIcon].draw();
