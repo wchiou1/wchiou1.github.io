@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Color Analysis Tool</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="style.css" type="text/css">
+	<script src="jquery-2.2.4.js" type="text/javascript"></script>
+	<script src="sylvester.js" type="text/javascript"></script>
+    <script src="glUtils.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+	
+
+	<!-- Vertex shader program -->
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+		attribute vec3 aVertexPosition;
+		attribute vec4 aVertexColor;
+
+		uniform mat4 uMVMatrix;
+		uniform mat4 uPMatrix;
+
+		varying lowp vec4 vColor;
+
+		void main(void) {
+			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			vColor = aVertexColor;
+		}
+    </script>
+	
+    <!-- Fragment shader program -->
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+		varying lowp vec4 vColor;
+
+		void main(void) {
+			//gl_FragColor=vec4(1,1,1,1);
+			gl_FragColor = vColor;
+		}
+    </script>
+
+    
+  </head>
+
+  <body onload="start()">
+
+	<div class="image" id="img1">
+		<canvas id="glcanvas" width="600" height="400">
+		  Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
+		</canvas>
+	</div>
+	<DIV id="status"><p>Drag the files from a folder to a selected area ...</p></DIV>
+	<DIV class=drop id="drop1">
+		Drop image data files here.
+		<input type="file" id="selector1" multiple="multiple" >
+	</DIV>
+	<DIV class=drop id="drop2">
+		Drop color map files here.
+		<input type="file" id="selector2" multiple="multiple" >
+	</DIV>
+  </body>
+</html>

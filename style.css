@@ -1,0 +1,29 @@
+#scale_selection{
+	height:100px;
+	width:250px;
+	border: 3px solid green;
+}
+
+canvas{
+	position: relative; 
+	top: 20px; 
+	left: 20px; 
+	border: 2px solid red;
+}
+
+
+#drop1 {
+  height: 100px;
+  width: 250px;
+  border: 1px solid blue;
+}
+
+#drop2 {
+  height: 100px;
+  width: 250px;
+  border: 1px solid orange;
+}
+
+#selector1{
+	
+}
