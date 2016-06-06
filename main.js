@@ -15,9 +15,9 @@ var color_panels=[];
 
 var orthogonal={
 	l: 0,
-	r: 600,
+	r: 1200,
 	t: 0,
-	b: -400
+	b: -600
 };
 
 var ImagePanel=function(x,y,w,h,dataID,cID){ 
