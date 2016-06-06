@@ -510,6 +510,7 @@ function drawScene() {
 		
 	}
 	
+	drawColorView();
 	drawColorThumbnails();
 	
 	//can also make it longer
@@ -518,12 +519,19 @@ function drawScene() {
 	color_panels[0].draw();
 }
 
+function drawColorView(){
+	var rectangle=Shape.rectangle;
+	rectangle.scale(iconViewWidth+6,3);
+	rectangle.move(iconX-3,iconY-3,0.5);
+	rectangle.changeColor(1.0,0.0,0.0);
+	rectangle.draw();
+}
 
 function drawColorThumbnails(){
 	//this draw colormap as thumbnails;
 	for(var i=0;i<color_panels.length;i++){
 		color_panels[i].scale(iconWidth,iconHeight);
-		color_panels[i].move(iconX+(iconWidth+10)*i,iconY);
+		color_panels[i].move(iconX+(iconWidth+10)*i+10,iconY+10);
 		color_panels[i].draw();
 	}
 }
