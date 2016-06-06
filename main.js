@@ -525,6 +525,13 @@ function drawColorView(){
 	rectangle.move(iconX-3,iconY-3,0.5);
 	rectangle.changeColor(1.0,0.0,0.0);
 	rectangle.draw();
+	rectangle.move(iconX-3,iconY+iconViewHeight+3);
+	rectangle.draw();
+	rectangle.scale(3,iconViewHeight+6);
+	rectangle.move(iconX-3,iconY-3,.5);
+	rectangle.draw();
+	rectangle.move(iconX+iconViewWidth+3,iconY);
+	rectangle.draw();
 }
 
 function drawColorThumbnails(){
