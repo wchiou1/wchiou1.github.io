@@ -451,31 +451,31 @@ function handleMouseMove(event){
 	if(!mouseDown){
 		return;
 	}
-	return;
 	
 	var mouse = getMousePos(canvas, event);
 	
 	//updateDrag(mouse.x,mouse.y);
 	
 	if(dragIcon==-2){
-		//updateIconViewOffset(mouse.x,mouse.y);
+		updateIconViewOffset(mouse.x,mouse.y);
 		//updateIcons();
 	}
-	
-	drawScene();
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
+	if(dragIcon!=-1){
+		drawScene();
+	}
 }
 
 function updateIconViewOffset(mouseX,mouseY){
 	var dx=lastMouseX-mouseX;
-	iconViewOffset = iconViewOffset+dx;
-	if(iconViewOffset<0||0>colorMaps.length*60-iconViewWidth){
+	iconViewOffset = iconViewOffset+dx;/*
+	if(iconViewOffset<0||0>scales.length*60-iconViewWidth){
 		iconViewOffset=0;
 	}
-	if(0<colorMaps.length*60-iconViewWidth+10&&iconViewOffset>colorMaps.length*60-iconViewWidth+10){
-		iconViewOffset=colorMaps.length*60-iconViewWidth+10;
-	}
+	if(0<scales.length*60-iconViewWidth+10&&iconViewOffset>scales.length*60-iconViewWidth+10){
+		iconViewOffset=scales.length*60-iconViewWidth+10;
+	}*/
 }
 
 //
@@ -485,7 +485,7 @@ function updateIconViewOffset(mouseX,mouseY){
 //
 function drawScene() {
   // Clear the canvas before we start drawing on it.
-
+  gl.clearColor(.5, .5, .5, 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	//this draws a rectangle
@@ -512,11 +512,18 @@ function drawScene() {
 	
 	drawColorView();
 	drawColorThumbnails();
+	drawDraggedThumbnail();
 	
 	//can also make it longer
 	color_panels[0].scale(200,50);
 	color_panels[0].move(0,350);
 	color_panels[0].draw();
+}
+
+function drawDraggedThumbnail(){
+	color_panels[dragIcon].scale(iconWidth,iconHeight);
+	color_panels[dragIcon].move(lastMouseX,lastMouseY);
+	color_panels[dragIcon].draw();
 }
 
 function drawColorView(){
