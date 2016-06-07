@@ -475,6 +475,7 @@ function handleMouseUp(event){
 	mouseDown = false;
 	if(dragIcon>=0){
 		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
+		console.log("Receive debug:"+receiveIndex);
 		if(receiveIndex!=-1){
 			mapCIndices[receiveIndex]=dragIcon;
 			//updatereceiveIcons();
