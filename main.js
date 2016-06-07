@@ -1,4 +1,4 @@
-var version="colormap hitbox7";
+var version="colormap hitbox8";
 var canvas;
 var gl;
 var imageCanvas;
@@ -371,13 +371,16 @@ function initWebGL() {
   }
 }
 
+//Checks if the set color should be changed based on the click, returns if the scene should be update
 function checkSetColor(mouseX,mouseY){
 	for(var i=0;i<mapCIndices.length;i++){
 		var tempHeight = testColorMapHit(mouseX,mouseY,i);
 		if(tempHeight!=-1){
 			setColorHeight[i]=tempHeight;
+			return true;
 		}
 	}
+	return false;
 }
 
 //Returns the color height that was clicked, otherwise returns -1
@@ -478,7 +481,9 @@ function handleMouseDown(event){
 		//}
 	//}
 	
-	checkSetColor(mouse.x,mouse.y)
+	if(checkSetColor(mouse.x,mouse.y)){
+		drawScene();
+	}
 	
 	if(dragIcon>=0){
 		var tempxy=getIconxy(dragIcon);
@@ -605,7 +610,7 @@ function drawPanels(){
 		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX+100,receiveY+receiveDelta*i);
 		colorPanel.draw();
-		drawGraph(receiveX+100,receiveY+receiveDelta*i-50,200,50,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
+		drawGraph(receiveX+100,receiveY+receiveDelta*i-scaleHeight,scaleWidth,scaleHeight,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
 
