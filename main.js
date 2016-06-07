@@ -1,4 +1,4 @@
-var version="jump";
+var version="recieve";
 var canvas;
 var gl;
 var imageCanvas;
@@ -383,7 +383,7 @@ function testreceiverHit(mouseX,mouseY){
 		return -1;
 	}
 	//Test y values
-	for(var i=0;i<receiverBuffers.length;i++){
+	for(var i=0;i<2;i++){
 		if(mouseY>receiveY+i*receiveDelta-iconHeight/2&&mouseY<receiveY+iconHeight+i*receiveDelta+iconHeight/2){
 			return i;
 		}
@@ -553,7 +553,7 @@ function drawScene() {
 	
 	drawColorView();
 	drawColorThumbnails();
-	drawDraggedThumbnail();
+	drawReceiveThumbnails();
 	
 	//can also make it longer
 	color_panels[0].scale(200,50);
@@ -561,11 +561,11 @@ function drawScene() {
 	color_panels[0].draw();
 }
 
-function drawDraggedThumbnail(){
-	if(dragIcon<0){
-		return;
+function drawReceiveThumbnails(){
+	for(var i=0;i<mapCIndices.length;i++){
+		var tempy=receiveY+receiveDelta*i;
+		drawThumbnail(receiveX,tempy,mapCIndices[i]);
 	}
-	drawThumbnail(lastMouseX,lastMouseY,dragIcon);
 }
 
 function drawColorView(){
