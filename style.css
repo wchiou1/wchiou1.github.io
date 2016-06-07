@@ -11,6 +11,12 @@ canvas{
 	border: 2px solid red;
 }
 
+ .dragme{
+			position:relative;
+			width: 270px;
+			height: 203px;
+			cursor: move;
+		}
 
 #drop1 {
   height: 100px;
