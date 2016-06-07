@@ -1,4 +1,4 @@
-var version="colormap hitbox2";
+var version="colormap hitbox3";
 var canvas;
 var gl;
 var imageCanvas;
@@ -380,6 +380,7 @@ function checkSetColor(mouseX,mouseY){
 
 //Returns the color height that was clicked, otherwise returns -1
 function testColorMapHit(mouseX,mouseY,rindex){
+	console.log(mouseX+","+mouseY+":"+receiveX+100+","+receiveX+100+scaleWidth+"|"+receiveY+receiveDelta*rindex+","+receiveY+receiveDelta*rindex+scaleHeight/2)
 	//Check if the click is within the bounds of the top half of the color map
 	if(mouseX<receiveX+100||mouseX>receiveX+100+scaleWidth){
 		return -1;
