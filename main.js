@@ -545,13 +545,13 @@ function drawScene() {
 	var l=img_panels.length;
 	if(l>0){
 		//this draws the image
-		img_panels[l-1].changeColor(0);//changeColor(id) here takes the index of the colormap in scales[]
+		img_panels[l-1].changeColor(mapCIndices[0]);//changeColor(id) here takes the index of the colormap in scales[]
 		img_panels[l-1].scale(img_data[0].w, img_data[0].h);//can change the dimension
-		img_panels[l-1].move(100,150,0); //you can change z value, things in the front block things in the back
+		img_panels[l-1].move(600,150,0); //you can change z value, things in the front block things in the back
 		img_panels[l-1].draw();
 		//draw with another colormap
-		img_panels[l-1].changeColor(2);
-		img_panels[l-1].move(300,150,1);
+		img_panels[l-1].changeColor(mapCIndices[1]);
+		img_panels[l-1].move(850,150,1);
 		img_panels[l-1].draw();
 		
 	}
@@ -809,6 +809,12 @@ function FileListenerInit(){
 			var drop2 = document.getElementById('drop2');
 			var select1 = document.getElementById('selector1');
 			var select2 = document.getElementById('selector2');
+			
+			drop2.left= iconX-3+'px';
+			drop2.top= iconY-3+"px";
+			drop2.width=iconViewWidth;
+			drop2.height=iconViewHeight
+			
 			function cancel(e) {
 			   e.preventDefault(); 
 			}
