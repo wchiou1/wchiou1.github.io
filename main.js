@@ -354,6 +354,41 @@ function start() {
 	
 }
 
+function initBuffers() {
+iconViewBuffer[0] = gl.createBuffer();
+	iconViewBuffer[1] = gl.createBuffer();
+	//Create buffers for the receive icons
+	for(var i=0;i<2;i++){
+		receiverBuffers[i] = [gl.createBuffer(),gl.createBuffer()];
+	}
+
+	//Create a buffer for the dragged icon vertices
+	dragBuffer[0] = gl.createBuffer();
+	
+	//Create a buffer for the dragged icon colors
+	dragBuffer[1] = gl.createBuffer();
+
+	//Create a buffer for the icons' vertices
+	iconVBuffer = gl.createBuffer();
+	
+	//Create a buffer for the icons' colors
+	iconCBuffer = gl.createBuffer();
+
+  // Create a buffer for the cube's vertices.
+
+  verticesBuffer = gl.createBuffer();
+
+  // Now create an array of vertices 
+	//each value on the image2DArray is represented with a square with 4 vertices
+	createImageVertices();
+
+  // Now set up the colors 
+	verticesColorBuffer = gl.createBuffer();
+
+	createImageColors();
+ 
+}
+
 //
 // initWebGL
 //
