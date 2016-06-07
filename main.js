@@ -1,13 +1,6 @@
-
 var canvas;
 var gl;
-var verticesBuffer;
-var verticesColorBuffer;
-var iconVBuffer;
-var iconCBuffer;
-var dragBuffer = [];
-var receiverBuffers = [];
-var iconViewBuffer = [];
+
 
 var mvMatrix;
 var shaderProgram;
@@ -20,7 +13,7 @@ var lastMouseX;
 var lastMouseY;
 
 //Color stuffs
-var scales = [];//2d array of objects which stores the colors
+var colorMaps = [];//2d array of objects which stores the colors
 var iconHeight = 50;
 var iconWidth = 50;
 var iconX = 600;
@@ -349,48 +342,12 @@ function start() {
 
 		initShape();
 		
-		initBuffers();
-		
-		updateIconView();
-		
-		updateIcons();
-		updatereceiveIcons();
-		
 		// Set up to draw the scene periodically.
 		//setInterval(drawScene, 15);
 		// no need to update screen every 15ms
 		//drawScene();
 	  }
 	
-}
-
-function initBuffers() {
-iconViewBuffer[0] = gl.createBuffer();
-	iconViewBuffer[1] = gl.createBuffer();
-	//Create buffers for the receive icons
-	for(var i=0;i<2;i++){
-		receiverBuffers[i] = [gl.createBuffer(),gl.createBuffer()];
-	}
-
-	//Create a buffer for the dragged icon vertices
-	dragBuffer[0] = gl.createBuffer();
-	
-	//Create a buffer for the dragged icon colors
-	dragBuffer[1] = gl.createBuffer();
-
-	//Create a buffer for the icons' vertices
-	iconVBuffer = gl.createBuffer();
-	
-	//Create a buffer for the icons' colors
-	iconCBuffer = gl.createBuffer();
-
-  // Create a buffer for the cube's vertices.
-
-  verticesBuffer = gl.createBuffer();
-
-  // Now set up the colors 
-	verticesColorBuffer = gl.createBuffer();
- 
 }
 
 //
@@ -470,113 +427,6 @@ function getMousePos(canvas, evt) {
 	};
 }
 
-function updateDrag(mouseX,mouseY){
-	//Checks if there is an icon which should be dragged
-	if(dragIcon<0){
-		return;
-	}
-	//Setup the icon to be rendered
-	var iconVertices=[];
-	var iconColors=[];
-	for(var i=0;i<iconWidth;i++){
-		var ix=mouseX+i-iconWidth/2;
-		var tempColor=getColorHeight(dragIcon,1.0*i/iconWidth);
-		iconVertices = iconVertices.concat([ix,mouseY-iconHeight/2,0]);
-		iconVertices = iconVertices.concat([ix+1,mouseY-iconHeight/2,0]);
-		iconVertices = iconVertices.concat([ix+1,mouseY+iconHeight/2,0]);
-		iconVertices = iconVertices.concat([ix,mouseY+iconHeight/2,0]);
-		
-		for(var k=0;k<4;k++){
-			iconColors = iconColors.concat([tempColor.R/255.0,tempColor.G/255.0,tempColor.B/255.0,1.0]);
-		}
-	}
-	
-	gl.bindBuffer(gl.ARRAY_BUFFER, dragBuffer[0]);
-
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(iconVertices), gl.STATIC_DRAW);
-	iconVBuffer.itemSize = 3;
-	
-	gl.bindBuffer(gl.ARRAY_BUFFER, dragBuffer[1]);
-
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(iconColors), gl.STATIC_DRAW);
-	iconCBuffer.itemSize = 4;
-}
-
-//Sets up the icons in a horizontal row starting at the coords given 
-function updateIcons(){
-	var iconVertices=[];
-	var iconColors=[];
-	for(var i=0;i<scales.length;i++){
-		for(var j=0;j<iconWidth;j++){
-			var ix=iconX+i*(iconWidth+10)+j+10-iconViewOffset;
-			var iy=iconY+10;
-			var tempColor;
-			if(ix<iconX||ix>iconX+iconViewWidth){
-				tempColor={'R':.5,'G':.5,'B':.5};
-				for(var k=0;k<4;k++){
-					iconVertices = iconVertices.concat([0,0,0]);
-				}
-			}
-			else{
-				tempColor=getColorHeight(i,1.0*j/iconWidth);
-				iconVertices = iconVertices.concat([ix,iy,0]);
-				iconVertices = iconVertices.concat([ix+1,iy,0]);
-				iconVertices = iconVertices.concat([ix+1,iy+iconHeight,0]);
-				iconVertices = iconVertices.concat([ix,iy+iconHeight,0]);
-			}
-			
-			for(var k=0;k<4;k++){
-				iconColors = iconColors.concat([tempColor.R/255.0,tempColor.G/255.0,tempColor.B/255.0,1.0]);
-			}
-		}
-	}
-	gl.bindBuffer(gl.ARRAY_BUFFER, iconVBuffer);
-
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(iconVertices), gl.STATIC_DRAW);
-	iconVBuffer.itemSize = 3;
-	
-	gl.bindBuffer(gl.ARRAY_BUFFER, iconCBuffer);
-
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(iconColors), gl.STATIC_DRAW);
-	iconCBuffer.itemSize = 4;
-	
-}
-
-function updateIconView(){
-	//Create the border around the view
-	//Border will be 3 pixels thick
-	var iconViewV = [];
-	var iconViewC = [];
-	
-	iconViewV = iconViewV.concat([iconX-3,iconY-3,0]);
-	iconViewV = iconViewV.concat([iconX+3+iconViewWidth,iconY-3,0]);
-	iconViewV = iconViewV.concat([iconX+3+iconViewWidth,iconY+3+iconViewHeight,0]);
-	iconViewV = iconViewV.concat([iconX-3,iconY+3+iconViewHeight,0]);
-	
-	iconViewV = iconViewV.concat([iconX,iconY,0]);
-	iconViewV = iconViewV.concat([iconX+iconViewWidth,iconY,0]);
-	iconViewV = iconViewV.concat([iconX+iconViewWidth,iconY+iconViewHeight,0]);
-	iconViewV = iconViewV.concat([iconX,iconY+iconViewHeight,0]);
-	
-	for(var i=0;i<4;i++){
-		iconViewC = iconViewC.concat([0.0,0.0,0.0,1.0]);
-	}
-	for(var i=0;i<4;i++){
-		iconViewC = iconViewC.concat([0.5,0.5,0.5,1.0]);
-	}
-	
-	gl.bindBuffer(gl.ARRAY_BUFFER, iconViewBuffer[0]);
-
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(iconViewV), gl.STATIC_DRAW);
-	iconViewBuffer[0].itemSize = 3;
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, iconViewBuffer[1]);
-
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(iconViewC), gl.STATIC_DRAW);
-	iconViewBuffer[1].itemSize = 4;
-}
-
-
 function handleMouseDown(event){
 	if(mouseDown){
 		return;
@@ -585,15 +435,16 @@ function handleMouseDown(event){
 	//Get the mouse x and y
 	var mouse = getMousePos(canvas, event);
 	//Test if the icon view box was hit
-	if(testIconViewHit(mouse.x,mouse.y)){
+	//if(testIconViewHit(mouse.x,mouse.y)){
 		
-		dragIcon=testIconHit(mouse.x,mouse.y);
-		if(dragIcon==-1){
-			dragIcon=-2;
-		}
-	}
+	dragIcon=testIconHit(mouse.x,mouse.y);
+		//if(dragIcon==-1){
+			//dragIcon=-2;
+		//}
+	//}
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
+	console.log(dragIcon);
 }
 
 
@@ -601,11 +452,12 @@ function handleMouseDown(event){
 function handleMouseUp(event){
 	var mouse = getMousePos(canvas, event);
 	mouseDown = false;
+	dragIcon=-1;
 	if(dragIcon>=0){
 		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
 		if(receiveIndex!=-1){
 			mapCIndices[receiveIndex]=dragIcon;
-			updatereceiveIcons();
+			//updatereceiveIcons();
 		}
 	};
 	dragIcon=-1;
@@ -618,18 +470,21 @@ function handleMouseMove(event){
 		return;
 	}
 	
+	
+	
 	var mouse = getMousePos(canvas, event);
 	
-	updateDrag(mouse.x,mouse.y);
+	//updateDrag(mouse.x,mouse.y);
 	
 	if(dragIcon==-2){
 		updateIconViewOffset(mouse.x,mouse.y);
-		updateIcons();
+		//updateIcons();
 	}
-	
-	drawScene();
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
+	if(dragIcon!=-1){
+		drawScene();
+	}
 }
 
 function updateIconViewOffset(mouseX,mouseY){
@@ -675,106 +530,14 @@ function drawScene() {
 		
 	}
 	
-	drawOldScene();
-	//drawColorView();
-	//drawColorThumbnails();
-	//drawDraggedThumbnail();
+	drawColorView();
+	drawColorThumbnails();
+	drawDraggedThumbnail();
 	
 	//can also make it longer
 	color_panels[0].scale(200,50);
 	color_panels[0].move(0,350);
 	color_panels[0].draw();
-}
-
-function drawOldScene(){
-	perspectiveMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.t, orthogonal.b, 0.1, 100.0);
-	
-  // Set the drawing position to the "identity" point, which is
-  // the center of the scene.
-
-  loadIdentity();
-
-  // Now move the drawing position a bit to where we want to start
-  // drawing the square.
-  mvTranslate([-0.0, 0.0, -6.0]);
-
-  
-	mvPushMatrix();
-	//set position attribute of vertices
-  gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
-  gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-
-  // Set the colors attribute for the vertices.
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
-  gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-
-  // Draw the squares
-	
-	//not drawing using indices right now
-	//gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer);
-	
-	//pass in uniforms to shader
-	setMatrixUniforms();
-	
-	//draw the squares one by one as two triangles
-	
-	//for(var i=0;i<imageWidth*imageHeight;i++){
-		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-	//}
-	
-	//Draw the border of the icon view
-	gl.bindBuffer(gl.ARRAY_BUFFER, iconViewBuffer[0]);
-	gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-	
-	gl.bindBuffer(gl.ARRAY_BUFFER, iconViewBuffer[1]);
-	gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-	
-	setMatrixUniforms();
-	gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-	gl.drawArrays(gl.TRIANGLE_FAN, 4, 4);
-	
-	//Render the icons
-	gl.bindBuffer(gl.ARRAY_BUFFER, iconVBuffer);
-	gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-	
-	gl.bindBuffer(gl.ARRAY_BUFFER, iconCBuffer);
-	gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-	
-	setMatrixUniforms();
-	for(var i=0;i<scales.length*iconWidth;i++){
-		gl.drawArrays(gl.TRIANGLE_FAN, i*4, 4);
-	}
-	
-	//Draw receive icons
-	for(var i=0;i<receiverBuffers.length;i++){
-		gl.bindBuffer(gl.ARRAY_BUFFER, receiverBuffers[i][0]);
-		gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-	
-		gl.bindBuffer(gl.ARRAY_BUFFER, receiverBuffers[i][1]);
-		gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-	
-		setMatrixUniforms();
-		for(var j=0;j<iconWidth;j++){
-			gl.drawArrays(gl.TRIANGLE_FAN, j*4, 4);
-		}
-	}
-	
-	//Draw the dragged icon(if there is one)
-	if(dragIcon>=0){
-		gl.bindBuffer(gl.ARRAY_BUFFER, dragBuffer[0]);
-		gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-	
-		gl.bindBuffer(gl.ARRAY_BUFFER, dragBuffer[1]);
-		gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-	
-		setMatrixUniforms();
-		for(var i=0;i<iconWidth;i++){
-			gl.drawArrays(gl.TRIANGLE_FAN, i*4, 4);
-		}
-	
-	}
-	 mvPopMatrix();
 }
 
 function drawDraggedThumbnail(){
@@ -1158,4 +921,3 @@ function handleColorFileSelect(evt) {
     var files = evt.target.files;
     readFiles(files,"color");
 }
-
