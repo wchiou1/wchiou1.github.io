@@ -36,6 +36,8 @@ var img_panels=[];
 var color_panels=[];
 
 var targ = document.getElementById("imageCanvas");
+targ.width="50";
+targ.height="50";
 console.log("target:"+targ);
 
 var orthogonal={
