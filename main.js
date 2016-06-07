@@ -444,6 +444,7 @@ function handleMouseMove(event){
 	// move div element
 	targ.style.left=event.clientX+'px';
 	targ.style.top=event.clientY+'px';
+	console.log(event.clientX+","+event.clientY);
 	return false;
 }
 
