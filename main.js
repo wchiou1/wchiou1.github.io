@@ -33,6 +33,8 @@ var scales=[];
 var img_panels=[];
 var color_panels=[];
 
+var targ = document.getElementById("chicken");
+
 var orthogonal={
 	l: 0,
 	r: 1200,
@@ -417,20 +419,6 @@ function getMousePos(canvas, evt) {
 }
 
 function handleMouseDown(event){
-	// determine event object
-	if (!e) {
-		var e = window.event;
-	}
-	console.log("event:"+e);
-
-	// IE uses srcElement, others use target
-	var targ = e.target ? e.target : e.srcElement;
-	console.log("target:"+targ);
-
-	if (targ.className != 'dragme') {return};
-	// calculate event X, Y coordinates
-		offsetX = e.clientX;
-		offsetY = e.clientY;
 
 	// assign default values for top and left properties
 	if(!targ.style.left) { targ.style.left='0px'};
@@ -455,12 +443,9 @@ function handleMouseUp(event){
 //Called when the mouse moves
 function handleMouseMove(event){
 	if (!drag) {return};
-	if (!e) { var e= window.event};
-	var targ=e.target?e.target:e.srcElement;
-	if (targ.className != 'dragme') {return};
 	// move div element
-	targ.style.left=coordX+e.clientX-offsetX+'px';
-	targ.style.top=coordY+e.clientY-offsetY+'px';
+	targ.style.left=coordX+e.clientX+'px';
+	targ.style.top=coordY+e.clientY'px';
 	return false;
 }
 
