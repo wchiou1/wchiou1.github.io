@@ -566,6 +566,7 @@ function drawThumbnail(x,y,cindex){
 	for(var i=0;i<iconWidth;i++){
 		rectangle.move(x+i,y,0);
 		var color=getColorHeight(cindex,increment*i);
+		console.log(color+","+increment*i);
 		rectangle.changeColor(color.R/255.0,color.G/255.0,color.B/255.0);
 		rectangle.draw();
 	}
