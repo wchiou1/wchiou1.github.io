@@ -555,7 +555,7 @@ function drawColorView(){
 function drawColorThumbnails(){
 	//this draw colormap as thumbnails;
 	for(var i=0;i<color_panels.length;i++){
-		drawThumbnail(iconX+(iconWidth+10)*i+10,iconY+10);
+		drawThumbnail(iconX+(iconWidth+10)*i+10,iconY+10,i);
 	}
 }
 
