@@ -1,4 +1,4 @@
-var version="clear drag2";
+var version="clear drag3";
 var canvas;
 var gl;
 var imageCanvas;
@@ -500,9 +500,9 @@ function handleMouseMove(event){
 }
 
 function clearDrag(){
-	createImage(0,0,1,1);
-	targ.style.left='0px';
-	targ.style.top='0px';
+	createImage(0,0,iconWidth,iconHeight);
+	targ.style.left='20px';
+	targ.style.top='20px';
 }
 
 
