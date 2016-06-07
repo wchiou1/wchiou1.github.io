@@ -1,4 +1,4 @@
-var version="redrawGraphs8wtf";
+var version="redrawGraphs9";
 var canvas;
 var gl;
 var imageCanvas;
@@ -605,7 +605,7 @@ function drawScene() {
 function clearRectangle(x,y,w,h){
 	gl.enable(gl.SCISSOR_TEST);
 	
-	gl.scissor(x,y,w,h);
+	gl.scissor(x,600-y,w,h);
 	
 	gl.clearColor(0.0,0.0,0.0,1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
