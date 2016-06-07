@@ -20,7 +20,7 @@ var lastMouseX;
 var lastMouseY;
 
 //Color stuffs
-var colorMaps = [];//2d array of objects which stores the colors
+var scales = [];//2d array of objects which stores the colors
 var iconHeight = 50;
 var iconWidth = 50;
 var iconX = 600;
@@ -326,7 +326,17 @@ function start() {
 	  
 		canvas.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
-		document.onmousemove = handleMouseMove;
+		var scheduled=false,lastEvent;
+		document.onmousemove = 	function(event) {
+									lastEvent = event;
+									if (!scheduled) {
+									  scheduled = true;
+									  setTimeout(function() {
+										scheduled = false;
+										handleMouseMove(lastEvent);
+									  }, 50);
+									}
+								  };
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
 		gl.clearDepth(1.0);                 // Clear everything
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -496,7 +506,7 @@ function updateDrag(mouseX,mouseY){
 function updateIcons(){
 	var iconVertices=[];
 	var iconColors=[];
-	for(var i=0;i<colorMaps.length;i++){
+	for(var i=0;i<scales.length;i++){
 		for(var j=0;j<iconWidth;j++){
 			var ix=iconX+i*(iconWidth+10)+j+10-iconViewOffset;
 			var iy=iconY+10;
@@ -732,7 +742,7 @@ function drawOldScene(){
 	gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
 	
 	setMatrixUniforms();
-	for(var i=0;i<colorMaps.length*iconWidth;i++){
+	for(var i=0;i<scales.length*iconWidth;i++){
 		gl.drawArrays(gl.TRIANGLE_FAN, i*4, 4);
 	}
 	
