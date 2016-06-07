@@ -378,14 +378,8 @@ iconViewBuffer[0] = gl.createBuffer();
 
   verticesBuffer = gl.createBuffer();
 
-  // Now create an array of vertices 
-	//each value on the image2DArray is represented with a square with 4 vertices
-	createImageVertices();
-
   // Now set up the colors 
 	verticesColorBuffer = gl.createBuffer();
-
-	createImageColors();
  
 }
 
