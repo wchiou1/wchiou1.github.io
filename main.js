@@ -1,4 +1,4 @@
-var version="creating drag icon";
+var version="testing create image";
 var canvas;
 var gl;
 var imageCanvas;
