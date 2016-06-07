@@ -1,4 +1,4 @@
-var version="colorgraph debug2";
+var version="colormap hitbox";
 var canvas;
 var gl;
 var imageCanvas;
@@ -25,10 +25,12 @@ var receiveY = 100;
 var receiveDelta = 300;
 var dragIcon=-1;
 var mapCIndices = [0,1];
-var setColorIndices = [];
+var setColorHeight = [0,0];
 var iconViewOffset = 0;
 var iconViewWidth = 400;
 var iconViewHeight = 70;
+var scaleWidth = 250;
+var scaleHeight = 50;
 
 var img_data=[];
 var scales=[];
@@ -367,6 +369,27 @@ function initWebGL() {
   }
 }
 
+function checkSetColor(mouseX,mouseY){
+	for(var i=0;i<mapCIndices.length;i++){
+		var tempHeight = testColorMapHit(mouseX,mouseY,i);
+		if(tempHeight!=-1){
+			setColorHeight[i]=tempHeight;
+		}
+	}
+}
+
+//Returns the color height that was clicked, otherwise returns -1
+function testColorMapHit(mouseX,mouseY,rindex){
+	//Check if the click is within the bounds of the top half of the color map
+	if(mouseX<receiveX+100||mouseX>receiveX+100+scaleWidth){
+		return -1;
+	}
+	if(mouseY<receiveY+receiveDelta*i||mouseY>receiveY+receiveDelta*i+scaleHeight/2){
+		return -1;
+	}
+	return 1.0*(mouseY-receiveX-100)/scaleWidth;
+}
+
 function testIconViewHit(mouseX,mouseY){
 	if(mouseX>iconX&&mouseX<iconX+iconViewWidth){
 		if(mouseY>iconY&&mouseY<iconY+iconViewHeight){
@@ -451,6 +474,8 @@ function handleMouseDown(event){
 		//}
 	//}
 	
+	checkSetColor(mouse.x,mouse.y)
+	
 	if(dragIcon>=0){
 		var tempxy=getIconxy(dragIcon);
 		//console.log(tempxy[0]+","+tempxy[1]);
@@ -475,7 +500,6 @@ function handleMouseUp(event){
 	mouseDown = false;
 	if(dragIcon>=0){
 		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
-		console.log("Receive debug:"+receiveIndex);
 		if(receiveIndex!=-1){
 			mapCIndices[receiveIndex]=dragIcon;
 			drawScene();
@@ -568,10 +592,10 @@ function drawPanels(){
 		if(colorPanel==null){
 			continue;
 		}
-		colorPanel.scale(200,50);
+		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX+100,receiveY+receiveDelta*i);
 		colorPanel.draw();
-		drawGraph(receiveX+100,receiveY+receiveDelta*i-50,200,50,mapCIndices[i],0);//x,y,w,h,colorID, relative position(0 to 1)
+		drawGraph(receiveX+100,receiveY+receiveDelta*i-50,200,50,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
 
@@ -985,7 +1009,6 @@ function drawGraph(x,y,w,h,cID,relative){
 	var labref=rgb_to_lab({'R':cref.r, 'G':cref.g, 'B':cref.b});
 	
 	rect.changeColor(cref.r/255.0,cref.g/255.0,cref.b/255.0);
-	console.log(cref.r+","+cref.g+","+cref.b);
 	for(var i=0; i<len; i++){
 		var barWidth=w/len;
 		var color=getColorHeight(cID,i/len);
