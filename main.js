@@ -445,7 +445,7 @@ function handleMouseMove(event){
 	if (!drag) {return};
 	// move div element
 	targ.style.left=coordX+e.clientX+'px';
-	targ.style.top=coordY+e.clientY'px';
+	targ.style.top=coordY+e.clientY+'px';
 	return false;
 }
 
