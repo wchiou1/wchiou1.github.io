@@ -431,6 +431,29 @@ function handleMouseDown(event){
 	if(mouseDown){
 		return;
 	}
+	// determine event object
+	if (!e) {
+		var e = window.event;
+	}
+
+	// IE uses srcElement, others use target
+	var targ = e.target ? e.target : e.srcElement;
+
+	if (targ.className != 'dragme') {return};
+	// calculate event X, Y coordinates
+		offsetX = e.clientX;
+		offsetY = e.clientY;
+
+	// assign default values for top and left properties
+	if(!targ.style.left) { targ.style.left='0px'};
+	if (!targ.style.top) { targ.style.top='0px'};
+
+	// calculate integer values for top and left 
+	// properties
+	coordX = parseInt(targ.style.left);
+	coordY = parseInt(targ.style.top);
+	drag = true;
+	
 	mouseDown=true;
 	//Get the mouse x and y
 	var mouse = getMousePos(canvas, event);
@@ -452,6 +475,7 @@ function handleMouseDown(event){
 function handleMouseUp(event){
 	var mouse = getMousePos(canvas, event);
 	mouseDown = false;
+	drag=false;
 	dragIcon=-1;
 	if(dragIcon>=0){
 		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
@@ -470,6 +494,13 @@ function handleMouseMove(event){
 		return;
 	}
 	
+	if (!drag) {return};
+	if (!e) { var e= window.event};
+	var targ=e.target?e.target:e.srcElement;
+	// move div element
+	targ.style.left=coordX+e.clientX-offsetX+'px';
+	targ.style.top=coordY+e.clientY-offsetY+'px';
+	return false;
 	
 	
 	var mouse = getMousePos(canvas, event);
