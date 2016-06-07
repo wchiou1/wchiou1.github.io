@@ -1,4 +1,4 @@
-var version="offset render canvas";
+var version="removed border";
 var canvas;
 var gl;
 var imageCanvas;
