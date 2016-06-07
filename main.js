@@ -1,4 +1,4 @@
-var version="scales2";
+var version="scales3";
 var canvas;
 var gl;
 var imageCanvas;
@@ -560,7 +560,6 @@ function drawScene() {
 	drawColorThumbnails();
 	drawReceiveThumbnails();
 	drawPanels();
-	drawGraphs();
 }
 
 function drawPanels(){
@@ -574,8 +573,6 @@ function drawPanels(){
 		colorPanel.draw();
 		drawGraph(receiveX+100,receiveY+receiveDelta*i-50,200,50,mapCIndices[i],0);//x,y,w,h,colorID, relative position(0 to 1)
 	}
-	
-	drawGraph(100,100,200,50,0,0);//x,y,w,h,colorID, relative position(0 to 1)
 }
 
 function drawReceiveThumbnails(){
