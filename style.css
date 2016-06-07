@@ -12,10 +12,10 @@ canvas{
 }
 
  .dragme{
-			position:relative;
-			width: 270px;
-			height: 203px;
-		}
+	position:absolute;
+	width: 270px;
+	height: 203px;
+}
 
 #drop1 {
   height: 100px;
