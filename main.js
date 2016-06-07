@@ -448,6 +448,7 @@ function handleMouseDown(event){
 	
 	if(dragIcon>=0){
 		var tempxy=getIconxy(dragIcon);
+		console.log(tempxy[0]+","+tempxy[1]);
 		createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
 	}
 	
@@ -457,6 +458,7 @@ function handleMouseDown(event){
 	document.onmousemove=handleMouseMove;
 	
 	//createImage(mouse.x,mouse.y,50,50);
+	console.log(dragIcon);
 }
 
 
@@ -483,7 +485,6 @@ function handleMouseMove(event){
 	}
 	targ.style.left=event.clientX+'px';
 	targ.style.top=event.clientY+'px';
-	console.log(event.clientX+","+event.clientY);
 	var mouse = getMousePos(canvas, event);
 	
 	//updateDrag(mouse.x,mouse.y);
