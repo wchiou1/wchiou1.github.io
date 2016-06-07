@@ -1,7 +1,7 @@
-var versionNum=1;
 var canvas;
 var gl;
-
+var imageCanvas;
+var ctx;
 
 var mvMatrix;
 var shaderProgram;
@@ -33,9 +33,6 @@ var img_data=[];
 var scales=[];
 var img_panels=[];
 var color_panels=[];
-
-var targ = document.getElementById("chicken");
-console.log("target:"+targ);
 
 var orthogonal={
 	l: 0,
@@ -134,9 +131,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 				
 					}
 				}
-				//console.log(imageVertices.length);
-				//console.log(imageVertices[imageVertices.length-3]);
-				//console.log(imageVertices[imageVertices.length-2]);
+
 				gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(imageVertices), gl.STATIC_DRAW);
@@ -312,7 +307,7 @@ var Rectangle= function(){
 var Shape={};
 
 function start() {
-	console.log("version:"+versionNum);
+
 	  canvas = document.getElementById("glcanvas");
 
 	  initWebGL(canvas);      // Initialize the GL context
@@ -320,9 +315,20 @@ function start() {
 	  // Only continue if WebGL is available and working
 
 	  if (gl) {
-		document.onmousedown = handleMouseDown;
+	  
+		canvas.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
 		var scheduled=false,lastEvent;
+		document.onmousemove = 	function(event) {
+									lastEvent = event;
+									if (!scheduled) {
+									  scheduled = true;
+									  setTimeout(function() {
+										scheduled = false;
+										handleMouseMove(lastEvent);
+									  }, 50);
+									}
+								  };
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
 		gl.clearDepth(1.0);                 // Clear everything
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -340,7 +346,8 @@ function start() {
 		// no need to update screen every 15ms
 		//drawScene();
 	  }
-	
+		imageCanvas=document.getElementById("imageCanvas");
+		ctx=imageCanvas.getContext("2d");
 }
 
 //
@@ -353,7 +360,7 @@ function initWebGL() {
   gl = null;
 
   try {
-    gl = canvas.getContext("experimental-webgl");
+    gl = canvas.getContext("experimental-webgl",{preserveDrawingBuffer: true});
   }
   catch(e) {
   }
@@ -421,31 +428,65 @@ function getMousePos(canvas, evt) {
 }
 
 function handleMouseDown(event){
-
-	// assign default values for top and left properties
-	if(!targ.style.left) { targ.style.left='0px'};
-	if (!targ.style.top) { targ.style.top='0px'};
+	if(mouseDown){
+		return;
+	}
+	mouseDown=true;
+	//Get the mouse x and y
+	var mouse = getMousePos(canvas, event);
+	//Test if the icon view box was hit
+	//if(testIconViewHit(mouse.x,mouse.y)){
+		
+	dragIcon=testIconHit(mouse.x,mouse.y);
+		//if(dragIcon==-1){
+			//dragIcon=-2;
+		//}
+	//}
+	lastMouseX=mouse.x;
+	lastMouseY=mouse.y;
+	console.log(dragIcon);
 	
-	drag = true;
-
-	// move div element
-	document.onmousemove=handleMouseMove;
+	//createImage(mouse.x,mouse.y,50,50);
 }
 
 
 //Called when the mouse is released
 function handleMouseUp(event){
-	drag=false;
+	var mouse = getMousePos(canvas, event);
+	mouseDown = false;
+	dragIcon=-1;
+	if(dragIcon>=0){
+		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
+		if(receiveIndex!=-1){
+			mapCIndices[receiveIndex]=dragIcon;
+			//updatereceiveIcons();
+		}
+	};
+	dragIcon=-1;
+	drawScene();
 }
 
 //Called when the mouse moves
 function handleMouseMove(event){
-	if (!drag) {return};
-	// move div element
-	targ.style.left=event.clientX+'px';
-	targ.style.top=event.clientY+'px';
-	console.log(event.clientX+","+event.clientY);
-	return false;
+	if(!mouseDown){
+		return;
+	}
+	
+	
+	
+	var mouse = getMousePos(canvas, event);
+	
+	//updateDrag(mouse.x,mouse.y);
+	
+	if(dragIcon==-2){
+		updateIconViewOffset(mouse.x,mouse.y);
+		//updateIcons();
+	}
+	lastMouseX=mouse.x;
+	lastMouseY=mouse.y;
+	if(dragIcon!=-1){
+		drawScene();
+	}
 }
 
 function updateIconViewOffset(mouseX,mouseY){
@@ -882,3 +923,13 @@ function handleColorFileSelect(evt) {
     var files = evt.target.files;
     readFiles(files,"color");
 }
+
+
+function createImage(x,y,w,h){
+	var myImageData=ctx.createImageData(w,h); //uint8clampedarray
+	var pixelData = new Uint8Array(w*h*4);//unit8array
+	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
+	myImageData.data.set(pixelData);
+	ctx.putImageData(myImageData,0,0);
+}
+
