@@ -316,20 +316,9 @@ function start() {
 	  // Only continue if WebGL is available and working
 
 	  if (gl) {
-	  
-		canvas.onmousedown = handleMouseDown;
+		document.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
 		var scheduled=false,lastEvent;
-		document.onmousemove = 	function(event) {
-									lastEvent = event;
-									if (!scheduled) {
-									  scheduled = true;
-									  setTimeout(function() {
-										scheduled = false;
-										handleMouseMove(lastEvent);
-									  }, 50);
-									}
-								  };
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
 		gl.clearDepth(1.0);                 // Clear everything
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -429,31 +418,30 @@ function getMousePos(canvas, evt) {
 
 function handleMouseDown(event){
 	// determine event object
-				if (!e) {
-					var e = window.event;
-				}
+	if (!e) {
+		var e = window.event;
+	}
 
-				// IE uses srcElement, others use target
-				var targ = e.target ? e.target : e.srcElement;
+	// IE uses srcElement, others use target
+	var targ = e.target ? e.target : e.srcElement;
 
-				if (targ.className != 'dragme') {return};
-				// calculate event X, Y coordinates
-					offsetX = e.clientX;
-					offsetY = e.clientY;
+	if (targ.className != 'dragme') {return};
+	// calculate event X, Y coordinates
+		offsetX = e.clientX;
+		offsetY = e.clientY;
 
-				// assign default values for top and left properties
-				if(!targ.style.left) { targ.style.left='0px'};
-				if (!targ.style.top) { targ.style.top='0px'};
+	// assign default values for top and left properties
+	if(!targ.style.left) { targ.style.left='0px'};
+	if (!targ.style.top) { targ.style.top='0px'};
 
-				// calculate integer values for top and left 
-				// properties
-				coordX = parseInt(targ.style.left);
-				coordY = parseInt(targ.style.top);
-				drag = true;
+	// calculate integer values for top and left 
+	// properties
+	coordX = parseInt(targ.style.left);
+	coordY = parseInt(targ.style.top);
+	drag = true;
 
-				// move div element
-					document.onmousemove=handleMouseMove;
-				
+	// move div element
+	document.onmousemove=handleMouseMove;
 }
 
 
@@ -465,12 +453,12 @@ function handleMouseUp(event){
 //Called when the mouse moves
 function handleMouseMove(event){
 	if (!drag) {return};
-				if (!e) { var e= window.event};
-				var targ=e.target?e.target:e.srcElement;
-				// move div element
-				targ.style.left=coordX+e.clientX-offsetX+'px';
-				targ.style.top=coordY+e.clientY-offsetY+'px';
-				return false;
+	if (!e) { var e= window.event};
+	var targ=e.target?e.target:e.srcElement;
+	// move div element
+	targ.style.left=coordX+e.clientX-offsetX+'px';
+	targ.style.top=coordY+e.clientY-offsetY+'px';
+	return false;
 }
 
 function updateIconViewOffset(mouseX,mouseY){
