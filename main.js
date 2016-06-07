@@ -1,4 +1,4 @@
-var version="clear drag3";
+var version="jump";
 var canvas;
 var gl;
 var imageCanvas;
@@ -452,6 +452,8 @@ function handleMouseDown(event){
 		var tempxy=getIconxy(dragIcon);
 		console.log(tempxy[0]+","+tempxy[1]);
 		createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
+		targ.style.left=event.clientX-iconWidth/2+'px';
+		targ.style.top=event.clientY-iconHeight/2+'px';
 	}
 	
 	lastMouseX=mouse.x;
