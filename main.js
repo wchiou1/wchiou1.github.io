@@ -1,4 +1,4 @@
-var version="testing create image2";
+var version="offset render canvas";
 var canvas;
 var gl;
 var imageCanvas;
@@ -415,8 +415,8 @@ function getColorHeight(cindex,height){
 }
 
 function getIconxy(cindex){
-	var tempx=iconX+(iconWidth+10)*cindex;
-	var tempy=iconY;
+	var tempx=iconX+(iconWidth+10)*cindex-10;
+	var tempy=iconY-10;
 	return [tempx,tempy];
 }
 
