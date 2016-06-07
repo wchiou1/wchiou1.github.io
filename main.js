@@ -1,4 +1,4 @@
-var version="removed border";
+var version="clear drag";
 var canvas;
 var gl;
 var imageCanvas;
@@ -468,7 +468,6 @@ function handleMouseDown(event){
 function handleMouseUp(event){
 	var mouse = getMousePos(canvas, event);
 	mouseDown = false;
-	dragIcon=-1;
 	if(dragIcon>=0){
 		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
 		if(receiveIndex!=-1){
@@ -477,7 +476,7 @@ function handleMouseUp(event){
 		}
 	};
 	dragIcon=-1;
-	drawScene();
+	clearDrag();
 }
 
 //Called when the mouse moves
@@ -485,8 +484,8 @@ function handleMouseMove(event){
 	if(dragIcon==-1){
 		return;
 	}
-	targ.style.left=event.clientX+'px';
-	targ.style.top=event.clientY+'px';
+	targ.style.left=event.clientX-iconWidth/2+'px';
+	targ.style.top=event.clientY-iconHeight/2+'px';
 	var mouse = getMousePos(canvas, event);
 	
 	//updateDrag(mouse.x,mouse.y);
@@ -499,6 +498,13 @@ function handleMouseMove(event){
 	lastMouseY=mouse.y;
 	return false;
 }
+
+function clearDrag(){
+	createImage(0,0,0,0);
+	targ.style.left='0px';
+	targ.style.top='0px';
+}
+
 
 function updateIconViewOffset(mouseX,mouseY){
 	var dx=lastMouseX-mouseX;
