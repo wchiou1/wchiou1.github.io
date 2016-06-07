@@ -1,4 +1,4 @@
-var version="redrawGraphs4";
+var version="redrawGraphs5";
 var canvas;
 var gl;
 var imageCanvas;
@@ -620,7 +620,7 @@ function drawGraphs(){
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX+100,receiveY+receiveDelta*i-scaleHeight,250,100);
+		clearRectangle(receiveX+100,receiveY+receiveDelta*i-scaleHeight,250,300);
 		drawGraph(receiveX+100,receiveY+receiveDelta*i-scaleHeight,scaleWidth,scaleHeight,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
