@@ -1,4 +1,4 @@
-var version="colormap hitbox";
+var version="colormap hitbox2";
 var canvas;
 var gl;
 var imageCanvas;
@@ -384,7 +384,7 @@ function testColorMapHit(mouseX,mouseY,rindex){
 	if(mouseX<receiveX+100||mouseX>receiveX+100+scaleWidth){
 		return -1;
 	}
-	if(mouseY<receiveY+receiveDelta*i||mouseY>receiveY+receiveDelta*i+scaleHeight/2){
+	if(mouseY<receiveY+receiveDelta*rindex||mouseY>receiveY+receiveDelta*rindex+scaleHeight/2){
 		return -1;
 	}
 	return 1.0*(mouseY-receiveX-100)/scaleWidth;
