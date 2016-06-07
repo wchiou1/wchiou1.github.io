@@ -399,6 +399,15 @@ function testIconHit(mouseX,mouseY){
 	}
 	return -1;
 }
+//Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
+function getColorHeight(cindex,height){
+	if(height>=1.0||height<0.0){
+		console.log("Warning: Attempted to get invalid color height("+height+").");
+		return {'R' : 0,'G' : 0,'B' : 0};
+	}
+	var index=Math.floor(1.0*(scales[cindex].length)*height);
+	return scales[cindex][index];
+}
 
 function getMousePos(canvas, evt) {
 	var rect = canvas.getBoundingClientRect();
@@ -546,9 +555,19 @@ function drawColorView(){
 function drawColorThumbnails(){
 	//this draw colormap as thumbnails;
 	for(var i=0;i<color_panels.length;i++){
-		color_panels[i].scale(iconWidth,iconHeight);
-		color_panels[i].move(iconX+(iconWidth+10)*i+10,iconY+10);
-		color_panels[i].draw();
+		drawThumbnail(iconX+(iconWidth+10)*i+10,iconY+10);
+	}
+}
+
+function drawThumbnail(x,y,cindex){
+	var rectangle=Shape.rectangle;
+	rectangle.scale(1,iconHeight);
+	var increment = 1.0/iconWidth;
+	for(var i=0;i<iconWidth;i++){
+		rectangle.move(x+i,y,0);
+		var color=getColorHeight(cindex,increment*i);
+		rectangle.changeColor(color.R/255.0,color.G/255.0,color.B/255.0);
+		rectangle.draw();
 	}
 }
 
