@@ -5,7 +5,7 @@
 }
 
 canvas{
-	position: relative; 
+	position: absolute; 
 	top: 20px; 
 	left: 20px; 
 	border: 2px solid red;
