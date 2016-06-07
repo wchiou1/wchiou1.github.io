@@ -1,3 +1,4 @@
+var versionNum=1;
 var canvas;
 var gl;
 var imageCanvas;
@@ -33,6 +34,9 @@ var img_data=[];
 var scales=[];
 var img_panels=[];
 var color_panels=[];
+
+var targ = document.getElementById("imageCanvas");
+console.log("target:"+targ);
 
 var orthogonal={
 	l: 0,
@@ -316,19 +320,8 @@ function start() {
 
 	  if (gl) {
 	  
-		canvas.onmousedown = handleMouseDown;
+		document.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
-		var scheduled=false,lastEvent;
-		document.onmousemove = 	function(event) {
-									lastEvent = event;
-									if (!scheduled) {
-									  scheduled = true;
-									  setTimeout(function() {
-										scheduled = false;
-										handleMouseMove(lastEvent);
-									  }, 50);
-									}
-								  };
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
 		gl.clearDepth(1.0);                 // Clear everything
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -428,9 +421,13 @@ function getMousePos(canvas, evt) {
 }
 
 function handleMouseDown(event){
+	// assign default values for top and left properties
+	if(!targ.style.left) { targ.style.left='0px'};
+	if (!targ.style.top) { targ.style.top='0px'};
 	if(mouseDown){
 		return;
 	}
+	
 	mouseDown=true;
 	//Get the mouse x and y
 	var mouse = getMousePos(canvas, event);
@@ -444,6 +441,8 @@ function handleMouseDown(event){
 	//}
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
+	
+	document.onmousemove=handleMouseMove;
 	console.log(dragIcon);
 	
 	//createImage(mouse.x,mouse.y,50,50);
@@ -468,12 +467,12 @@ function handleMouseUp(event){
 
 //Called when the mouse moves
 function handleMouseMove(event){
-	if(!mouseDown){
+	if(dragIcon==-1){
 		return;
 	}
-	
-	
-	
+	targ.style.left=event.clientX+'px';
+	targ.style.top=event.clientY+'px';
+	console.log(event.clientX+","+event.clientY);
 	var mouse = getMousePos(canvas, event);
 	
 	//updateDrag(mouse.x,mouse.y);
@@ -484,9 +483,7 @@ function handleMouseMove(event){
 	}
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
-	if(dragIcon!=-1){
-		drawScene();
-	}
+	return false;
 }
 
 function updateIconViewOffset(mouseX,mouseY){
