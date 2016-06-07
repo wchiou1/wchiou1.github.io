@@ -1,4 +1,4 @@
-var versionNum=2;
+var versionNum=1;
 var canvas;
 var gl;
 
@@ -34,7 +34,7 @@ var scales=[];
 var img_panels=[];
 var color_panels=[];
 
-var targ = $('youtubeimg');
+var targ = document.getElementById("chicken");
 console.log("target:"+targ);
 
 var orthogonal={
