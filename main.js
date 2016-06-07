@@ -1,4 +1,4 @@
-var version="index error3";
+var version="redraw";
 var canvas;
 var gl;
 var imageCanvas;
@@ -478,11 +478,12 @@ function handleMouseUp(event){
 		console.log("Receive debug:"+receiveIndex);
 		if(receiveIndex!=-1){
 			mapCIndices[receiveIndex]=dragIcon;
-			//updatereceiveIcons();
+			drawScene();
 		}
 	};
 	dragIcon=-1;
 	clearDrag();
+	
 }
 
 //Called when the mouse moves
