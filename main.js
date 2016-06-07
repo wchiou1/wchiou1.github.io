@@ -1,4 +1,4 @@
-var version="redrawGraphs9";
+var version="redrawGraphs10";
 var canvas;
 var gl;
 var imageCanvas;
@@ -620,7 +620,7 @@ function drawGraphs(){
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX+100,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2);
+		clearRectangle(receiveX+100,receiveY+receiveDelta*i,scaleWidth,scaleHeight*2);
 		console.log((receiveX+100)+","+(receiveY+receiveDelta*i-scaleHeight*2)+"|"+scaleWidth+","+(scaleHeight*2))
 		drawGraph(receiveX+100,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
