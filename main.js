@@ -1,4 +1,4 @@
-var version="index error2";
+var version="index error3";
 var canvas;
 var gl;
 var imageCanvas;
@@ -569,8 +569,9 @@ function drawScene() {
 function drawReceiveThumbnails(){
 	for(var i=0;i<mapCIndices.length;i++){
 		var tempy=receiveY+receiveDelta*i;
-		console.log(i+","+mapCIndices[i]);
-		drawThumbnail(receiveX,tempy,mapCIndices[i]);
+		if(mapCIndices[i]<scales.length){
+			drawThumbnail(receiveX,tempy,mapCIndices[i]);
+		}
 	}
 }
 
