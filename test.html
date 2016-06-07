@@ -8,16 +8,15 @@
 <script type="text/javascript">
 	$(document).on("load",start());
 	function start(){
-		var dir = "./images";
-		var fileextension = ".png";
+		var folder = "images/";
+
 		$.ajax({
-			//This will retrieve the contents of the folder if the folder is configured as 'browsable'
-			url: dir,
+			url : folder,
 			success: function (data) {
-				//Lsit all png file names in the page
-				$(data).find("a:contains(" + fileextension + ")").each(function () {
-					var filename = this.href.replace(window.location.host, "").replace("http:///", "");
-					$("body").append($("<img src=" + dir + filename + "></img>"));
+				$(data).find("a").attr("href", function (i, val) {
+					if( val.match(/\.(jpe?g|png|gif)$/) ) { 
+						$("body").append( "<img src='"+ folder + val +"'>" );
+					} 
 				});
 			}
 		});
