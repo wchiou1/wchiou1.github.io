@@ -532,6 +532,40 @@ function updateIcons(){
 	
 }
 
+function updateIconView(){
+	//Create the border around the view
+	//Border will be 3 pixels thick
+	var iconViewV = [];
+	var iconViewC = [];
+	
+	iconViewV = iconViewV.concat([iconX-3,iconY-3,0]);
+	iconViewV = iconViewV.concat([iconX+3+iconViewWidth,iconY-3,0]);
+	iconViewV = iconViewV.concat([iconX+3+iconViewWidth,iconY+3+iconViewHeight,0]);
+	iconViewV = iconViewV.concat([iconX-3,iconY+3+iconViewHeight,0]);
+	
+	iconViewV = iconViewV.concat([iconX,iconY,0]);
+	iconViewV = iconViewV.concat([iconX+iconViewWidth,iconY,0]);
+	iconViewV = iconViewV.concat([iconX+iconViewWidth,iconY+iconViewHeight,0]);
+	iconViewV = iconViewV.concat([iconX,iconY+iconViewHeight,0]);
+	
+	for(var i=0;i<4;i++){
+		iconViewC = iconViewC.concat([0.0,0.0,0.0,1.0]);
+	}
+	for(var i=0;i<4;i++){
+		iconViewC = iconViewC.concat([0.5,0.5,0.5,1.0]);
+	}
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, iconViewBuffer[0]);
+
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(iconViewV), gl.STATIC_DRAW);
+	iconViewBuffer[0].itemSize = 3;
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, iconViewBuffer[1]);
+
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(iconViewC), gl.STATIC_DRAW);
+	iconViewBuffer[1].itemSize = 4;
+}
+
 
 function handleMouseDown(event){
 	if(mouseDown){
