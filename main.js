@@ -1,4 +1,4 @@
-var version="recieve2";
+var version="index error";
 var canvas;
 var gl;
 var imageCanvas;
@@ -410,6 +410,7 @@ function getColorHeight(cindex,height){
 		console.log("Warning: Attempted to get invalid color height("+height+").");
 		return {'R' : 0,'G' : 0,'B' : 0};
 	}
+		console.log("Color Height debug:"+cindex+","+scales[cindex]);
 	var index=Math.floor(1.0*(scales[cindex].length)*height);
 	return scales[cindex][index];
 }
@@ -595,6 +596,7 @@ function drawThumbnail(x,y,cindex){
 	var rectangle=Shape.rectangle;
 	rectangle.scale(1,iconHeight);
 	var increment = 1.0/iconWidth;
+
 	for(var i=0;i<iconWidth;i++){
 		rectangle.move(x+i,y,0);
 		var color=getColorHeight(cindex,increment*i);
