@@ -421,6 +421,7 @@ function handleMouseDown(event){
 	if (!e) {
 		var e = window.event;
 	}
+	console.log(e);
 
 	// IE uses srcElement, others use target
 	var targ = e.target ? e.target : e.srcElement;
