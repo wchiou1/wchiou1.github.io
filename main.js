@@ -500,7 +500,7 @@ function handleMouseMove(event){
 }
 
 function clearDrag(){
-	createImage(0,0,0,0);
+	createImage(0,0,1,1);
 	targ.style.left='0px';
 	targ.style.top='0px';
 }
