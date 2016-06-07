@@ -814,6 +814,7 @@ function FileListenerInit(){
 			drop2.style.top= iconY-3+"px";
 			drop2.style.width=iconViewWidth;
 			drop2.style.height=iconViewHeight
+			drop2.style.position= 'absolute';
 			
 			function cancel(e) {
 			   e.preventDefault(); 
