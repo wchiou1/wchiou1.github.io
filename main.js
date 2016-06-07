@@ -1,4 +1,4 @@
-var version="testing create image";
+var version="testing create image2";
 var canvas;
 var gl;
 var imageCanvas;
@@ -415,7 +415,7 @@ function getColorHeight(cindex,height){
 function getIconxy(cindex){
 	var tempx=iconX+(iconWidth+10)*cindex;
 	var tempy=iconY;
-	return [tempy,tempy];
+	return [tempx,tempy];
 }
 
 function getMousePos(canvas, evt) {
