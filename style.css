@@ -25,10 +25,7 @@ canvas{
 
 #drop2 {
 	position:absolute;
-	top:450px;
-	left:950px;
-  height: 100px;
-  width: 250px;
+
   border: 1px solid orange;
 }
 
