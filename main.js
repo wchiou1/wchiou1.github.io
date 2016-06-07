@@ -412,6 +412,12 @@ function getColorHeight(cindex,height){
 	return scales[cindex][index];
 }
 
+function getIconxy(cindex){
+	var tempx=iconX+(iconWidth+10)*cindex;
+	var tempy=iconY;
+	return [tempy,tempy];
+}
+
 function getMousePos(canvas, evt) {
 	var rect = canvas.getBoundingClientRect();
 	return {
@@ -439,6 +445,12 @@ function handleMouseDown(event){
 			//dragIcon=-2;
 		//}
 	//}
+	
+	if(dragIcon>=0){
+		var tempxy=getIconxy(dragIcon);
+		createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
+	}
+	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
 	
