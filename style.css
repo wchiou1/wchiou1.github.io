@@ -17,11 +17,7 @@ canvas{
 }
 
 #drop1 {
-	position:absolute;
-	top:450px;
-	left:700px;
-  height: 100px;
-  width: 250px;
+
   border: 1px solid blue;
 }
 

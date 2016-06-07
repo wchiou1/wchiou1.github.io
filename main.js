@@ -873,6 +873,12 @@ function FileListenerInit(){
 			var select1 = document.getElementById('selector1');
 			var select2 = document.getElementById('selector2');
 			
+			drop1.style.left= imgIconX-10+'px';
+			drop1.style.top= imgIconY-10+"px";
+			drop1.style.width=iconViewWidth+"px";
+			drop1.style.height=iconViewHeight+"px";
+			drop1.style.position= 'absolute';
+			
 			drop2.style.left= iconX-3+'px';
 			drop2.style.top= iconY-3+"px";
 			drop2.style.width=iconViewWidth+"px";
