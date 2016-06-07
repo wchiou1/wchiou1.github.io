@@ -457,6 +457,7 @@ function handleMouseMove(event){
 	if (!drag) {return};
 	if (!e) { var e= window.event};
 	var targ=e.target?e.target:e.srcElement;
+	if (targ.className != 'dragme') {return};
 	// move div element
 	targ.style.left=coordX+e.clientX-offsetX+'px';
 	targ.style.top=coordY+e.clientY-offsetY+'px';
