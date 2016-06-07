@@ -428,9 +428,6 @@ function getMousePos(canvas, evt) {
 }
 
 function handleMouseDown(event){
-	if(mouseDown){
-		return;
-	}
 	// determine event object
 	if (!e) {
 		var e = window.event;
