@@ -1,4 +1,4 @@
-var version="redraw";
+var version="scales";
 var canvas;
 var gl;
 var imageCanvas;
@@ -559,11 +559,21 @@ function drawScene() {
 	drawColorView();
 	drawColorThumbnails();
 	drawReceiveThumbnails();
-	
-	//can also make it longer
-	color_panels[0].scale(200,50);
-	color_panels[0].move(0,350);
-	color_panels[0].draw();
+	drawPanels();
+	drawGraphs();
+}
+
+function drawPanels(){
+	for(var i=0;i<mapCIndices.length;i++){
+		var colorPanel=color_panels[mapCIndices[i]];
+		if(colorPanel=null){
+			continue;
+		}
+		colorPanel.scale(200,50);
+		colorPanel.move(receiveX+100,receiveY+receiveDelta*i);
+		colorPanel.draw();
+		drawGraph(receiveX+100,receiveY+receiveDelta*i-50,200,50,mapCIndices[i],0);//x,y,w,h,colorID, relative position(0 to 1)
+	}
 	
 	drawGraph(100,100,200,50,0,0);//x,y,w,h,colorID, relative position(0 to 1)
 }
