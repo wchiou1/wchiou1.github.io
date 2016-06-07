@@ -1,4 +1,4 @@
-var version="clear drag";
+var version="clear drag2";
 var canvas;
 var gl;
 var imageCanvas;
