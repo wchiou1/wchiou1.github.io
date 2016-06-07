@@ -421,10 +421,11 @@ function handleMouseDown(event){
 	if (!e) {
 		var e = window.event;
 	}
-	console.log(e);
+	console.log("event:"+e);
 
 	// IE uses srcElement, others use target
 	var targ = e.target ? e.target : e.srcElement;
+	console.log("target:"+targ);
 
 	if (targ.className != 'dragme') {return};
 	// calculate event X, Y coordinates
