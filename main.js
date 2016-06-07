@@ -560,6 +560,8 @@ function drawScene() {
 	color_panels[0].scale(200,50);
 	color_panels[0].move(0,350);
 	color_panels[0].draw();
+	
+	drawGraph(100,100,200,50,0,0);//x,y,w,h,colorID, relative position(0 to 1)
 }
 
 function drawReceiveThumbnails(){
@@ -955,3 +957,22 @@ function createImage(x,y,w,h){
 	ctx.putImageData(myImageData,0,0);
 }
 
+
+function drawGraph(x,y,w,h,cID,relative){
+	var scale=scales[cID];
+	var len=scale.length;
+	var rect=Shape.rectangle;
+	var cref=getColorHeight(cID,relative);
+	var labref=rgb_to_lab({'R':cref.r, 'G':cref.g, 'B':cref.b});
+	
+	rect.changeColor(cref.r,cref.g,cref.b);
+	for(var i=0; i<len; i++){
+		var barWidth=w/len;
+		var color=getColorHeight(cID,i/len);
+		var lab=rgb_to_lab({'R':color.r, 'G':color.g, 'B':color.b});
+		var barHeight=ciede2000(labref,lab);
+		rect.scale(barWidth,barHeight);
+		rect.move(x+(barWidth*i),y+h-barHeight);
+		rect.draw();
+	}
+}
