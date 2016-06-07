@@ -588,10 +588,10 @@ function drawScene() {
 		img_panels[l-1].draw();
 		
 		for(var i=0;i<l;i++){
-			img_panels[l-1].changeColor(null);
-			img_panels[l-1].scale(iconWidth, iconHeight);
-			img_panels[l-1].move(imgIconX,i*(imgIconY+10),0);
-			img_panels[l-1].draw();
+			img_panels[i].changeColor(null);
+			img_panels[i].scale(iconWidth, iconHeight);
+			img_panels[i].move(i*(iconWidth+10)+imgIconX,imgIconY,0);
+			img_panels[i].draw();
 		}
 	}
 	
