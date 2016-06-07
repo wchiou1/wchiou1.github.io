@@ -1,4 +1,4 @@
-var version="redrawGraphs12"
+var version="clean"
 var canvas;
 var gl;
 var imageCanvas;
@@ -385,15 +385,13 @@ function checkSetColor(mouseX,mouseY){
 
 //Returns the color height that was clicked, otherwise returns -1
 function testColorMapHit(mouseX,mouseY,rindex){
-	console.log(mouseX+","+mouseY+":"+(receiveX+100)+","+(receiveX+100+scaleWidth)+"|"+(receiveY+receiveDelta*rindex)+","+(receiveY+receiveDelta*rindex+scaleHeight/2));
 	//Check if the click is within the bounds of the top half of the color map
 	if(mouseX<receiveX+100||mouseX>receiveX+100+scaleWidth){
 		return -1;
 	}
-	if(mouseY<receiveY+receiveDelta*rindex||mouseY>receiveY+receiveDelta*rindex+scaleHeight/2){
+	if(mouseY<receiveY+receiveDelta*rindex||mouseY>receiveY+receiveDelta*rindex+scaleHeight){
 		return -1;
 	}
-	console.log(1.0*(mouseX-receiveX-100)/scaleWidth);
 	return 1.0*(mouseX-receiveX-100)/scaleWidth;
 }
 
@@ -487,7 +485,6 @@ function handleMouseDown(event){
 	
 	if(dragIcon>=0){
 		var tempxy=getIconxy(dragIcon);
-		//console.log(tempxy[0]+","+tempxy[1]);
 		createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
 		targ.style.left=event.clientX-iconWidth/2+'px';
 		targ.style.top=event.clientY-iconHeight/2+'px';
@@ -497,9 +494,6 @@ function handleMouseDown(event){
 	lastMouseY=mouse.y;
 	
 	document.onmousemove=handleMouseMove;
-	
-	//createImage(mouse.x,mouse.y,50,50);
-	//console.log(dragIcon);
 }
 
 
@@ -621,7 +615,6 @@ function drawGraphs(){
 			continue;
 		}
 		clearRectangle(receiveX+100,receiveY+receiveDelta*i,scaleWidth,200);
-		console.log((receiveX+100)+","+(receiveY+receiveDelta*i-scaleHeight*2)+"|"+scaleWidth+","+(scaleHeight*2))
 		drawGraph(receiveX+100,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
