@@ -383,7 +383,7 @@ function testreceiverHit(mouseX,mouseY){
 		return -1;
 	}
 	//Test y values
-	for(var i=0;i<2;i++){
+	for(var i=0;i<mapCIndices.length;i++){
 		if(mouseY>receiveY+i*receiveDelta-iconHeight/2&&mouseY<receiveY+iconHeight+i*receiveDelta+iconHeight/2){
 			return i;
 		}
@@ -450,7 +450,7 @@ function handleMouseDown(event){
 	
 	if(dragIcon>=0){
 		var tempxy=getIconxy(dragIcon);
-		console.log(tempxy[0]+","+tempxy[1]);
+		//console.log(tempxy[0]+","+tempxy[1]);
 		createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
 		targ.style.left=event.clientX-iconWidth/2+'px';
 		targ.style.top=event.clientY-iconHeight/2+'px';
@@ -462,7 +462,7 @@ function handleMouseDown(event){
 	document.onmousemove=handleMouseMove;
 	
 	//createImage(mouse.x,mouse.y,50,50);
-	console.log(dragIcon);
+	//console.log(dragIcon);
 }
 
 
