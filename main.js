@@ -1,4 +1,4 @@
-var version="colormap hitbox8";
+var version="redrawGraphs";
 var canvas;
 var gl;
 var imageCanvas;
@@ -482,7 +482,7 @@ function handleMouseDown(event){
 	//}
 	
 	if(checkSetColor(mouse.x,mouse.y)){
-		drawScene();
+		drawGraphs();
 	}
 	
 	if(dragIcon>=0){
@@ -599,6 +599,13 @@ function drawScene() {
 	drawColorThumbnails();
 	drawReceiveThumbnails();
 	drawPanels();
+	drawGraphs();
+}
+
+function drawGraphs(){
+	for(var i=0;i<mapCIndices.length;i++){
+		drawGraph(receiveX+100,receiveY+receiveDelta*i-scaleHeight,scaleWidth,scaleHeight,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
+	}
 }
 
 function drawPanels(){
@@ -610,7 +617,7 @@ function drawPanels(){
 		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX+100,receiveY+receiveDelta*i);
 		colorPanel.draw();
-		drawGraph(receiveX+100,receiveY+receiveDelta*i-scaleHeight,scaleWidth,scaleHeight,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
+		
 	}
 }
 
