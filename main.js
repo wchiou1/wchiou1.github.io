@@ -1,4 +1,4 @@
-var version="colormap hitbox6";
+var version="colormap hitbox7";
 var canvas;
 var gl;
 var imageCanvas;
@@ -388,8 +388,8 @@ function testColorMapHit(mouseX,mouseY,rindex){
 	if(mouseY<receiveY+receiveDelta*rindex||mouseY>receiveY+receiveDelta*rindex+scaleHeight/2){
 		return -1;
 	}
-	console.log(1.0*(mouseY-receiveX-100)/scaleWidth);
-	return 1.0*(mouseY-receiveX-100)/scaleWidth;
+	console.log(1.0*(mouseX-receiveX-100)/scaleWidth);
+	return 1.0*(mouseX-receiveX-100)/scaleWidth;
 }
 
 function testIconViewHit(mouseX,mouseY){
