@@ -425,11 +425,7 @@ function handleMouseDown(event){
 	// assign default values for top and left properties
 	if(!targ.style.left) { targ.style.left='0px'};
 	if (!targ.style.top) { targ.style.top='0px'};
-
-	// calculate integer values for top and left 
-	// properties
-	coordX = parseInt(targ.style.left);
-	coordY = parseInt(targ.style.top);
+	
 	drag = true;
 
 	// move div element
@@ -446,8 +442,8 @@ function handleMouseUp(event){
 function handleMouseMove(event){
 	if (!drag) {return};
 	// move div element
-	targ.style.left=coordX+event.clientX+'px';
-	targ.style.top=coordY+event.clientY+'px';
+	targ.style.left=event.clientX+'px';
+	targ.style.top=event.clientY+'px';
 	return false;
 }
 
