@@ -1,4 +1,4 @@
-var version="redrawGraphs11";
+var version="redrawGraphs12
 var canvas;
 var gl;
 var imageCanvas;
@@ -23,7 +23,7 @@ var iconY = 50;
 var imgIconX=600;
 var imgIconY=500;
 var receiveX = 50;
-var receiveY = 100;
+var receiveY = 150;
 var receiveDelta = 300;
 var dragIcon=-1;
 var mapCIndices = [0,1];
