@@ -1,4 +1,4 @@
-var version="recieve";
+var version="recieve2";
 var canvas;
 var gl;
 var imageCanvas;
@@ -564,6 +564,7 @@ function drawScene() {
 function drawReceiveThumbnails(){
 	for(var i=0;i<mapCIndices.length;i++){
 		var tempy=receiveY+receiveDelta*i;
+		console.log(i+","+mapCIndices[i]);
 		drawThumbnail(receiveX,tempy,mapCIndices[i]);
 	}
 }
