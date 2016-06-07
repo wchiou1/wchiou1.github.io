@@ -1,4 +1,4 @@
-var version="index error";
+var version="index error2";
 var canvas;
 var gl;
 var imageCanvas;
@@ -410,7 +410,9 @@ function getColorHeight(cindex,height){
 		console.log("Warning: Attempted to get invalid color height("+height+").");
 		return {'R' : 0,'G' : 0,'B' : 0};
 	}
+	if(scales[cindex]==null){
 		console.log("Color Height debug:"+cindex+","+scales[cindex]);
+	}
 	var index=Math.floor(1.0*(scales[cindex].length)*height);
 	return scales[cindex][index];
 }
