@@ -1,4 +1,4 @@
-var versionNum=1;
+var version="creating drag icon";
 var canvas;
 var gl;
 var imageCanvas;
@@ -455,7 +455,6 @@ function handleMouseDown(event){
 	lastMouseY=mouse.y;
 	
 	document.onmousemove=handleMouseMove;
-	console.log(dragIcon);
 	
 	//createImage(mouse.x,mouse.y,50,50);
 }
