@@ -429,90 +429,48 @@ function getMousePos(canvas, evt) {
 
 function handleMouseDown(event){
 	// determine event object
-	if (!e) {
-		var e = window.event;
-	}
+				if (!e) {
+					var e = window.event;
+				}
 
-	// IE uses srcElement, others use target
-	var targ = e.target ? e.target : e.srcElement;
+				// IE uses srcElement, others use target
+				var targ = e.target ? e.target : e.srcElement;
 
-	if (targ.className != 'dragme') {return};
-	// calculate event X, Y coordinates
-		offsetX = e.clientX;
-		offsetY = e.clientY;
+				if (targ.className != 'dragme') {return};
+				// calculate event X, Y coordinates
+					offsetX = e.clientX;
+					offsetY = e.clientY;
 
-	// assign default values for top and left properties
-	if(!targ.style.left) { targ.style.left='0px'};
-	if (!targ.style.top) { targ.style.top='0px'};
+				// assign default values for top and left properties
+				if(!targ.style.left) { targ.style.left='0px'};
+				if (!targ.style.top) { targ.style.top='0px'};
 
-	// calculate integer values for top and left 
-	// properties
-	coordX = parseInt(targ.style.left);
-	coordY = parseInt(targ.style.top);
-	drag = true;
-	
-	mouseDown=true;
-	//Get the mouse x and y
-	var mouse = getMousePos(canvas, event);
-	//Test if the icon view box was hit
-	//if(testIconViewHit(mouse.x,mouse.y)){
-		
-	dragIcon=testIconHit(mouse.x,mouse.y);
-		//if(dragIcon==-1){
-			//dragIcon=-2;
-		//}
-	//}
-	lastMouseX=mouse.x;
-	lastMouseY=mouse.y;
-	console.log(dragIcon);
+				// calculate integer values for top and left 
+				// properties
+				coordX = parseInt(targ.style.left);
+				coordY = parseInt(targ.style.top);
+				drag = true;
+
+				// move div element
+					document.onmousemove=handleMouseMove;
+				
 }
 
 
 //Called when the mouse is released
 function handleMouseUp(event){
-	var mouse = getMousePos(canvas, event);
-	mouseDown = false;
 	drag=false;
-	dragIcon=-1;
-	if(dragIcon>=0){
-		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
-		if(receiveIndex!=-1){
-			mapCIndices[receiveIndex]=dragIcon;
-			//updatereceiveIcons();
-		}
-	};
-	dragIcon=-1;
-	drawScene();
 }
 
 //Called when the mouse moves
 function handleMouseMove(event){
-	if(!mouseDown){
-		return;
-	}
-	
 	if (!drag) {return};
-	if (!e) { var e= window.event};
-	var targ=e.target?e.target:e.srcElement;
-	// move div element
-	targ.style.left=coordX+e.clientX-offsetX+'px';
-	targ.style.top=coordY+e.clientY-offsetY+'px';
-	return false;
-	
-	
-	var mouse = getMousePos(canvas, event);
-	
-	//updateDrag(mouse.x,mouse.y);
-	
-	if(dragIcon==-2){
-		updateIconViewOffset(mouse.x,mouse.y);
-		//updateIcons();
-	}
-	lastMouseX=mouse.x;
-	lastMouseY=mouse.y;
-	if(dragIcon!=-1){
-		drawScene();
-	}
+				if (!e) { var e= window.event};
+				var targ=e.target?e.target:e.srcElement;
+				// move div element
+				targ.style.left=coordX+e.clientX-offsetX+'px';
+				targ.style.top=coordY+e.clientY-offsetY+'px';
+				return false;
 }
 
 function updateIconViewOffset(mouseX,mouseY){
