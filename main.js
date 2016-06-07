@@ -1,4 +1,4 @@
-var version="colorgraph debug";
+var version="colorgraph debug2";
 var canvas;
 var gl;
 var imageCanvas;
@@ -977,7 +977,7 @@ function drawGraph(x,y,w,h,cID,relative){
 	var cref=getColorHeight(cID,relative);
 	var labref=rgb_to_lab({'R':cref.r, 'G':cref.g, 'B':cref.b});
 	
-	rect.changeColor(cref.r,cref.g,cref.b);
+	rect.changeColor(cref.r/255.0,cref.g/255.0,cref.b/255.0);
 	console.log(cref.r+","+cref.g+","+cref.b);
 	for(var i=0; i<len; i++){
 		var barWidth=w/len;
