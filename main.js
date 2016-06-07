@@ -1,4 +1,4 @@
-var version="redrawGraphs";
+var version="redrawGraphss";
 var canvas;
 var gl;
 var imageCanvas;
@@ -602,8 +602,25 @@ function drawScene() {
 	drawGraphs();
 }
 
+function clearRectangle(x,y,w,h){
+	gl.enable(gl.SCISSOR_TEST);
+	
+	gl.scissor(x,y,w,h);
+	
+	gl.clearColor(.5,.5,.5,1.0);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
+	gl.disable(gl.SCISSOR_TEST);
+
+}
+
 function drawGraphs(){
 	for(var i=0;i<mapCIndices.length;i++){
+		var colorPanel=color_panels[mapCIndices[i]];
+		if(colorPanel==null){
+			continue;
+		}
+		clearRectangle(receiveX+100,receiveY+receiveDelta*i-scaleHeight,scaleWidth,scaleHeight);
 		drawGraph(receiveX+100,receiveY+receiveDelta*i-scaleHeight,scaleWidth,scaleHeight,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
