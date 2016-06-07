@@ -810,10 +810,10 @@ function FileListenerInit(){
 			var select1 = document.getElementById('selector1');
 			var select2 = document.getElementById('selector2');
 			
-			drop2.left= iconX-3+'px';
-			drop2.top= iconY-3+"px";
-			drop2.width=iconViewWidth;
-			drop2.height=iconViewHeight
+			drop2.style.left= iconX-3+'px';
+			drop2.style.top= iconY-3+"px";
+			drop2.style.width=iconViewWidth;
+			drop2.style.height=iconViewHeight
 			
 			function cancel(e) {
 			   e.preventDefault(); 
