@@ -1,0 +1,50 @@
+
+<html>
+<title>Test</title>
+<head>
+<script type="text/javascript" src="lib/diff.js"></script>
+<script type="text/javascript" src="lib/convert.js"></script>
+<script type="text/javascript" src="jquery-2.2.4.js"></script>
+<script type="text/javascript">
+	$(document).on("load",start());
+	function start(){
+		var dir = "./images";
+		var fileextension = ".png";
+		$.ajax({
+			//This will retrieve the contents of the folder if the folder is configured as 'browsable'
+			url: dir,
+			success: function (data) {
+				//Lsit all png file names in the page
+				$(data).find("a:contains(" + fileextension + ")").each(function () {
+					var filename = this.href.replace(window.location.host, "").replace("http:///", "");
+					$("body").append($("<img src=" + dir + filename + "></img>"));
+				});
+			}
+		});
+	}
+</script>
+<script type="text/javascript">
+	var color1={
+				'R' : 55,
+                'G' : 100,
+				'B' : 130
+				};
+	var lab1=	{"L" : 50.0000,
+				 "a" : 2.6772,
+				 "b" : -79.7751
+				 };
+	var lab2={
+			   "L" : 50.0000,
+			   "a" : 0.0000,
+			   "b" : -82.7485
+				};
+	function chicken(){
+		var lab = rgb_to_lab(color1);
+		alert("Rgb to lab conversion:"+lab.L+","+lab.a+","+lab.b+"\nCiede2000: "+ciede2000(lab1,lab2));
+	}
+</script>
+</head>
+<body>
+	Chickens
+</body>
+</html>

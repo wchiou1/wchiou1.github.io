@@ -815,6 +815,24 @@ function readFiles(files,type){
 }
 
 $(document).on("load",readFilesFromServer("./data/colorscale/","scale"));
+$(document).on("load",readImage());
+
+function readImage(){
+	$.ajax({
+    type:    "GET",
+    url:     directory+"index.txt",
+    success: function(text) {		
+            var lines=text.split('\n');
+			if(lines[lines.length-1]=="")lines.pop();
+				for(var i=0;i<lines.length;i++) {
+					readOneFileFromServer(directory+lines[i],type);
+				}
+    },
+    error:   function() {
+        // An error occurred
+		alert("Error reading placeholder image from server");
+    }
+}
 
 function readFilesFromServer(directory,type){//type=scale, image
 	$.ajax({
