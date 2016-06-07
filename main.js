@@ -1,3 +1,4 @@
+var versionNum=1;
 var canvas;
 var gl;
 
@@ -311,7 +312,7 @@ var Rectangle= function(){
 var Shape={};
 
 function start() {
-
+	console.log("version:"+versionNum);
 	  canvas = document.getElementById("glcanvas");
 
 	  initWebGL(canvas);      // Initialize the GL context
