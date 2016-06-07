@@ -34,6 +34,7 @@ var img_panels=[];
 var color_panels=[];
 
 var targ = document.getElementById("chicken");
+console.log("target:"+targ);
 
 var orthogonal={
 	l: 0,
