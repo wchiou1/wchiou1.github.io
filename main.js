@@ -1,4 +1,4 @@
-var version="scales";
+var version="scales2";
 var canvas;
 var gl;
 var imageCanvas;
@@ -566,7 +566,7 @@ function drawScene() {
 function drawPanels(){
 	for(var i=0;i<mapCIndices.length;i++){
 		var colorPanel=color_panels[mapCIndices[i]];
-		if(colorPanel=null){
+		if(colorPanel==null){
 			continue;
 		}
 		colorPanel.scale(200,50);
