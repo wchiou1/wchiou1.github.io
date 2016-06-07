@@ -1,4 +1,4 @@
-var version="redrawGraphs12
+var version="redrawGraphs12"
 var canvas;
 var gl;
 var imageCanvas;
