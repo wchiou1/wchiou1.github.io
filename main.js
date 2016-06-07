@@ -311,7 +311,7 @@ var Rectangle= function(){
 var Shape={};
 
 function start() {
-
+	console.log("version:"+version);
 	  canvas = document.getElementById("glcanvas");
 
 	  initWebGL(canvas);      // Initialize the GL context
