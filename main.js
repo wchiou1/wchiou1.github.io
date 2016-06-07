@@ -532,9 +532,7 @@ function drawDraggedThumbnail(){
 	if(dragIcon<0){
 		return;
 	}
-	color_panels[dragIcon].scale(iconWidth,iconHeight);
-	color_panels[dragIcon].move(lastMouseX,lastMouseY);
-	color_panels[dragIcon].draw();
+	drawThumbnail(lastMouseX,lastMouseY,dragIcon);
 }
 
 function drawColorView(){
@@ -567,7 +565,7 @@ function drawThumbnail(x,y,cindex){
 		rectangle.move(x+i,y,0);
 		var color=getColorHeight(cindex,increment*i);
 		console.log(color+","+increment*i);
-		rectangle.changeColor(color.R/255.0,color.G/255.0,color.B/255.0);
+		rectangle.changeColor(color.r/255.0,color.g/255.0,color.b/255.0);
 		rectangle.draw();
 	}
 }
