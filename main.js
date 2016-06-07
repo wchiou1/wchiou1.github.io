@@ -20,6 +20,8 @@ var iconHeight = 50;
 var iconWidth = 50;
 var iconX = 600;
 var iconY = 50;
+var imgIconX=600;
+var imgIconY=500;
 var receiveX = 50;
 var receiveY = 100;
 var receiveDelta = 300;
@@ -580,6 +582,12 @@ function drawScene() {
 		img_panels[l-1].move(850,150,1);
 		img_panels[l-1].draw();
 		
+		for(var i=0;i<l;i++){
+			img_panels[l-1].changeColor(null);
+			img_panels[l-1].scale(iconWidth, iconHeight);
+			img_panels[l-1].move(imgIconX,i*(imgIconY+10),0);
+			img_panels[l-1].draw();
+		}
 	}
 	
 	drawColorView();
