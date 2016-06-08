@@ -1,4 +1,4 @@
-var version="marker constraints3"
+var version="marker constraints4"
 var canvas;
 var gl;
 var imageCanvas;
@@ -597,6 +597,7 @@ function updateMarkerLoc(mouseX,mouseY){
 	if(tempx<0){
 		tempx=0;
 	}
+	console.log("Edge"+tempx);
 	if(tempx>1.0){
 		temp=1.0;
 	}
@@ -607,7 +608,7 @@ function updateMarkerLoc(mouseX,mouseY){
 	if(markerIndex<3&&tempx>markerLocs[scaleIndex][markerIndex+1]){
 		tempx=markerLocs[scaleIndex][markerIndex+1]-.01;
 	}
-	console.log(tempx);
+	console.log("End:"+tempx);
 	markerLocs[scaleIndex][markerIndex]=tempx;
 }
 
