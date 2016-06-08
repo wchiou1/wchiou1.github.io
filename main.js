@@ -1,4 +1,4 @@
-var version="click markers5"
+var version="move marker"
 var canvas;
 var gl;
 var imageCanvas;
@@ -516,7 +516,8 @@ function handleMouseDown(event){
 	dragMarker=testMarkerHit(mouse.x,mouse.y);
 	console.log(dragMarker);
 	
-	if(checkSetColor(mouse.x,mouse.y)){
+	//Only check setting the color if the markers did not get hit
+	if(dragMarker==-1&&checkSetColor(mouse.x,mouse.y)){
 		drawGraphs();
 	}
 	
@@ -566,6 +567,11 @@ function handleMouseMove(event){
 		updateIconViewOffset(mouse.x,mouse.y);
 		//updateIcons();
 	}
+	
+	if(dragMarker!=-1){
+		updateMarkerLoc(mouse.x,mouse.y);
+	}
+	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
 	return false;
@@ -577,6 +583,13 @@ function clearDrag(){
 	targ.style.top='20px';
 }
 
+function updateMarkerLoc(mouseX,mouseY){
+	var dx=lastMouseX-mouseX;
+	var scaleIndex = Math.floor(dragMarker/4);
+	var markerIndex = dragMarker%4;
+	console.log(scaleIndex+","+markerIndex);
+	markerLocs[scaleIndex][markerIndex]=markerLocs[scaleIndex][markerIndex]+dx/scaleWidth;
+}
 
 function updateIconViewOffset(mouseX,mouseY){
 	var dx=lastMouseX-mouseX;
