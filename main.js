@@ -1,4 +1,4 @@
-var version="move marker3"
+var version="move marker4"
 var canvas;
 var gl;
 var imageCanvas;
@@ -570,6 +570,7 @@ function handleMouseMove(event){
 	
 	if(dragMarker!=-1){
 		updateMarkerLoc(mouse.x,mouse.y);
+		drawMarkers();
 	}
 	
 	lastMouseX=mouse.x;
