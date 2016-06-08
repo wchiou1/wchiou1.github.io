@@ -1,4 +1,4 @@
-var version="text3"
+var version="bigger"
 var canvas;
 var gl;
 var imageCanvas;
@@ -31,8 +31,9 @@ var setColorHeight = [0,0];
 var iconViewOffset = 0;
 var iconViewWidth = 400;
 var iconViewHeight = 70;
-var scaleWidth = 250;
-var scaleHeight = 50;
+var scaleWidth = 400;
+var scaleHeight = 100;
+var markerLocs = [] //2d array which contains the marker locations in color height
 
 var img_data=[];
 var scales=[];
@@ -339,6 +340,8 @@ function start() {
 		// Initialize the shaders; this is where all the lighting for the
 		// vertices and so forth is established.
 
+		initMarkers();
+		
 		initShaders();
 
 		initShape();
@@ -350,6 +353,12 @@ function start() {
 	  }
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
+}
+
+function initMarkers()[
+	for(var i=0;i<mapCIndices.length;i++){
+		markerLocs[i] = [{left : .2, right : .4},{left : .6, right : .4}]
+	}
 }
 
 //
@@ -388,14 +397,14 @@ function checkSetColor(mouseX,mouseY){
 
 //Returns the color height that was clicked, otherwise returns -1
 function testColorMapHit(mouseX,mouseY,rindex){
-	//Check if the click is within the bounds of the top half of the color map
-	if(mouseX<receiveX+100||mouseX>receiveX+100+scaleWidth){
+	//Check if the click is within the bounds of the color map
+	if(mouseX<receiveX||mouseX>receiveX+scaleWidth){
 		return -1;
 	}
 	if(mouseY<receiveY+receiveDelta*rindex||mouseY>receiveY+receiveDelta*rindex+scaleHeight){
 		return -1;
 	}
-	return 1.0*(mouseX-receiveX-100)/scaleWidth;
+	return 1.0*(mouseX-receiveX)/scaleWidth;
 }
 
 function testIconViewHit(mouseX,mouseY){
@@ -410,12 +419,12 @@ function testIconViewHit(mouseX,mouseY){
 //Returns the index of the receiver at the coords or -1 if there is no receiver at location
 function testreceiverHit(mouseX,mouseY){
 	//Receivers will always be in the same x value
-	if(mouseX<receiveX-iconWidth/2||mouseX>receiveX+iconWidth+iconWidth/2){
+	if(mouseX<receiveX-iconWidth/2||mouseX>receiveX+scaleWidth+iconWidth/2){
 		return -1;
 	}
 	//Test y values
 	for(var i=0;i<mapCIndices.length;i++){
-		if(mouseY>receiveY+i*receiveDelta-iconHeight/2&&mouseY<receiveY+iconHeight+i*receiveDelta+iconHeight/2){
+		if(mouseY>receiveY+i*receiveDelta-iconHeight/2&&mouseY<receiveY+scaleHeight+i*receiveDelta+iconHeight/2){
 			return i;
 		}
 	}
@@ -594,10 +603,22 @@ function drawScene() {
 	
 	drawColorView();
 	drawColorThumbnails();
-	drawReceiveThumbnails();
+	//drawReceiveThumbnails();
 	drawPanels();
 	drawGraphs();
+	//drawMarkers();
 	drawText();
+}
+
+function drawMarkers(){
+	
+}
+
+function drawMarker(graphIndex,height){
+	//Height is the color that is to be seen
+	var tempx = receiveX+Math.floor(scaleWidth*height);
+	var tempy = receiveY+scaleHeight/2+receiveDelta*graphIndex;
+	
 }
 
 function drawText(){
@@ -623,8 +644,8 @@ function drawGraphs(){
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX+100,receiveY+receiveDelta*i,scaleWidth,200);
-		drawGraph(receiveX+100,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
+		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth,200);
+		drawGraph(receiveX,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
 
@@ -635,7 +656,7 @@ function drawPanels(){
 			continue;
 		}
 		colorPanel.scale(scaleWidth,scaleHeight);
-		colorPanel.move(receiveX+100,receiveY+receiveDelta*i);
+		colorPanel.move(receiveX,receiveY+receiveDelta*i);
 		colorPanel.draw();
 		
 	}
