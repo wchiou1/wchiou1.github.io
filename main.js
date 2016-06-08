@@ -1,4 +1,4 @@
-var version="move marker4"
+var version="move marker5"
 var canvas;
 var gl;
 var imageCanvas;
@@ -570,6 +570,7 @@ function handleMouseMove(event){
 	
 	if(dragMarker!=-1){
 		updateMarkerLoc(mouse.x,mouse.y);
+		drawPanels();
 		drawMarkers();
 	}
 	
@@ -589,7 +590,7 @@ function updateMarkerLoc(mouseX,mouseY){
 	var scaleIndex = Math.floor(dragMarker/4);
 	var markerIndex = dragMarker%4;
 	console.log(scaleIndex+","+markerIndex);
-	markerLocs[scaleIndex][markerIndex]=markerLocs[scaleIndex][markerIndex]+dx/scaleWidth;
+	markerLocs[scaleIndex][markerIndex]=markerLocs[scaleIndex][markerIndex]-dx/scaleWidth;
 }
 
 function updateIconViewOffset(mouseX,mouseY){
