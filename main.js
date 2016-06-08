@@ -1,4 +1,4 @@
-var version="move marker"
+var version="move marker2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -554,7 +554,7 @@ function handleMouseUp(event){
 
 //Called when the mouse moves
 function handleMouseMove(event){
-	if(dragIcon==-1){
+	if(dragIcon==-1&&dragIcon==-1){
 		return;
 	}
 	targ.style.left=event.clientX-iconWidth/2+'px';
