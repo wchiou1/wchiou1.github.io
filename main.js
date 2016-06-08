@@ -1,4 +1,4 @@
-var version="clean up2"
+var version="lines"
 var canvas;
 var gl;
 var imageCanvas;
@@ -666,6 +666,46 @@ function drawScene() {
 	drawGraphs();
 	drawMarkers();
 	drawText();
+	drawLine(0,0,400,400,{r:100,g:100,b:100});
+}
+
+function drawLine(x,y,x2,y2,color){
+	var thickness=3;
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-1,y,0,	x+1,y,0,	x2+1,y2,0, x2-1,y2,0]), gl.STATIC_DRAW);
+		
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1, color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1]), gl.STATIC_DRAW);
+
+	perspectiveMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
+	
+	
+	loadIdentity();
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+	gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
+	gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+
+	setMatrixUniforms();
+	
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	
+}
+
+
+function drawInfoBoxes(){
+
+}
+
+function drawInfoBox(graphIndex, marker1, marker2){
+	var gap = 20;
+	var rectangle=Shape.rectangle;
+	rectangle.scale(3,scaleHeight/2);
+	rectangle.move(tempx-3,tempy);
+	rectangle.changeColor(.3,.3,.3);
+	rectangle.draw();
 }
 
 function drawMarkers(){
