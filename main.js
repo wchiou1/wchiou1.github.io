@@ -1,4 +1,4 @@
-var version="bigger"
+var version="markers"
 var canvas;
 var gl;
 var imageCanvas;
@@ -606,19 +606,32 @@ function drawScene() {
 	//drawReceiveThumbnails();
 	drawPanels();
 	drawGraphs();
-	//drawMarkers();
+	drawMarkers();
 	drawText();
 }
 
 function drawMarkers(){
-	
+	for(var i=0;i<mapCIndices.length;i++){
+		for(var j=0;j<markerLocs[i].length;j++){
+			var range = markerLocs[i][j];
+			drawMarker(i,range.left);
+			drawMarker(i,range.right);
+		}
+	}
 }
 
 function drawMarker(graphIndex,height){
 	//Height is the color that is to be seen
 	var tempx = receiveX+Math.floor(scaleWidth*height);
-	var tempy = receiveY+scaleHeight/2+receiveDelta*graphIndex;
+	var tempy = receiveY+scaleHeight/2+receiveDelta*graphIndex;	
 	
+	var rectangle=Shape.rectangle;
+	rectangle.scale(3,scaleHeight/2);
+	rectangle.move(tempx-3,tempy);
+	rectangle.changeColor(.3,.3,.3);
+	rectangle.draw();
+	rectangle.move(tempx+1,tempy);
+	rectangle.draw();
 }
 
 function drawText(){
