@@ -1,4 +1,4 @@
-var version="click markers4"
+var version="click markers5"
 var canvas;
 var gl;
 var imageCanvas;
@@ -389,15 +389,16 @@ function testMarkerHit(mouseX,mouseY){
 	//Find which scale the click is on
 	var scale=-1;
 	for(var i=0;i<mapCIndices.length;i++){
-		if(mouseY>receiveY+scaleHeight/2&&mouseY<receiveY+scaleHeight){
+		if(mouseY>receiveY+scaleHeight/2+receiveDelta*i&&mouseY<receiveY+scaleHeight+receiveDelta*i){
 			scale=i;
+			break;
 		}
 	}
 	if(scale==-1){
 		return -1;
 	}
 	for(var i=0;i<markerLocs[scale].length;i++){
-		if(mouseX>1.0*scaleWidth*markerLocs[scale][i]-4&&mouseX<1.0*scaleWidth*markerLocs[scale][i]+4){
+		if(mouseX>1.0*scaleWidth*markerLocs[scale][i]-4+receiveX&&mouseX<1.0*scaleWidth*markerLocs[scale][i]+4+receiveX){
 			return scale*4+i;
 		}
 	}
