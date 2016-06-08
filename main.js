@@ -52,7 +52,7 @@ var orthogonal={
 	l: 0,
 	r: 1200,
 	t: 0,
-	b: -600
+	b: -700
 };
 
 var ImagePanel=function(x,y,w,h,dataID,cID){ 
@@ -357,7 +357,7 @@ function start() {
 
 function initMarkers(){
 	for(var i=0;i<mapCIndices.length;i++){
-		markerLocs[i] = [{left : .2, right : .4},{left : .6, right : .4}]
+		markerLocs[i] = [{left : .2, right : .4},{left : .6, right : .8}]
 	}
 }
 
