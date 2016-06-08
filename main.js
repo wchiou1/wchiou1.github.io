@@ -1,4 +1,4 @@
-var version="clean"
+var version="text"
 var canvas;
 var gl;
 var imageCanvas;
@@ -38,6 +38,9 @@ var img_data=[];
 var scales=[];
 var img_panels=[];
 var color_panels=[];
+
+var textCanvas = document.getElementById("text");
+var ctx = textCanvas.getContext("2d");
 
 var targ = document.getElementById("imageCanvas");
 targ.width="50";
@@ -594,6 +597,12 @@ function drawScene() {
 	drawReceiveThumbnails();
 	drawPanels();
 	drawGraphs();
+	drawText();
+}
+
+function drawText(){
+	ctx.clearRectangle(0,0,ctx.canvas.width, ctx.canvas.height);
+	ctx.fillText("Chickens",50,50);
 }
 
 function clearRectangle(x,y,w,h){
