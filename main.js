@@ -1,4 +1,4 @@
-var version="click markers"
+var version="click markers2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -385,7 +385,7 @@ function initWebGL() {
 }
 
 //Returns the index of the marker which is clicked on, returns -1 if none
-function testMarkerHit(mousex,mousey){
+function testMarkerHit(mouseX,mouseY){
 	//Find which scale the click is on
 	var scale=-1;
 	for(var i=0;i<mapCIndices.length;i++){
