@@ -1,4 +1,4 @@
-var version="click markers2"
+var version="click markers3"
 var canvas;
 var gl;
 var imageCanvas;
@@ -512,7 +512,7 @@ function handleMouseDown(event){
 		//}
 	//}
 	
-	dragMarker=testMarkerHit(mousex,mousey);
+	dragMarker=testMarkerHit(mouse.x,mouse.y);
 	console.log(dragMarker);
 	
 	if(checkSetColor(mouse.x,mouse.y)){
