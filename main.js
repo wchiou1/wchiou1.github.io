@@ -1,4 +1,4 @@
-var version="marker constraints7"
+var version="clean up"
 var canvas;
 var gl;
 var imageCanvas;
@@ -719,12 +719,13 @@ function drawGraphs(){
 }
 
 function drawPanels(){
-	clearRectangle(receiveX-10,receiveY+receiveDelta*i-scaleHeight,scaleWidth+20,scaleHeight);
+	
 	for(var i=0;i<mapCIndices.length;i++){
 		var colorPanel=color_panels[mapCIndices[i]];
 		if(colorPanel==null){
 			continue;
 		}
+		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX,receiveY+receiveDelta*i);
 		colorPanel.draw();
