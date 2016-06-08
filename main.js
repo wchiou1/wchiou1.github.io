@@ -1,4 +1,4 @@
-var version="lines3"
+var version="lines4"
 var canvas;
 var gl;
 var imageCanvas;
@@ -681,7 +681,7 @@ function drawScene() {
 function drawLine(x,y,x2,y2,color){
 	var thickness=3;
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-1,y,0,	x+1,y,0,	x2+1,y2,0, x2-1,y2,0]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-10,y,0,	x+10,y,0,	x2+10,y2,0, x2-10,y2,0]), gl.STATIC_DRAW);
 		
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1, color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1]), gl.STATIC_DRAW);
@@ -699,7 +699,7 @@ function drawLine(x,y,x2,y2,color){
 
 	setMatrixUniforms();
 	
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 	mvPopMatrix();
 }
 
