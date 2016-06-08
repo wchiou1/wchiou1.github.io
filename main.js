@@ -1,4 +1,4 @@
-var version="marker constraints"
+var version="marker constraints2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -600,14 +600,14 @@ function updateMarkerLoc(mouseX,mouseY){
 		tempx=0;
 	}
 	if(tempx>1.0){
-		temp=x;
+		temp=1.0;
 	}
 	//Checking for previous and next markers
 	if(markerIndex>0&&tempx<markerLocs[scaleIndex][markerIndex-1]){
-		tempx=markerLocs[scaleIndex][markerIndex-1]+1;
+		tempx=markerLocs[scaleIndex][markerIndex-1]+.05;
 	}
 	if(markerIndex<3&&tempx>markerLocs[scaleIndex][markerIndex+1]){
-		tempx=markerLocs[scaleIndex][markerIndex+1]-1;
+		tempx=markerLocs[scaleIndex][markerIndex+1]-.05;
 	}
 	markerLocs[scaleIndex][markerIndex]=tempx;
 }
