@@ -690,7 +690,7 @@ function drawLine(x,y,x2,y2,color){
 	
 	
 	loadIdentity();
-	
+	mvPushMatrix();
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
 	gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 	
@@ -700,7 +700,7 @@ function drawLine(x,y,x2,y2,color){
 	setMatrixUniforms();
 	
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-	
+	mvPopMatrix();
 }
 
 
