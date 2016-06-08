@@ -1,4 +1,4 @@
-var version="markers"
+var version="click markers"
 var canvas;
 var gl;
 var imageCanvas;
@@ -34,6 +34,7 @@ var iconViewHeight = 70;
 var scaleWidth = 400;
 var scaleHeight = 100;
 var markerLocs = [] //2d array which contains the marker locations in color height
+var dragMarker = -1;
 
 var img_data=[];
 var scales=[];
@@ -357,7 +358,7 @@ function start() {
 
 function initMarkers(){
 	for(var i=0;i<mapCIndices.length;i++){
-		markerLocs[i] = [{left : .2, right : .4},{left : .6, right : .8}]
+		markerLocs[i] = [.2,.4,.6,.8];
 	}
 }
 
@@ -381,6 +382,26 @@ function initWebGL() {
   if (!gl) {
     alert("Unable to initialize WebGL. Your browser may not support it.");
   }
+}
+
+//Returns the index of the marker which is clicked on, returns -1 if none
+function testMarkerHit(mousex,mousey){
+	//Find which scale the click is on
+	var scale=-1;
+	for(var i=0;i<mapCIndices.length;i++){
+		if(mouseY>receiveY+scaleHeight/2&&mouseY<receiveY+scaleHeight){
+			scale=i;
+		}
+	}
+	if(scale==-1){
+		return -1;
+	}
+	for(var i=0;i<markerLocs[scale].length;i++){
+		if(mouseX>markerLocs[scale][i]-4&&mouseX<markerLocs[scale][i]+4){
+			return scale*4+i;
+		}
+	}
+	return -1;
 }
 
 //Checks if the set color should be changed based on the click, returns if the scene should be update
@@ -491,6 +512,9 @@ function handleMouseDown(event){
 		//}
 	//}
 	
+	dragMarker=testMarkerHit(mousex,mousey);
+	console.log(dragMarker);
+	
 	if(checkSetColor(mouse.x,mouse.y)){
 		drawGraphs();
 	}
@@ -521,6 +545,7 @@ function handleMouseUp(event){
 		}
 	};
 	dragIcon=-1;
+	dragMarker=-1;
 	clearDrag();
 	
 }
@@ -613,9 +638,7 @@ function drawScene() {
 function drawMarkers(){
 	for(var i=0;i<mapCIndices.length;i++){
 		for(var j=0;j<markerLocs[i].length;j++){
-			var range = markerLocs[i][j];
-			drawMarker(i,range.left);
-			drawMarker(i,range.right);
+			drawMarker(i,markerLocs[i][j]);
 		}
 	}
 }
@@ -671,7 +694,6 @@ function drawPanels(){
 		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX,receiveY+receiveDelta*i);
 		colorPanel.draw();
-		
 	}
 }
 
