@@ -1,4 +1,4 @@
-var version="click markers3"
+var version="click markers4"
 var canvas;
 var gl;
 var imageCanvas;
@@ -397,7 +397,7 @@ function testMarkerHit(mouseX,mouseY){
 		return -1;
 	}
 	for(var i=0;i<markerLocs[scale].length;i++){
-		if(mouseX>markerLocs[scale][i]-4&&mouseX<markerLocs[scale][i]+4){
+		if(mouseX>1.0*scaleWidth*markerLocs[scale][i]-4&&mouseX<1.0*scaleWidth*markerLocs[scale][i]+4){
 			return scale*4+i;
 		}
 	}
