@@ -355,7 +355,7 @@ function start() {
 		ctx=imageCanvas.getContext("2d");
 }
 
-function initMarkers()[
+function initMarkers(){
 	for(var i=0;i<mapCIndices.length;i++){
 		markerLocs[i] = [{left : .2, right : .4},{left : .6, right : .4}]
 	}
