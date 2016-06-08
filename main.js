@@ -1,4 +1,4 @@
-var version="marker constraints2"
+var version="marker constraints3"
 var canvas;
 var gl;
 var imageCanvas;
@@ -514,7 +514,6 @@ function handleMouseDown(event){
 	//}
 	
 	dragMarker=testMarkerHit(mouse.x,mouse.y);
-	console.log(dragMarker);
 	
 	//Only check setting the color if the markers did not get hit
 	if(dragMarker==-1&&checkSetColor(mouse.x,mouse.y)){
@@ -591,7 +590,6 @@ function updateMarkerLoc(mouseX,mouseY){
 	var dx=lastMouseX-mouseX;
 	var scaleIndex = Math.floor(dragMarker/4);
 	var markerIndex = dragMarker%4;
-	console.log(scaleIndex+","+markerIndex);
 	var tempx = markerLocs[scaleIndex][markerIndex];
 	tempx=tempx-dx/scaleWidth;
 	
@@ -604,11 +602,12 @@ function updateMarkerLoc(mouseX,mouseY){
 	}
 	//Checking for previous and next markers
 	if(markerIndex>0&&tempx<markerLocs[scaleIndex][markerIndex-1]){
-		tempx=markerLocs[scaleIndex][markerIndex-1]+.05;
+		tempx=markerLocs[scaleIndex][markerIndex-1]+.01;
 	}
 	if(markerIndex<3&&tempx>markerLocs[scaleIndex][markerIndex+1]){
-		tempx=markerLocs[scaleIndex][markerIndex+1]-.05;
+		tempx=markerLocs[scaleIndex][markerIndex+1]-.01;
 	}
+	console.log(tempx);
 	markerLocs[scaleIndex][markerIndex]=tempx;
 }
 
