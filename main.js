@@ -1,4 +1,4 @@
-var version="lines"
+var version="lines2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -13,6 +13,9 @@ var perspectiveMatrix;
 var mouseDown=false;
 var lastMouseX;
 var lastMouseY;
+
+var verticesBuffer;
+var verticesColorBuffer;
 
 //Color stuffs
 var colorMaps = [];//2d array of objects which stores the colors
@@ -341,6 +344,7 @@ function start() {
 		// Initialize the shaders; this is where all the lighting for the
 		// vertices and so forth is established.
 
+		initBuffers();
 		initMarkers();
 		
 		initShaders();
@@ -354,6 +358,11 @@ function start() {
 	  }
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
+}
+
+function initBuffers(){
+	var verticesBuffer = gl.createBuffer();
+	var verticesColorBuffer = gl.createBuffer();
 }
 
 function initMarkers(){
@@ -671,10 +680,10 @@ function drawScene() {
 
 function drawLine(x,y,x2,y2,color){
 	var thickness=3;
-	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-1,y,0,	x+1,y,0,	x2+1,y2,0, x2-1,y2,0]), gl.STATIC_DRAW);
 		
-	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1, color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1]), gl.STATIC_DRAW);
 
 	perspectiveMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
@@ -682,10 +691,10 @@ function drawLine(x,y,x2,y2,color){
 	
 	loadIdentity();
 	
-	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
 	gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 	
-	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
 	gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
 
 	setMatrixUniforms();
