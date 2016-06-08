@@ -1,4 +1,4 @@
-var version="marker constraints4"
+var version="marker constraints5"
 var canvas;
 var gl;
 var imageCanvas;
@@ -598,14 +598,14 @@ function updateMarkerLoc(mouseX,mouseY){
 		tempx=0;
 	}
 	console.log("Edge"+tempx);
-	if(tempx>1.0){
-		temp=1.0;
+	if(tempx>1){
+		tempx=1;
 	}
 	//Checking for previous and next markers
-	if(markerIndex>0&&tempx<markerLocs[scaleIndex][markerIndex-1]){
+	if(markerIndex>0&&tempx<markerLocs[scaleIndex][markerIndex-1]+.01){
 		tempx=markerLocs[scaleIndex][markerIndex-1]+.01;
 	}
-	if(markerIndex<3&&tempx>markerLocs[scaleIndex][markerIndex+1]){
+	if(markerIndex<3&&tempx>markerLocs[scaleIndex][markerIndex+1]-.01){
 		tempx=markerLocs[scaleIndex][markerIndex+1]-.01;
 	}
 	console.log("End:"+tempx);
@@ -721,6 +721,7 @@ function drawGraphs(){
 }
 
 function drawPanels(){
+	clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 	for(var i=0;i<mapCIndices.length;i++){
 		var colorPanel=color_panels[mapCIndices[i]];
 		if(colorPanel==null){
