@@ -1,4 +1,4 @@
-var version="lines2"
+var version="lines3"
 var canvas;
 var gl;
 var imageCanvas;
@@ -361,8 +361,8 @@ function start() {
 }
 
 function initBuffers(){
-	var verticesBuffer = gl.createBuffer();
-	var verticesColorBuffer = gl.createBuffer();
+	verticesBuffer = gl.createBuffer();
+	verticesColorBuffer = gl.createBuffer();
 }
 
 function initMarkers(){
