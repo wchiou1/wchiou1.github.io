@@ -1,4 +1,4 @@
-var version="gray box fix"
+var version="marker constraints"
 var canvas;
 var gl;
 var imageCanvas;
@@ -592,7 +592,24 @@ function updateMarkerLoc(mouseX,mouseY){
 	var scaleIndex = Math.floor(dragMarker/4);
 	var markerIndex = dragMarker%4;
 	console.log(scaleIndex+","+markerIndex);
-	markerLocs[scaleIndex][markerIndex]=markerLocs[scaleIndex][markerIndex]-dx/scaleWidth;
+	var tempx = markerLocs[scaleIndex][markerIndex];
+	tempx=tempx-dx/scaleWidth;
+	
+	//Edge checking
+	if(tempx<0){
+		tempx=0;
+	}
+	if(tempx>1.0){
+		temp=x;
+	}
+	//Checking for previous and next markers
+	if(markerIndex>0&&tempx<markerLocs[scaleIndex][markerIndex-1]){
+		tempx=markerLocs[scaleIndex][markerIndex-1]+1;
+	}
+	if(markerIndex<3&&tempx>markerLocs[scaleIndex][markerIndex+1]){
+		tempx=markerLocs[scaleIndex][markerIndex+1]-1;
+	}
+	markerLocs[scaleIndex][markerIndex]=tempx;
 }
 
 function updateIconViewOffset(mouseX,mouseY){
