@@ -1,4 +1,4 @@
-var version="text2"
+var version="text3"
 var canvas;
 var gl;
 var imageCanvas;
@@ -601,7 +601,7 @@ function drawScene() {
 }
 
 function drawText(){
-	ctx2.clearRectangle(0,0,ctx.canvas.width, ctx.canvas.height);
+	ctx2.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
 	ctx2.fillText("Chickens",50,50);
 }
 
