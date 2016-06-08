@@ -1,4 +1,4 @@
-var version="lines4"
+var version="lines6"
 var canvas;
 var gl;
 var imageCanvas;
@@ -684,7 +684,7 @@ function drawLine(x,y,x2,y2,color){
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-10,y,0,	x+10,y,0,	x2+10,y2,0, x2-10,y2,0]), gl.STATIC_DRAW);
 		
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1, color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1.0,1.0,1.0,1,	1.0,1.0,1.0,1, 1.0,1.0,1.0,1,	1.0,1.0,1.0,1]), gl.STATIC_DRAW);
 
 	perspectiveMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
 	
