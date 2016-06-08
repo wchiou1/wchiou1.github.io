@@ -1,4 +1,4 @@
-var version="move marker5"
+var version="gray box fix"
 var canvas;
 var gl;
 var imageCanvas;
@@ -557,8 +557,10 @@ function handleMouseMove(event){
 	if(dragIcon==-1&&dragMarker==-1){
 		return;
 	}
-	targ.style.left=event.clientX-iconWidth/2+'px';
-	targ.style.top=event.clientY-iconHeight/2+'px';
+	if(dragIcon>=0){
+		targ.style.left=event.clientX-iconWidth/2+'px';
+		targ.style.top=event.clientY-iconHeight/2+'px';
+	}
 	var mouse = getMousePos(canvas, event);
 	
 	//updateDrag(mouse.x,mouse.y);
