@@ -598,7 +598,9 @@ function updateFilenameIndicator(mouseX,mouseY){
 	//Check what fileIcon the mouse is over
 	var hit=testIconHit(mouseX,mouseY);
 	
-	drawText(hit,iconX,iconY-10);
+	if(hit!=-1){
+		drawText(colorMapFileNames[hit],iconX,iconY-10);
+	}
 }
 
 function clearDrag(){
