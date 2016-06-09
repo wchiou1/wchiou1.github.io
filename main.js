@@ -681,7 +681,7 @@ function drawScene() {
 }
 
 function drawLine(x,y,x2,y2,color){
-	var thickness=3;
+	var thickness=2;
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-thickness,-y,-1,	x+thickness,-y,-1,	x2+thickness,-y2,-1, x2-thickness,-y2,-1]), gl.STATIC_DRAW);
 		
@@ -707,20 +707,23 @@ function drawLine(x,y,x2,y2,color){
 
 
 function drawInfoBoxes(){
-	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+30,0,0,1);
-	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+30,0,2,3);
-	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
-	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
+	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight,0,0,1,30);
+	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight,0,2,3,30);
+	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+receiveDelta,1,0,1,30);
+	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+receiveDelta,1,2,3,30);
 }
 
-function drawInfoBox(x,y,graphIndex, marker1, marker2){
+function drawInfoBox(x,y,graphIndex, marker1, marker2, offset){
 	var rectangle=Shape.rectangle;
 	var width = scaleWidth*.2+20;
 	var height = scaleHeight/2;
 	rectangle.scale(width,height);
-	rectangle.move(x-10,y);
+	rectangle.move(x-10,y+30);
 	rectangle.changeColor(1,1,1);
 	rectangle.draw();
+	
+	//Clear the area the lines go in
+	clearRectangle(receiveX,y,scaleWidth+10,30);
 	
 	//Draw lines to the markers
 	var marker1Loc = markerLocs[graphIndex][marker1];
