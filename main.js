@@ -716,8 +716,8 @@ function drawInfoBoxes(){
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.05+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
-	drawInfoBox(scaleWidth*.55+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
+	drawInfoBox(scaleWidth*.00+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
+	drawInfoBox(scaleWidth*.50+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
 }
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
@@ -725,7 +725,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 		return;
 	}
 	var rectangle=Shape.rectangle;
-	var width = scaleWidth*.4;
+	var width = scaleWidth*.45;
 	var height = 75;
 	rectangle.scale(width,height);
 	rectangle.move(x,y);
@@ -747,8 +747,13 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.changeColor(color2.r/255,color2.g/255,color2.b/255);
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
+	//write rgb values
 	drawText(Math.round(color1.r)+" "+Math.round(color1.g)+" "+Math.round(color1.b),x+2,y+25);
 	drawText(Math.round(color2.r)+" "+Math.round(color2.g)+" "+Math.round(color2.b),x+width/2+2,y+25);
+	
+	//write lab values
+	
+	//write ciede difference
 }
 
 function drawMarkers(){
