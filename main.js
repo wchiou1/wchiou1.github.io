@@ -1,4 +1,4 @@
-var version="text9"
+var version="filename"
 var canvas;
 var gl;
 var imageCanvas;
@@ -563,6 +563,7 @@ function handleMouseUp(event){
 
 //Called when the mouse moves
 function handleMouseMove(event){
+	updateFilenameIndicator(mouse.x,mouse.y);
 	if(dragIcon==-1&&dragMarker==-1){
 		return;
 	}
@@ -571,9 +572,6 @@ function handleMouseMove(event){
 		targ.style.top=event.clientY-iconHeight/2+'px';
 	}
 	var mouse = getMousePos(canvas, event);
-	
-	updateFilenameIndicator(mouse.x,mouse.y);
-	//updateDrag(mouse.x,mouse.y);
 	
 	if(dragIcon==-2){
 		updateIconViewOffset(mouse.x,mouse.y);
@@ -594,7 +592,7 @@ function handleMouseMove(event){
 
 function updateFilenameIndicator(mouseX,mouseY){
 	//Clear the text area where the fileName will go
-	ctx2.clearRect(iconX,iconY-10,300, 10);
+	ctx2.clearRect(iconX,iconY-20,300, 20);
 	
 	//Check what fileIcon the mouse is over
 	var hit=testIconHit(mouseX,mouseY);
