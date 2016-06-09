@@ -711,8 +711,8 @@ function drawInfoBoxes(){
 	clearText();
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.05+receiveX,receiveY+scaleHeight+30,0,0,1);
-	drawInfoBox(scaleWidth*.5+receiveX,receiveY+scaleHeight+30,0,2,3);
+	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30,0,0,1);
+	drawInfoBox(scaleWidth*.525+receiveX,receiveY+scaleHeight+30,0,2,3);
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
