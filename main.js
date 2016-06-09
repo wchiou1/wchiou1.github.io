@@ -43,6 +43,8 @@ var img_data=[];
 var scales=[];
 var img_panels=[];
 var color_panels=[];
+var colormapFileNames=[];
+var imgFileNames=[];
 
 var textCanvas = document.getElementById("text");
 var ctx2 = textCanvas.getContext("2d");
@@ -336,6 +338,7 @@ function start() {
 	  
 		document.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
+		document.onmousemove=handleMouseMove;
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
 		gl.clearDepth(1.0);                 // Clear everything
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -538,8 +541,7 @@ function handleMouseDown(event){
 	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
-	
-	document.onmousemove=handleMouseMove;
+
 }
 
 
@@ -1111,10 +1113,10 @@ function readFiles(files,type){
 		var reader = new FileReader();
 		reader.onload = function(e2) { // finished reading file data.
 			if(type=='img'){
-				readTextToImage(e2.target.result);
+				readTextToImage(e2.target.result,file.name);
 			}
 			else if(type=='color'){
-				readTextToScale(e2.target.result);
+				readTextToScale(e2.target.result,file.name);
 			}
 		}
 		reader.readAsText(file); // start reading the file data.
@@ -1131,7 +1133,7 @@ function readFilesFromServer(directory,type){//type=scale, image
             var lines=text.split('\n');
 			if(lines[lines.length-1]=="")lines.pop();
 				for(var i=0;i<lines.length;i++) {
-					readOneFileFromServer(directory+lines[i],type);
+					readOneFileFromServer(directory,lines[i],type);
 				}
     },
     error:   function() {
@@ -1141,17 +1143,17 @@ function readFilesFromServer(directory,type){//type=scale, image
 });
 }
 
-function readOneFileFromServer(URL,type){
+function readOneFileFromServer(directory,filename,type){
 	$.ajax({
     type:    "GET",
-    url:     URL,
+    url:     directory+filename,
     success: function(text) {
         // `text` is the file text
 		if(type=="scale"){
-			readTextToScale(text);
+			readTextToScale(text,filename);
 		}
 		else if(type=="image"){
-			readTextToImage(text);
+			readTextToImage(text,filename);
 		}
 		else{
 			console.log("file does not match:");
@@ -1165,7 +1167,7 @@ function readOneFileFromServer(URL,type){
 });
 }
 
-function readTextToImage(text){
+function readTextToImage(text,filename){
 	var image2DArray=[];
 	var imageHeight= undefined;
 	var imageWidth= undefined;
@@ -1194,12 +1196,13 @@ function readTextToImage(text){
 	};
 	img_data.push(imgData);
 	img_panels.push(new ImagePanel(0,0,1,1,img_data.length-1,null));
-
+	imgFileNames.push(filename);
 	//setView();
 	drawScene();
+	console.log(imgFileNames);
 }
 
-function readTextToScale(text){
+function readTextToScale(text,filename){
 	var scale=[];
 	var lines=text.split('\n');
 	if(lines[lines.length-1]=="")lines.pop();
@@ -1215,9 +1218,9 @@ function readTextToScale(text){
 	scales.push(scale);
 	
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
-
+	colormapFileNames.push(filename);
 	drawScene();
-	
+	console.log(colormapFileNames);
 	//computeDeltaE(scale);
 }
 
