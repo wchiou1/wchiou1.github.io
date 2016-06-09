@@ -1,4 +1,4 @@
-var version="lines9"
+var version="text"
 var canvas;
 var gl;
 var imageCanvas;
@@ -744,7 +744,7 @@ function drawMarker(graphIndex,height){
 
 function drawText(){
 	ctx2.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
-	ctx2.font = "12px ariel";
+	ctx2.font = "48px serif";
 	ctx2.fillText("Chickens",50,50);
 }
 
