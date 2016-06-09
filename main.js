@@ -724,9 +724,9 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	if(mapCIndices[graphIndex]>=scales.length){
 		return;
 	}
-	var x=x-30;
+	var x=x-40;
 	var rectangle=Shape.rectangle;
-	var width = scaleWidth*.2+60;
+	var width = scaleWidth*.2+80;
 	var height = 75;
 	rectangle.scale(width,height);
 	rectangle.move(x,y);
