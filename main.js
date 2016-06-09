@@ -563,6 +563,7 @@ function handleMouseUp(event){
 
 //Called when the mouse moves
 function handleMouseMove(event){
+	var mouse = getMousePos(canvas, event);
 	updateFilenameIndicator(mouse.x,mouse.y);
 	if(dragIcon==-1&&dragMarker==-1){
 		return;
@@ -571,7 +572,7 @@ function handleMouseMove(event){
 		targ.style.left=event.clientX-iconWidth/2+'px';
 		targ.style.top=event.clientY-iconHeight/2+'px';
 	}
-	var mouse = getMousePos(canvas, event);
+	
 	
 	if(dragIcon==-2){
 		updateIconViewOffset(mouse.x,mouse.y);
