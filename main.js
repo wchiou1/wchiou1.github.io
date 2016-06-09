@@ -325,7 +325,7 @@ var Rectangle= function(){
 };
 
 var Shape={};
-
+var scheduled=false,lastEvent;
 function start() {
 	console.log("version:"+version);
 	  canvas = document.getElementById("glcanvas");
@@ -338,7 +338,17 @@ function start() {
 	  
 		document.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
-		document.onmousemove=handleMouseMove;
+		//set time out for mouse move event
+		document.onmousemove = 	function(event) {
+									lastEvent = event;
+									if (!scheduled) {
+									  scheduled = true;
+									  setTimeout(function() {
+										scheduled = false;
+										handleMouseMove(lastEvent);
+									  }, 15);
+									}
+								  };
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
 		gl.clearDepth(1.0);                 // Clear everything
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -1200,7 +1210,7 @@ function readTextToImage(text,filename){
 	imgFileNames.push(filename);
 	//setView();
 	drawScene();
-	console.log(imgFileNames);
+	//console.log(imgFileNames);
 }
 
 function readTextToScale(text,filename){
@@ -1221,7 +1231,7 @@ function readTextToScale(text,filename){
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
 	colormapFileNames.push(filename);
 	drawScene();
-	console.log(colormapFileNames);
+	//console.log(colormapFileNames);
 	//computeDeltaE(scale);
 }
 
