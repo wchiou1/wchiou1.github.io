@@ -775,7 +775,7 @@ function drawMarker(graphIndex,height){
 }
 
 function clearText(){
-	
+	ctx2.clearRect(0,0,ctx2.canvas.width, ctx2.canvas.height);
 }
 
 function drawText(string,x,y){
