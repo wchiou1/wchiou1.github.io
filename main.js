@@ -749,7 +749,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
 	
-	drawText(Math.round(10*(color1.r/255))/10+" "+Math.round(10*(color1.g/255))/10+" "+Math.round(10*(color1.b/255,x+2,y+15);
+	drawText(Math.round(10*(color1.r/255))/10+" "+Math.round(10*(color1.g/255))/10+" "+Math.round(10*(color1.b/255))/10,x+2,y+15);
 }
 
 function drawMarkers(){
