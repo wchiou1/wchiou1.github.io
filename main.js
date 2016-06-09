@@ -1183,6 +1183,8 @@ function readTextToScale(text){
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
 
 	drawScene();
+	
+	computeDeltaE(scale);
 }
 
 function handleImageFileSelect(evt) {
@@ -1222,4 +1224,25 @@ function drawGraph(x,y,w,h,cID,relative){
 		rect.move(x+(barWidth*i),y+h-barHeight);
 		rect.draw();
 	}
+}
+
+function computeDeltaE(scale){
+	var outputText="";
+	for(var i=0;i<scale.length;i++){
+		var rgb1=scale[i-1];
+		var lab1=rgb_to_lab({'R':rgb1.r, 'G':rgb1.g, 'B':rgb1.b});
+		var rgb2=scale[i];
+		var lab2=rgb_to_lab({'R':rgb2.r, 'G':rgb2.g, 'B':rgb2.b});
+		var deltaE=ciede2000(lab1,lab2);
+		outputText=outputText+rgb2.r+" "+rgb2.g+" "+rgb2.b+" "+"deltaE = "+deltaE;
+	}
+	download(outputText, "deltaE.txt", 'text/plain');
+}
+
+function download(text, name, type) {
+    var a = document.createElement("a");
+    var file = new Blob([text], {type: type});
+    a.href = URL.createObjectURL(file);
+    a.download = name;
+    a.click();
 }
