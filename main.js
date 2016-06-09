@@ -1,4 +1,4 @@
-var version="boxes3"
+var version="boxes4"
 var canvas;
 var gl;
 var imageCanvas;
@@ -606,8 +606,8 @@ function updateMarkerLoc(mouseX,mouseY){
 	if(tempx<0){
 		tempx=0;
 	}
-	if(tempx>1){
-		tempx=1;
+	if(tempx>.99){
+		tempx=.99;
 	}
 	//Checking for previous and next markers
 	if(markerIndex>0&&tempx<markerLocs[scaleIndex][markerIndex-1]+.01){
@@ -718,6 +718,12 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.move(x-10,y);
 	rectangle.changeColor(1,1,1);
 	rectangle.draw();
+	
+	//Draw lines to the markers
+	var marker1Loc = markerLocs[graphIndex][marker1];
+	var marker2Loc = markerLocs[graphIndex][marker2];
+	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x-10,y,getColorHeight(mapCIndices[graphIndex],marker1Loc));
+	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x-10,y,getColorHeight(mapCIndices[graphIndex],marker2Loc));
 }
 
 function drawMarkers(){
@@ -742,7 +748,7 @@ function drawMarker(graphIndex,height){
 	rectangle.draw();
 }
 
-function drawText(){
+function drawText(string,x,y){
 	ctx2.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
 	ctx2.font = "18px serif";
 	ctx2.fillText("Chickens",50,50);
