@@ -1,4 +1,4 @@
-var version="boxes5"
+var version="boxes6"
 var canvas;
 var gl;
 var imageCanvas;
@@ -607,8 +607,8 @@ function updateMarkerLoc(mouseX,mouseY){
 	if(tempx<0){
 		tempx=0;
 	}
-	if(tempx>.99){
-		tempx=.99;
+	if(tempx>.999){
+		tempx=.999;
 	}
 	//Checking for previous and next markers
 	if(markerIndex>0&&tempx<markerLocs[scaleIndex][markerIndex-1]+.01){
@@ -707,23 +707,23 @@ function drawLine(x,y,x2,y2,color){
 
 
 function drawInfoBoxes(){
-	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight,0,0,1,30);
-	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight,0,2,3,30);
-	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+receiveDelta,1,0,1,30);
-	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+receiveDelta,1,2,3,30);
+	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+30,0,0,1);
+	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+30,0,2,3);
+	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
+	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
 }
 
-function drawInfoBox(x,y,graphIndex, marker1, marker2, offset){
+function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	var rectangle=Shape.rectangle;
 	var width = scaleWidth*.2+20;
 	var height = scaleHeight/2;
 	rectangle.scale(width,height);
-	rectangle.move(x-10,y+30);
+	rectangle.move(x-10,y);
 	rectangle.changeColor(1,1,1);
 	rectangle.draw();
 	
 	//Clear the area the lines go in
-	clearRectangle(receiveX,y,scaleWidth+10,30);
+	clearRectangle(receiveX-5,y,scaleWidth+10,20);
 	
 	//Draw lines to the markers
 	var marker1Loc = markerLocs[graphIndex][marker1];
