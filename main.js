@@ -759,7 +759,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	
 	//write ciede difference
 	var deltaE=ciede2000(lab1,lab2);
-	drawText("CIEDE-deltaE: "+deltaE,x+2,y+55);
+	drawText("CIEDE-deltaE: "+deltaE.toPrecision(9),x+2,y+65);
 
 }
 
