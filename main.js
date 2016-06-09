@@ -1111,12 +1111,13 @@ function readFiles(files,type){
 	for (var i=0, file; file=files[i]; i++) {
 		//if (!file.type.match('plain')) continue;
 		var reader = new FileReader();
+		reader.file=file;
 		reader.onload = function(e2) { // finished reading file data.
 			if(type=='img'){
-				readTextToImage(e2.target.result,e2.target.name);
+				readTextToImage(e2.target.result,this.file.name);
 			}
 			else if(type=='color'){
-				readTextToScale(e2.target.result,e2.target.name);
+				readTextToScale(e2.target.result,this.file.name);
 			}
 		}
 		reader.readAsText(file); // start reading the file data.
