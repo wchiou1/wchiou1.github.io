@@ -674,8 +674,8 @@ function drawScene() {
 	drawPanels();
 	drawGraphs();
 	drawMarkers();
-	//drawText();
-	drawLine(0,0,400,400,{r:100,g:100,b:100});
+	drawText();
+	//drawLine(0,0,400,400,{r:100,g:100,b:100});
 }
 
 function drawLine(x,y,x2,y2,color){
@@ -744,6 +744,7 @@ function drawMarker(graphIndex,height){
 
 function drawText(){
 	ctx2.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+	ctx2.font = "12px ariel";
 	ctx2.fillText("Chickens",50,50);
 }
 
