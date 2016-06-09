@@ -1232,7 +1232,8 @@ function computeDeltaE(scale){
 	var outputText="";
 	for(var i=0;i<scale.length;i++){
 		var rgb1=scale[i-1];
-		var lab1=rgb_to_lab({'R':rgb1.r, 'G':rgb1.g, 'B':rgb1.b});
+		if(rgb1)
+			var lab1=rgb_to_lab({'R':rgb1.r, 'G':rgb1.g, 'B':rgb1.b});
 		var rgb2=scale[i];
 		var lab2=rgb_to_lab({'R':rgb2.r, 'G':rgb2.g, 'B':rgb2.b});
 		var deltaE=ciede2000(lab1,lab2);
