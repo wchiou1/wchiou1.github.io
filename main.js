@@ -1,4 +1,4 @@
-var version="boxes6"
+var version="boxes7"
 var canvas;
 var gl;
 var imageCanvas;
@@ -707,8 +707,13 @@ function drawLine(x,y,x2,y2,color){
 
 
 function drawInfoBoxes(){
+	//Clear the area the lines go in
+	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+30,0,0,1);
 	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+30,0,2,3);
+	
+	//Clear the area the lines go in
+	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
 	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
 }
@@ -721,9 +726,6 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.move(x-10,y);
 	rectangle.changeColor(1,1,1);
 	rectangle.draw();
-	
-	//Clear the area the lines go in
-	clearRectangle(receiveX-5,y,scaleWidth+10,20);
 	
 	//Draw lines to the markers
 	var marker1Loc = markerLocs[graphIndex][marker1];
