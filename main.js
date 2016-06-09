@@ -1,4 +1,4 @@
-var version="boxes4"
+var version="boxes5"
 var canvas;
 var gl;
 var imageCanvas;
@@ -582,6 +582,7 @@ function handleMouseMove(event){
 		updateMarkerLoc(mouse.x,mouse.y);
 		drawPanels();
 		drawMarkers();
+		drawInfoBoxes();
 	}
 	
 	lastMouseX=mouse.x;
@@ -682,7 +683,7 @@ function drawScene() {
 function drawLine(x,y,x2,y2,color){
 	var thickness=3;
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-10,-y,-1,	x+10,-y,-1,	x2+10,-y2,-1, x2-10,-y2,-1]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-thickness,-y,-1,	x+thickness,-y,-1,	x2+thickness,-y2,-1, x2-thickness,-y2,-1]), gl.STATIC_DRAW);
 		
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1, color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1]), gl.STATIC_DRAW);
@@ -714,7 +715,9 @@ function drawInfoBoxes(){
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	var rectangle=Shape.rectangle;
-	rectangle.scale(scaleWidth*.2+20,scaleHeight/2);
+	var width = scaleWidth*.2+20;
+	var height = scaleHeight/2;
+	rectangle.scale(width,height);
 	rectangle.move(x-10,y);
 	rectangle.changeColor(1,1,1);
 	rectangle.draw();
@@ -723,7 +726,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	var marker1Loc = markerLocs[graphIndex][marker1];
 	var marker2Loc = markerLocs[graphIndex][marker2];
 	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x-10,y,getColorHeight(mapCIndices[graphIndex],marker1Loc));
-	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x-10,y,getColorHeight(mapCIndices[graphIndex],marker2Loc));
+	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width-10,y,getColorHeight(mapCIndices[graphIndex],marker2Loc));
 }
 
 function drawMarkers(){
