@@ -1,4 +1,4 @@
-var version="boxes"
+var version="boxes2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -714,8 +714,8 @@ function drawInfoBoxes(){
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	var rectangle=Shape.rectangle;
-	rectangle.scale(scaleWidth*.2,scaleHeight/2);
-	rectangle.move(x,y);
+	rectangle.scale(scaleWidth*.2+20,scaleHeight/2);
+	rectangle.move(x-10,y);
 	rectangle.changeColor(1,1,1);
 	rectangle.draw();
 }
@@ -744,7 +744,7 @@ function drawMarker(graphIndex,height){
 
 function drawText(){
 	ctx2.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
-	ctx2.font = "48px serif";
+	ctx2.font = "18px serif";
 	ctx2.fillText("Chickens",50,50);
 }
 
@@ -766,7 +766,7 @@ function drawGraphs(){
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth,200);
+		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth,150);
 		drawGraph(receiveX,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
