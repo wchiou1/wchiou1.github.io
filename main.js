@@ -748,7 +748,6 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.changeColor(color2.r/255,color2.g/255,color2.b/255);
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
-	clearText();
 	drawText(Math.round(color1.r)+" "+Math.round(color1.g/255)+" "+Math.round(color1.b/255),x+2,y+20);
 }
 
@@ -779,7 +778,6 @@ function clearText(){
 }
 
 function drawText(string,x,y){
-	ctx2.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
 	ctx2.font = "18px serif";
 	ctx2.fillText(string,x,y);
 }
