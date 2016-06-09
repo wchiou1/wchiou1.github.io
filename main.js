@@ -325,7 +325,6 @@ var Rectangle= function(){
 };
 
 var Shape={};
-var scheduled=false,lastEvent;
 function start() {
 	console.log("version:"+version);
 	  canvas = document.getElementById("glcanvas");
