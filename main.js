@@ -1,4 +1,4 @@
-var version="lines"
+var version="text"
 var canvas;
 var gl;
 var imageCanvas;
@@ -733,8 +733,20 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	//Draw lines to the markers
 	var marker1Loc = markerLocs[graphIndex][marker1];
 	var marker2Loc = markerLocs[graphIndex][marker2];
-	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x-10,y,getColorHeight(mapCIndices[graphIndex],marker1Loc));
-	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width-10,y,getColorHeight(mapCIndices[graphIndex],marker2Loc));
+	var color1 = getColorHeight(mapCIndices[graphIndex],marker1Loc);
+	var color2 =getColorHeight(mapCIndices[graphIndex],marker2Loc)
+	
+	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x-10,y,color1);
+	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width-10,y,color2);
+	rectangle.scale(width/2-4,3);
+	rectangle.changeColor(color1.r/255,color1.g/255,color1.b/255);
+	rectangle.move(x+2,y+2);
+	rectangle.draw();
+	rectangle.changeColor(color2.r/255,color2.g/255,color2.b/255);
+	rectangle.move(x+width/2,y+2);
+	rectangle.draw();
+	
+	drawText(color1.r/255+" "+color1.g/255+" "+color1.b/255,x+2,y+3);
 }
 
 function drawMarkers(){
@@ -759,10 +771,13 @@ function drawMarker(graphIndex,height){
 	rectangle.draw();
 }
 
-function drawText(string,x,y){
+function clearText(){
 	ctx2.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+}
+
+function drawText(string,x,y){
 	ctx2.font = "18px serif";
-	ctx2.fillText("Chickens",50,50);
+	ctx2.fillText(string,x,y);
 }
 
 function clearRectangle(x,y,w,h){
