@@ -1,4 +1,4 @@
-var version="text"
+var version="text2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -724,11 +724,12 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	if(mapCIndices[graphIndex]>=scales.length){
 		return;
 	}
+	var x=x-20;
 	var rectangle=Shape.rectangle;
-	var width = scaleWidth*.2+20;
-	var height = scaleHeight/2;
+	var width = scaleWidth*.2+40;
+	var height = 50;
 	rectangle.scale(width,height);
-	rectangle.move(x-10,y);
+	rectangle.move(x,y);
 	rectangle.changeColor(1,1,1);
 	rectangle.draw();
 	
@@ -738,9 +739,9 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	var color1 = getColorHeight(mapCIndices[graphIndex],marker1Loc);
 	var color2 =getColorHeight(mapCIndices[graphIndex],marker2Loc)
 	
-	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x-10,y,color1);
-	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width-10,y,color2);
-	rectangle.scale(width/2-4,3);
+	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
+	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width,y,color2);
+	rectangle.scale(width/2-4,5);
 	rectangle.changeColor(color1.r/255,color1.g/255,color1.b/255);
 	rectangle.move(x+2,y+2);
 	rectangle.draw();
@@ -748,7 +749,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
 	
-	drawText(color1.r/255+" "+color1.g/255+" "+color1.b/255,x+2,y+3);
+	drawText(Math.round(10*(color1.r/255))/10+" "+Math.round(10*(color1.g/255))/10+" "+Math.round(10*(color1.b/255,x+2,y+15);
 }
 
 function drawMarkers(){
