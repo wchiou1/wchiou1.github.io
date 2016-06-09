@@ -591,8 +591,8 @@ function handleMouseMove(event){
 
 function clearDrag(){
 	createImage(0,0,iconWidth,iconHeight);
-	targ.style.left='20px';
-	targ.style.top='20px';
+	targ.style.left='0px';
+	targ.style.top='0px';
 }
 
 function updateMarkerLoc(mouseX,mouseY){
@@ -674,7 +674,7 @@ function drawScene() {
 	drawPanels();
 	drawGraphs();
 	drawMarkers();
-	drawText();
+	//drawText();
 	drawLine(0,0,400,400,{r:100,g:100,b:100});
 }
 
@@ -705,10 +705,13 @@ function drawLine(x,y,x2,y2,color){
 
 
 function drawInfoBoxes(){
-
+	drawInfoBox(scaleWidth*.20,0,1);
+	drawInfoBox(0,2,3);
+	drawInfoBox(1,0,1);
+	drawInfoBox(1,2,3);
 }
 
-function drawInfoBox(graphIndex, marker1, marker2){
+function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	var gap = 20;
 	var rectangle=Shape.rectangle;
 	rectangle.scale(3,scaleHeight/2);
