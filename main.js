@@ -775,11 +775,10 @@ function drawMarker(graphIndex,height){
 }
 
 function clearText(){
-	
+	ctx2.clearRect(0,0,1200, 700);
 }
 
 function drawText(string,x,y){
-	ctx2.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
 	ctx2.font = "18px serif";
 	ctx2.fillText(string,x,y);
 }
