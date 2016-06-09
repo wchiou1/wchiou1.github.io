@@ -1113,10 +1113,10 @@ function readFiles(files,type){
 		var reader = new FileReader();
 		reader.onload = function(e2) { // finished reading file data.
 			if(type=='img'){
-				readTextToImage(e2.target.result,file.name);
+				readTextToImage(e2.target.result,e2.target.name);
 			}
 			else if(type=='color'){
-				readTextToScale(e2.target.result,file.name);
+				readTextToScale(e2.target.result,e2.target.name);
 			}
 		}
 		reader.readAsText(file); // start reading the file data.
