@@ -725,7 +725,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 		return;
 	}
 	var rectangle=Shape.rectangle;
-	var width = scaleWidth*.4;
+	var width = scaleWidth*.45;
 	var height = 75;
 	rectangle.scale(width,height);
 	rectangle.move(x,y);
