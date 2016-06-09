@@ -1,4 +1,4 @@
-var version="text7"
+var version="text8"
 var canvas;
 var gl;
 var imageCanvas;
@@ -748,7 +748,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
 	drawText(Math.round(color1.r)+" "+Math.round(color1.g)+" "+Math.round(color1.b),x+2,y+25);
-	drawText(Math.round(color2.r)+" "+Math.round(color2.g)+" "+Math.round(color2.b),x+width/2,y+25);
+	drawText(Math.round(color2.r)+" "+Math.round(color2.g)+" "+Math.round(color2.b),x+width/2+2,y+25);
 }
 
 function drawMarkers(){
@@ -778,7 +778,7 @@ function clearText(){
 }
 
 function drawText(string,x,y){
-	ctx2.font = "18px serif";
+	ctx2.font = "15px serif";
 	ctx2.fillText(string,x,y);
 }
 
