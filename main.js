@@ -1,4 +1,4 @@
-var version="text4"
+var version="text5"
 var canvas;
 var gl;
 var imageCanvas;
@@ -775,10 +775,11 @@ function drawMarker(graphIndex,height){
 }
 
 function clearText(){
-	ctx2.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+	
 }
 
 function drawText(string,x,y){
+	ctx2.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
 	ctx2.font = "18px serif";
 	ctx2.fillText(string,x,y);
 }
