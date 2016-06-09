@@ -1,4 +1,4 @@
-var version="text"
+var version="boxes"
 var canvas;
 var gl;
 var imageCanvas;
@@ -674,6 +674,7 @@ function drawScene() {
 	drawPanels();
 	drawGraphs();
 	drawMarkers();
+	drawInfoBoxes();
 	drawText();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
 }
@@ -705,18 +706,17 @@ function drawLine(x,y,x2,y2,color){
 
 
 function drawInfoBoxes(){
-	drawInfoBox(scaleWidth*.20,0,1);
-	drawInfoBox(0,2,3);
-	drawInfoBox(1,0,1);
-	drawInfoBox(1,2,3);
+	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+30,0,0,1);
+	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+30,0,2,3);
+	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
+	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
 }
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
-	var gap = 20;
 	var rectangle=Shape.rectangle;
-	rectangle.scale(3,scaleHeight/2);
-	rectangle.move(tempx-3,tempy);
-	rectangle.changeColor(.3,.3,.3);
+	rectangle.scale(scaleWidth*.2,scaleHeight/2);
+	rectangle.move(x,y);
+	rectangle.changeColor(1,1,1);
 	rectangle.draw();
 }
 
