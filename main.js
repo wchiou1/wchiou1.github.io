@@ -681,7 +681,7 @@ function drawScene() {
 }
 
 function drawLine(x,y,x2,y2,color){
-	var thickness=2;
+	var thickness=0;
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-thickness,-y,-1,	x+thickness,-y,-1,	x2+thickness,-y2,-1, x2-thickness,-y2,-1]), gl.STATIC_DRAW);
 		
