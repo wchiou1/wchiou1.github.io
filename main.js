@@ -712,12 +712,12 @@ function drawInfoBoxes(){
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.05+receiveX,receiveY+scaleHeight+30,0,0,1);
-	drawInfoBox(scaleWidth*.55+receiveX,receiveY+scaleHeight+30,0,2,3);
+	drawInfoBox(scaleWidth*.5+receiveX,receiveY+scaleHeight+30,0,2,3);
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.05+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
-	drawInfoBox(scaleWidth*.55+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
+	drawInfoBox(scaleWidth*.5+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
 }
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
@@ -752,8 +752,15 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	drawText(Math.round(color2.r)+" "+Math.round(color2.g)+" "+Math.round(color2.b),x+width/2+2,y+25);
 	
 	//write lab values
+	var lab1=rgb_to_lab({'R':color1.r, 'G':color1.g, 'B':color1.b});
+	var lab2=rgb_to_lab({'R':color2.r, 'G':color2.g, 'B':color2.b});
+	drawText(Math.round(lab1.L)+" "+Math.round(lab1.a)+" "+Math.round(lab1.b),x+2,y+45);
+	drawText(Math.round(lab2.L)+" "+Math.round(lab2.a)+" "+Math.round(lab2.b),x+width/2+2,y+45);
 	
 	//write ciede difference
+	var deltaE=ciede2000(lab1,lab2);
+	drawText("CIEDE-deltaE: "+deltaE,x+2,y+55);
+
 }
 
 function drawMarkers(){
