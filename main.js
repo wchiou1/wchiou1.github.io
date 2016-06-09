@@ -748,7 +748,8 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.changeColor(color2.r/255,color2.g/255,color2.b/255);
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
-	drawText(Math.round(color1.r)+" "+Math.round(color1.g)+" "+Math.round(color1.b),x+2,y+20);
+	drawText(Math.round(color1.r)+" "+Math.round(color1.g)+" "+Math.round(color1.b),x+2,y+25);
+	drawText(Math.round(color2.r)+" "+Math.round(color2.g)+" "+Math.round(color2.b),x+2,y+50);
 }
 
 function drawMarkers(){
