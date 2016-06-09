@@ -1,4 +1,4 @@
-var version="boxes7"
+var version="lines"
 var canvas;
 var gl;
 var imageCanvas;
@@ -681,7 +681,7 @@ function drawScene() {
 }
 
 function drawLine(x,y,x2,y2,color){
-	var thickness=0;
+	var thickness=1;
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-thickness,-y,-1,	x+thickness,-y,-1,	x2+thickness,-y2,-1, x2-thickness,-y2,-1]), gl.STATIC_DRAW);
 		
@@ -719,6 +719,9 @@ function drawInfoBoxes(){
 }
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
+	if(mapCIndices[graphIndex]>=scales.length){
+		return;
+	}
 	var rectangle=Shape.rectangle;
 	var width = scaleWidth*.2+20;
 	var height = scaleHeight/2;
