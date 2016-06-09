@@ -599,7 +599,7 @@ function updateFilenameIndicator(mouseX,mouseY){
 	var hit=testIconHit(mouseX,mouseY);
 	
 	if(hit!=-1){
-		drawText(colorMapFileNames[hit],iconX,iconY-10);
+		drawText(colormapFileNames[hit],iconX,iconY-10);
 	}
 }
 
