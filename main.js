@@ -1,4 +1,4 @@
-var version="text8"
+var version="text9"
 var canvas;
 var gl;
 var imageCanvas;
@@ -711,13 +711,13 @@ function drawInfoBoxes(){
 	clearText();
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.1+receiveX,receiveY+scaleHeight+30,0,0,1);
-	drawInfoBox(scaleWidth*.6+receiveX,receiveY+scaleHeight+30,0,2,3);
+	drawInfoBox(scaleWidth*.05+receiveX,receiveY+scaleHeight+30,0,0,1);
+	drawInfoBox(scaleWidth*.55+receiveX,receiveY+scaleHeight+30,0,2,3);
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.00+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
-	drawInfoBox(scaleWidth*.50+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
+	drawInfoBox(scaleWidth*.05+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
+	drawInfoBox(scaleWidth*.55+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
 }
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
@@ -725,7 +725,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 		return;
 	}
 	var rectangle=Shape.rectangle;
-	var width = scaleWidth*.45;
+	var width = scaleWidth*.4;
 	var height = 75;
 	rectangle.scale(width,height);
 	rectangle.move(x,y);
@@ -740,12 +740,12 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	
 	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
 	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width,y,color2);
-	rectangle.scale(width*0.45,6);
+	rectangle.scale(width*0.475,6);
 	rectangle.changeColor(color1.r/255,color1.g/255,color1.b/255);
 	rectangle.move(x+2,y+2);
 	rectangle.draw();
 	rectangle.changeColor(color2.r/255,color2.g/255,color2.b/255);
-	rectangle.move(x+width/2,y+2);
+	rectangle.move(x+2+width/2,y+2);
 	rectangle.draw();
 	//write rgb values
 	drawText(Math.round(color1.r)+" "+Math.round(color1.g)+" "+Math.round(color1.b),x+2,y+25);
