@@ -1061,7 +1061,7 @@ function FileListenerInit(){
 
 function readFiles(files,type){
 	for (var i=0, file; file=files[i]; i++) {
-		if (!file.type.match('plain')) continue;
+		//if (!file.type.match('plain')) continue;
 		var reader = new FileReader();
 		reader.onload = function(e2) { // finished reading file data.
 			if(type=='img'){
