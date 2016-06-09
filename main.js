@@ -572,6 +572,7 @@ function handleMouseMove(event){
 	}
 	var mouse = getMousePos(canvas, event);
 	
+	updateFilenameIndicator(mouse.x,mouse.y);
 	//updateDrag(mouse.x,mouse.y);
 	
 	if(dragIcon==-2){
@@ -589,6 +590,16 @@ function handleMouseMove(event){
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
 	return false;
+}
+
+function updateFilenameIndicator(mouseX,mouseY){
+	//Clear the text area where the fileName will go
+	ctx2.clearRect(iconX,iconY-10,300, 10);
+	
+	//Check what fileIcon the mouse is over
+	var hit=testIconHit(mouseX,mouseY);
+	
+	drawText(hit,iconX,iconY-10);
 }
 
 function clearDrag(){
