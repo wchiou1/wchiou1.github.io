@@ -1239,9 +1239,9 @@ function computeDeltaE(scale){
 			var lab1=rgb_to_lab({'R':rgb1.r, 'G':rgb1.g, 'B':rgb1.b});
 		var rgb2=scale[i];
 		var lab2=rgb_to_lab({'R':rgb2.r, 'G':rgb2.g, 'B':rgb2.b});
-		if(lab1)
+		if(lab1&&lab2)
 			var deltaE=ciede2000(lab1,lab2);
-		outputText=outputText+rgb2.r+" "+rgb2.g+" "+rgb2.b+" "+"deltaE = "+deltaE;
+		outputText=outputText+rgb2.r+" "+rgb2.g+" "+rgb2.b+" "+"deltaE = "+deltaE+"\n";
 	}
 	download(outputText, "deltaE.txt", 'text/plain');
 }
