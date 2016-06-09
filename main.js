@@ -707,6 +707,8 @@ function drawLine(x,y,x2,y2,color){
 
 
 function drawInfoBoxes(){
+
+	clearText();
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.2+receiveX,receiveY+scaleHeight+30,0,0,1);
