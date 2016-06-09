@@ -1206,7 +1206,7 @@ function readTextToScale(text){
 
 	drawScene();
 	
-	computeDeltaE(scale);
+	//computeDeltaE(scale);
 }
 
 function handleImageFileSelect(evt) {
