@@ -1,4 +1,4 @@
-var version="image hitboxes2 && viewport6"
+var version="image hitboxes2 && viewport7"
 var canvas;
 var gl;
 var imageCanvas;
@@ -202,7 +202,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	this.drawInViewport=function(vID){
 		var viewp=viewports[vID];
 		viewp.clear();
-		gl.viewport(viewp.x, canvas.height-viewp.y-h, viewp.w, viewp.h);
+		gl.viewport(viewp.x, canvas.height-viewp.y-viewp.h, viewp.w, viewp.h);
 		
 		perspectiveMatrix = makeOrtho(0, viewp.w, -viewp.h, 0, 0.1, 100.0);
 			
