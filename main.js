@@ -877,7 +877,7 @@ function drawColorView(){
 function drawColorThumbnails(){
 	
 	//Erase the whole of the iconview area
-	clearRectangle(iconX,iconY,iconViewWidth,iconViewHeight);
+	clearRectangle(iconX,iconY-iconViewHeight,iconViewWidth,iconViewHeight);
 	
 	//this draw colormap as thumbnails;
 	for(var i=0;i<color_panels.length;i++){
