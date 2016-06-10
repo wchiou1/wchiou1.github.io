@@ -62,8 +62,7 @@ var orthogonal={
 	b: -700
 };
 
-var viewports=[	new Viewport(canvas.width/2,150,canvas.width/4,canvas.width/4),
-				new Viewport(canvas.width*0.75,150,canvas.width/4,canvas.width/4)];
+var viewports=[];
 
 var Viewport=function(x,y,w,h){
 	this.x=x;
@@ -375,7 +374,7 @@ function start() {
 		initMarkers();
 		
 		initShaders();
-
+		initViewport();
 		initShape();
 		
 		// Set up to draw the scene periodically.
@@ -385,6 +384,11 @@ function start() {
 	  }
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
+}
+
+function initViewport(){
+	viewports.push(	new Viewport(canvas.width/2,150,canvas.width/4,canvas.width/4));
+	viewports.push(	new Viewport(canvas.width*0.75,150,canvas.width/4,canvas.width/4));
 }
 
 function initBuffers(){
