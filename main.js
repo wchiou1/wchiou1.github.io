@@ -63,7 +63,7 @@ var orthogonal={
 };
 
 var viewports=[];
-
+var 
 var Viewport=function(x,y,w,h){
 	this.x=x;
 	this.y=y;
@@ -1316,7 +1316,7 @@ function readTextToScale(text,filename){
 	colormapFileNames.push(filename);
 	drawScene();
 	//console.log(colormapFileNames);
-	//computeDeltaE(scale);
+	computeDeltaE(scale);
 }
 
 function handleImageFileSelect(evt) {
