@@ -62,9 +62,23 @@ var orthogonal={
 	b: -700
 };
 
+var viewports=[];
+
+var Viewport=function(x,y,w,h){
+	this.x=x;
+	this.y=y;
+	this.w=w;
+	this.h=h;
+	this.self=this;
+	this.clear=function(){
+		clearRectangle(self.x,self.y,self.w,self.h);
+	};
+};
+
 var ImagePanel=function(x,y,w,h,dataID,cID){ 
 	this.x=x;
 	this.y=y;
+	this.z=0;
 	this.w=w;
 	this.h=h;
 	this.id=dataID;
@@ -182,7 +196,16 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			}
 			mvPopMatrix();
 		};
-	
+	this.drawInViewport=function(vID){
+		var viewp=viewports[vID];
+		viewp.clear();
+		gl.viewport(viewp.x, viewp.y, viewp.w, viewp.h);
+		var tempOrtho=orthogonal;
+		orthogonal={l:0, r:viewp.w, b:-viewp.h, t:0};
+		self.draw();
+		orthogonal=tempOrtho;
+		gl.viewport(0, 0, canvas.width, canvas.height);
+	};
 };
 
 var ColorPanel= function(x,y,w,h,cID){ 
@@ -351,7 +374,7 @@ function start() {
 		initMarkers();
 		
 		initShaders();
-
+		initViewport();
 		initShape();
 		
 		// Set up to draw the scene periodically.
@@ -361,6 +384,11 @@ function start() {
 	  }
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
+}
+
+function initViewport(){
+	viewports.push(	new Viewport(canvas.width/2,150,canvas.width/4,canvas.width/4));
+	viewports.push(	new Viewport(canvas.width*0.75,150,canvas.width/4,canvas.width/4));
 }
 
 function initBuffers(){
