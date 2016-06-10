@@ -1,4 +1,4 @@
-var version="iconView5"
+var version="clean"
 var canvas;
 var gl;
 var imageCanvas;
