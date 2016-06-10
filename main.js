@@ -534,7 +534,7 @@ function handleMouseDown(event){
 	if(dragIcon>=0){
 		var tempxy=getIconxy(dragIcon);
 		createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
-		targ.style.left=mouse.X-iconWidth/2+'px';
+		targ.style.left=mouse.x-iconWidth/2+'px';
 		targ.style.top=mouse.y-iconHeight/2+'px';
 	}
 	
