@@ -404,7 +404,7 @@ function testImageIconHit(mouseX,mouseY){
 	//Test x values
 	for(var i=0;i<scales.length;i++){
 		if(mouseX>imgIconX+10+i*(iconWidth+10)&&mouseX<imgIconX+10+iconWidth+i*(iconWidth+10)){
-			return i;
+			return i+10000;
 		}
 	}
 	return -1;
@@ -505,8 +505,8 @@ function getColorHeight(cindex,height){
 	return scales[cindex][index];
 }
 
-function getImageIconxy(cindex){
-	var tempx=imgIconX+(iconWidth+10)*cindex+10;
+function getImageIconxy(iindex){
+	var tempx=imgIconX+(iconWidth+10)*iindex+10;
 	var tempy=imgIconY+10;
 	return [tempx,tempy];
 }
@@ -546,7 +546,7 @@ function handleMouseDown(event){
 	}
 	
 	if(dragIcon==-1){
-		dragIcon = testImageIconHit(mouse.x,mouse.y)+10000;
+		dragIcon = testImageIconHit(mouse.x,mouse.y);
 	}
 	
 	dragMarker=testMarkerHit(mouse.x,mouse.y);
