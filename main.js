@@ -84,7 +84,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	this.h=h;
 	this.id=dataID;
 	this.cindex=cID;
-	//this.viewInfo={w:img_data[id].width, h:img_data[id].height,};
+	this.viewInfo={x:0, y:0, z:0, w:img_data[id].width, h:img_data[id].height};
 	this.verticesBuffer=gl.createBuffer();
 	this.verticesColorBuffer=gl.createBuffer();
 	var self=this;
@@ -204,7 +204,25 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		gl.viewport(viewp.x, viewp.y, viewp.w, viewp.h);
 		var tempOrtho=orthogonal;
 		orthogonal={l:0, r:viewp.w, b:-viewp.h, t:0};
-		self.draw();
+		
+		perspectiveMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
+			
+		loadIdentity();	
+		mvPushMatrix();
+		mvTranslate([self.viewInfo.x, self.viewInfo.y, self.viewInfo.z-1.0]);
+		mvScale([self.viewInfo.w,self.viewInfo.h,1]);
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+		gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
+		gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+		setMatrixUniforms();
+	
+		var len=img_data[self.id].data.length;
+		for(var i=0;i<len;i++){
+			gl.drawArrays(gl.TRIANGLE_FAN, i*4, 4);
+		}
+		mvPopMatrix();
+		
 		orthogonal=tempOrtho;
 		gl.viewport(0, 0, canvas.width, canvas.height);
 	};
@@ -733,12 +751,12 @@ function drawScene() {
 		//this draws the image
 		panel.changeColor(mapCIndices[0]);//changeColor(id) here takes the index of the colormap in scales[]
 		panel.scale(img_data[imgIndex].w, img_data[imgIndex].h);//can change the dimension
-		panel.move(600,150,0); //you can change z value, things in the front block things in the back
-		panel.draw();
+		//panel.move(600,150,0); //you can change z value, things in the front block things in the back
+		panel.drawInViewport(0);
 		//draw with another colormap
 		panel.changeColor(mapCIndices[1]);
-		panel.move(850,150,1);
-		panel.draw();
+		//panel.move(850,150,1);
+		panel.drawInViewport(1);
 		
 		for(var i=0;i<img_panels.length;i++){
 			img_panels[i].changeColor(null);
