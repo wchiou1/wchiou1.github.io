@@ -1,4 +1,4 @@
-var version="image hitboxes2"
+var version="image hitboxes2 && viewport "
 var canvas;
 var gl;
 var imageCanvas;
@@ -84,7 +84,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	this.h=h;
 	this.id=dataID;
 	this.cindex=cID;
-	this.viewInfo={x:0, y:0, z:0, w:img_data[id].width, h:img_data[id].height};
+	this.viewInfo={x:0, y:0, z:0, w:img_data[dataID].width, h:img_data[dataID].height};
 	this.verticesBuffer=gl.createBuffer();
 	this.verticesColorBuffer=gl.createBuffer();
 	var self=this;
