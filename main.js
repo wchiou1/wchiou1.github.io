@@ -890,7 +890,7 @@ function drawColorThumbnails(){
 	drawColorView();
 	
 	//Clear the edges
-	clearRectangle(iconX-6,iconY+iconViewHeight,iconWidth+3,iconViewHeight);
+	clearRectangle(iconX-6-iconWidth,iconY+iconViewHeight,iconWidth+3,iconViewHeight);
 	clearRectangle(iconX+3+iconViewWidth,iconY+iconViewHeight,iconWidth+3,iconViewHeight);
 }
 
