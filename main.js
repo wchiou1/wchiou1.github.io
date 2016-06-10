@@ -214,7 +214,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
 		gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
 		setMatrixUniforms();
-	
+		console.log(mvMatrix);
 		var len=img_data[self.id].data.length;
 		for(var i=0;i<len;i++){
 			gl.drawArrays(gl.TRIANGLE_FAN, i*4, 4);
@@ -1144,7 +1144,6 @@ function setMatrixUniforms() {
 
   var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
   gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
-  console.log(mvMatrix);
 }
 
 function setIdentityUniforms(){
