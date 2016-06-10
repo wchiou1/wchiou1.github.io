@@ -63,6 +63,16 @@ var orthogonal={
 };
 
 var viewports=[];
+var viewMatrix=Matrix.I(4);
+function initView(id){
+	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x((Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4()));
+}
+function moveView(x,y,z){
+	
+}
+function scaleView(scalar,center){
+	
+}
 
 
 var Viewport=function(x,y,w,h){
@@ -85,7 +95,6 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	this.h=h;
 	this.id=dataID;
 	this.cindex=cID;
-	this.viewMatrix=Matrix.I(4);
 	this.verticesBuffer=gl.createBuffer();
 	this.verticesColorBuffer=gl.createBuffer();
 	var self=this;
@@ -199,19 +208,8 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			}
 			mvPopMatrix();
 		};
-		
-	this.moveView=function(x,y,z){
-		
-	};
-	this.scaleView=function(scalar,center){
-		
-	};
-	
 
-	this.initView=function(){	
-		self.viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x((Matrix.Diagonal([img_data[self.id].w, img_data[self.id].h, 1,1]).ensure4x4()));
-	};
-	this.initView();
+
 	this.drawInViewport=function(vID){
 		var viewp=viewports[vID];
 		viewp.clear();
@@ -221,7 +219,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			
 		loadIdentity();	
 		mvPushMatrix();
-		multMatrix(self.viewMatrix);
+		multMatrix(viewMatrix);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
