@@ -1,4 +1,4 @@
-var version="iconView2"
+var version="iconView3"
 var canvas;
 var gl;
 var imageCanvas;
@@ -574,7 +574,7 @@ function handleMouseMove(event){
 	}
 	
 	
-	if(dragIcon==-2){
+	if(dragIcon==-2&&iconViewWidth<scales.length*60+10){
 		updateIconViewOffset(mouse.x,mouse.y);
 		drawColorThumbnails();
 	}
@@ -635,13 +635,13 @@ function updateMarkerLoc(mouseX,mouseY){
 
 function updateIconViewOffset(mouseX,mouseY){
 	var dx=lastMouseX-mouseX;
-	iconViewOffset = iconViewOffset+dx;/*
-	if(iconViewOffset<0||0>scales.length*60-iconViewWidth){
+	iconViewOffset = iconViewOffset+dx;
+	if(iconViewOffset<0){
 		iconViewOffset=0;
 	}
 	if(0<scales.length*60-iconViewWidth+10&&iconViewOffset>scales.length*60-iconViewWidth+10){
 		iconViewOffset=scales.length*60-iconViewWidth+10;
-	}*/
+	}
 }
 
 //
@@ -875,10 +875,15 @@ function drawColorView(){
 }
 
 function drawColorThumbnails(){
+	
+	//Erase the whole of the iconview area
+	clearRectangle(iconX,iconY-iconViewHeight,iconViewWidth,iconViewHeight);
+	
 	//this draw colormap as thumbnails;
 	for(var i=0;i<color_panels.length;i++){
 		drawThumbnail(iconX+(iconWidth+10)*i+10-iconViewOffset,iconY+10,i);
 	}
+	
 }
 
 function drawThumbnail(x,y,cindex){
