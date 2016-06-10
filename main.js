@@ -73,6 +73,7 @@ var Viewport=function(x,y,w,h){
 	this.self=this;
 	this.clear=function(){
 		clearRectangle(self.x,self.y+self.h,self.w,self.h);
+		console.log([self.x,self.y+self.h,self.w,self.h]);
 	};
 };
 
