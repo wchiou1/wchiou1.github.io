@@ -29,6 +29,7 @@ var receiveX = 50;
 var receiveY = 150;
 var receiveDelta = 325;
 var dragIcon=-1;
+var imgIndex = 0;
 var mapCIndices = [0,1];
 var setColorHeight = [0,0];
 var iconViewOffset = 0;
@@ -395,6 +396,20 @@ function initWebGL() {
   }
 }
 
+function testImageIconHit(mouseX,mouseY){
+	//First test y value
+	if(mouseY<imgIconY+10||mouseY>imgIconY+10+iconHeight){
+		return -1;
+	}
+	//Test x values
+	for(var i=0;i<scales.length;i++){
+		if(mouseX>imgIconX+10+i*(iconWidth+10)&&mouseX<imgIconX+10+iconWidth+i*(iconWidth+10)){
+			return i;
+		}
+	}
+	return -1;
+}
+
 //Returns the index of the marker which is clicked on, returns -1 if none
 function testMarkerHit(mouseX,mouseY){
 	//Find which scale the click is on
@@ -490,6 +505,12 @@ function getColorHeight(cindex,height){
 	return scales[cindex][index];
 }
 
+function getImageIconxy(cindex){
+	var tempx=imgIconX+(iconWidth+10)*cindex+10;
+	var tempy=imgIconY+10;
+	return [tempx,tempy];
+}
+
 function getIconxy(cindex){
 	var tempx=iconX+(iconWidth+10)*cindex+10-iconViewOffset;
 	var tempy=iconY+10;
@@ -524,6 +545,10 @@ function handleMouseDown(event){
 			}
 	}
 	
+	if(dragIcon==-1){
+		dragIcon = testImageIconHit(mouse.x,mouse.y)+10000;
+	}
+	
 	dragMarker=testMarkerHit(mouse.x,mouse.y);
 	
 	//Only check setting the color if the markers did not get hit
@@ -532,11 +557,18 @@ function handleMouseDown(event){
 	}
 	
 	if(dragIcon>=0){
-		var tempxy=getIconxy(dragIcon);
+		var tempxy;
+		if(dragIcon<10000){
+			tempxy=getIconxy(dragIcon);
+		}
+		else{
+			tempxy=getImageIconxy(dragIcon);
+		}
 		createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
 		targ.style.left=mouse.x-iconWidth/2+'px';
 		targ.style.top=mouse.y-iconHeight/2+'px';
 	}
+	console.log(dragIcon);
 	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
