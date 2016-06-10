@@ -207,8 +207,11 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			
 		loadIdentity();	
 		mvPushMatrix();
+		console.log(mvMatrix);
 		mvTranslate([self.viewInfo.x, self.viewInfo.y, self.viewInfo.z-1.0]);
+		console.log(mvMatrix);
 		mvScale([self.viewInfo.w,self.viewInfo.h,1]);
+		console.log(mvMatrix);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
