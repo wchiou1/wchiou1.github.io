@@ -861,7 +861,7 @@ function drawReceiveThumbnails(){
 function drawColorView(){
 	var rectangle=Shape.rectangle;
 	rectangle.scale(iconViewWidth+6,3);
-	rectangle.move(iconX-3,iconY-3,0.5);
+	rectangle.move(iconX-3,iconY-3,-1);
 	rectangle.changeColor(1.0,0.0,0.0);
 	rectangle.draw();
 	rectangle.move(iconX-3,iconY+iconViewHeight);
