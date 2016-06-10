@@ -1329,4 +1329,5 @@ function linearizeLightness(cID){
 	scales.push(newScale);
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
 	colormapFileNames.push(colormapFileNames[cID]+"(Adjusted Linear Lightness)");
+	drawScene();
 }
