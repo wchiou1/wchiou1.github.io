@@ -587,7 +587,10 @@ function handleMouseUp(event){
 			mapCIndices[receiveIndex]=dragIcon;
 			drawScene();
 		}
-	};
+	}
+	if(dragIcon>=10000){
+		imgIndex = dragIcon-10000;
+	}
 	dragIcon=-1;
 	dragMarker=-1;
 	clearDrag();
@@ -695,17 +698,17 @@ function drawScene() {
 	rectangle.changeColor(0.5,0.5,0.5);
 	rectangle.draw();*/
 	
-	var l=img_panels.length;
-	if(l>0){
+	if(img_panels.length!=0){
+		var panel = img_panels[imgIndex];
 		//this draws the image
-		img_panels[l-1].changeColor(mapCIndices[0]);//changeColor(id) here takes the index of the colormap in scales[]
-		img_panels[l-1].scale(img_data[0].w, img_data[0].h);//can change the dimension
-		img_panels[l-1].move(600,150,0); //you can change z value, things in the front block things in the back
-		img_panels[l-1].draw();
+		panel.changeColor(mapCIndices[0]);//changeColor(id) here takes the index of the colormap in scales[]
+		panel.scale(img_data[imgIndex].w, img_data[imgIndex].h);//can change the dimension
+		panel.move(600,150,0); //you can change z value, things in the front block things in the back
+		panel.draw();
 		//draw with another colormap
-		img_panels[l-1].changeColor(mapCIndices[1]);
-		img_panels[l-1].move(850,150,1);
-		img_panels[l-1].draw();
+		panel.changeColor(mapCIndices[1]);
+		panel.move(850,150,1);
+		panel.draw();
 		
 		for(var i=0;i<l;i++){
 			img_panels[i].changeColor(null);
