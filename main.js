@@ -831,7 +831,7 @@ function drawGraphs(){
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth,130);
+		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth,120);
 		drawGraph(receiveX,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
