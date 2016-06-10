@@ -64,6 +64,7 @@ var orthogonal={
 
 var viewports=[];
 
+
 var Viewport=function(x,y,w,h){
 	this.x=x;
 	this.y=y;
@@ -83,6 +84,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	this.h=h;
 	this.id=dataID;
 	this.cindex=cID;
+	this.viewInfo={w:img_data[id].width, h:img_data[id].height,};
 	this.verticesBuffer=gl.createBuffer();
 	this.verticesColorBuffer=gl.createBuffer();
 	var self=this;
@@ -738,7 +740,7 @@ function drawScene() {
 		panel.move(850,150,1);
 		panel.draw();
 		
-		for(var i=0;i<l;i++){
+		for(var i=0;i<img_panels.length;i++){
 			img_panels[i].changeColor(null);
 			img_panels[i].scale(iconWidth, iconHeight);
 			img_panels[i].move(i*(iconWidth+10)+imgIconX+10,imgIconY+10,0);
