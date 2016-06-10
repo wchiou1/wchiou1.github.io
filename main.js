@@ -1323,7 +1323,7 @@ function linearizeLightness(cID){
 	for(var i=0;i<len;i++){
 		var newL=100*i/(len-1);
 		var oldLab=rgb_to_lab(scales[cID][i]);
-		var newLab={L: newL, a: oldLab.a, b: oldLab.b};
+		var newLab={'L': newL, 'a': oldLab.'a', 'b': oldLab.'b'};
 		newScale.push(lab_to_rgb(newLab));
 		console.log(newLab);
 	}
