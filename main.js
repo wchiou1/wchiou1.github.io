@@ -72,7 +72,7 @@ var Viewport=function(x,y,w,h){
 	this.h=h;
 	this.self=this;
 	this.clear=function(){
-		clearRectangle(canvas.width/2,150,canvas.width/4,canvas.width/4));
+		clearRectangle(canvas.width/2,150,canvas.width/4,canvas.width/4);
 	};
 };
 
