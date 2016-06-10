@@ -1316,7 +1316,7 @@ function readTextToScale(text,filename){
 	colormapFileNames.push(filename);
 	drawScene();
 	//console.log(colormapFileNames);
-	computeDeltaE(scale);
+	computeDeltaE(scales.length-1);
 }
 
 function handleImageFileSelect(evt) {
@@ -1358,8 +1358,9 @@ function drawGraph(x,y,w,h,cID,relative){
 	}
 }
 
-function computeDeltaE(scale){
+function computeDeltaE(cID){
 	var outputText="";
+	var scale=scales[cID];
 	for(var i=0;i<scale.length;i++){
 		var rgb1=scale[i-1];
 		if(rgb1)
@@ -1370,7 +1371,7 @@ function computeDeltaE(scale){
 			var deltaE=ciede2000(lab1,lab2);
 		outputText=outputText+rgb2.r+" "+rgb2.g+" "+rgb2.b+" "+"deltaE = "+deltaE+"\n";
 	}
-	download(outputText, "deltaE.txt", 'text/plain');
+	download(outputText, colormapFileNames[cID]+"-deltaE.txt", 'text/plain');
 }
 
 function download(text, name, type) {
