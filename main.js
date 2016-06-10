@@ -431,7 +431,7 @@ function checkSetColor(mouseX,mouseY){
 //Returns the color height that was clicked, otherwise returns -1
 function testColorMapHit(mouseX,mouseY,rindex){
 	//Check if the click is within the bounds of the color map
-	if(mouseX<receiveX||mouseX>receiveX+scaleWidth){
+	if(mouseX<receiveX||mouseX>=receiveX+scaleWidth){
 		return -1;
 	}
 	if(mouseY<receiveY+receiveDelta*rindex||mouseY>receiveY+receiveDelta*rindex+scaleHeight){
