@@ -67,12 +67,12 @@ var viewports=[];
 
 var Viewport=function(x,y,w,h){
 	this.x=x;
-	this.y=-y;
+	this.y=y;
 	this.w=w;
 	this.h=h;
 	this.self=this;
 	this.clear=function(){
-		clearRectangle(canvas.width/2,150,canvas.width/4,canvas.width/4);
+		clearRectangle(self.x,self.y+self.h,self.w,self.h);
 	};
 };
 
