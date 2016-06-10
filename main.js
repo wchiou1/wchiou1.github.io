@@ -1,4 +1,4 @@
-var version="image hitboxes"
+var version="image hitboxes2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -710,7 +710,7 @@ function drawScene() {
 		for(var i=0;i<l;i++){
 			img_panels[i].changeColor(null);
 			img_panels[i].scale(iconWidth, iconHeight);
-			img_panels[i].move(i*(iconWidth+10)+imgIconX,imgIconY,0);
+			img_panels[i].move(i*(iconWidth+10)+imgIconX+10,imgIconY+10,0);
 			img_panels[i].draw();
 		}
 	}
