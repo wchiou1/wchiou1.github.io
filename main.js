@@ -867,7 +867,7 @@ function drawColorView(){
 	rectangle.move(iconX-3,iconY+iconViewHeight);
 	rectangle.draw();
 	rectangle.scale(3,iconViewHeight+6);
-	rectangle.move(iconX-3,iconY-3,.5);
+	rectangle.move(iconX-3,iconY-3,-1);
 	rectangle.draw();
 	rectangle.move(iconX+iconViewWidth,iconY-3);
 	rectangle.draw();
