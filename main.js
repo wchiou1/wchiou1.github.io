@@ -1,4 +1,4 @@
-var version="image hitboxes2 && viewport5"
+var version="image hitboxes2 && viewport6"
 var canvas;
 var gl;
 var imageCanvas;
@@ -202,15 +202,15 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	this.drawInViewport=function(vID){
 		var viewp=viewports[vID];
 		viewp.clear();
-		gl.viewport(viewp.x, viewp.y, viewp.w, viewp.h);
+		gl.viewport(viewp.x, canvas.height-viewp.y-h, viewp.w, viewp.h);
 		
 		perspectiveMatrix = makeOrtho(0, viewp.w, -viewp.h, 0, 0.1, 100.0);
 			
 		loadIdentity();	
 		mvPushMatrix();
 		mvTranslate([self.viewInfo.x, -self.viewInfo.y, self.viewInfo.z-1.0]);
-		//mvScale([self.viewInfo.w,self.viewInfo.h,1]);
-		mvScale([1000,1000,1]);
+		mvScale([self.viewInfo.w,self.viewInfo.h,1]);
+
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
