@@ -1,4 +1,4 @@
-var version="filename3"
+var version="iconView"
 var canvas;
 var gl;
 var imageCanvas;
@@ -516,13 +516,13 @@ function handleMouseDown(event){
 	//Get the mouse x and y
 	var mouse = getMousePos(canvas, event);
 	//Test if the icon view box was hit
-	//if(testIconViewHit(mouse.x,mouse.y)){
+	if(testIconViewHit(mouse.x,mouse.y)){
 		
-	dragIcon=testIconHit(mouse.x,mouse.y);
-		//if(dragIcon==-1){
-			//dragIcon=-2;
-		//}
-	//}
+		dragIcon=testIconHit(mouse.x,mouse.y);
+			if(dragIcon==-1){
+				dragIcon=-2;
+			}
+	}
 	
 	dragMarker=testMarkerHit(mouse.x,mouse.y);
 	
