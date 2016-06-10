@@ -1,4 +1,4 @@
-var version="filename2"
+var version="filename3"
 var canvas;
 var gl;
 var imageCanvas;
@@ -593,7 +593,7 @@ function handleMouseMove(event){
 
 function updateFilenameIndicator(mouseX,mouseY){
 	//Clear the text area where the fileName will go
-	ctx2.clearRect(iconX-10,iconY-15,300, 30);
+	ctx2.clearRect(iconX-10,iconY-40,300, 40);
 	
 	//Check what fileIcon the mouse is over
 	var hit=testIconHit(mouseX,mouseY);
