@@ -203,7 +203,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		viewp.clear();
 		gl.viewport(viewp.x, viewp.y, viewp.w, viewp.h);
 		
-		perspectiveMatrix = makeOrtho(0, viewp.w, viewp.h, 0, 0.1, 100.0);
+		perspectiveMatrix = makeOrtho(0, viewp.w, -viewp.h, 0, 0.1, 100.0);
 			
 		loadIdentity();	
 		mvPushMatrix();
