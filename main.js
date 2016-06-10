@@ -70,10 +70,10 @@ var Viewport=function(x,y,w,h){
 	this.y=y;
 	this.w=w;
 	this.h=h;
-	this.self=this;
+	var self=this;
 	this.clear=function(){
 		clearRectangle(self.x,self.y+self.h,self.w,self.h);
-		console.log([self.x,self.y+self.h,self.w,self.h]);
+		//console.log([self.x,self.y+self.h,self.w,self.h]);
 	};
 };
 
