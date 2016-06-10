@@ -506,6 +506,7 @@ function getColorHeight(cindex,height){
 }
 
 function getImageIconxy(iindex){
+	iindex = iindex-10000;
 	var tempx=imgIconX+(iconWidth+10)*iindex+10;
 	var tempy=imgIconY+10;
 	return [tempx,tempy];
