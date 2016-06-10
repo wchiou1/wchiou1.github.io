@@ -593,7 +593,7 @@ function handleMouseMove(event){
 
 function updateFilenameIndicator(mouseX,mouseY){
 	//Clear the text area where the fileName will go
-	ctx2.clearRect(iconX-10,iconY-40,300, 40);
+	ctx2.clearRect(iconX-10,iconY-40,600, 40);
 	
 	//Check what fileIcon the mouse is over
 	var hit=testIconHit(mouseX,mouseY);
