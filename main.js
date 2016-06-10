@@ -62,9 +62,24 @@ var orthogonal={
 	b: -700
 };
 
+var viewports=[	new Viewport(canvas.width/2,150,canvas.width/4,canvas.width/4),
+				new Viewport(canvas.width*0.75,150,canvas.width/4,canvas.width/4)];
+
+var Viewport=function(x,y,w,h){
+	this.x=x;
+	this.y=y;
+	this.w=w;
+	this.h=h;
+	this.self=this;
+	this.clear=function(){
+		clearRectangle(self.x,self.y,self.w,self.h);
+	};
+};
+
 var ImagePanel=function(x,y,w,h,dataID,cID){ 
 	this.x=x;
 	this.y=y;
+	this.z=0;
 	this.w=w;
 	this.h=h;
 	this.id=dataID;
@@ -182,7 +197,16 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			}
 			mvPopMatrix();
 		};
-	
+	this.drawInViewport=function(vID){
+		var viewp=viewports[vID];
+		viewp.clear();
+		gl.viewport(viewp.x, viewp.y, viewp.w, viewp.h);
+		var tempOrtho=orthogonal;
+		orthogonal={l:0, r:viewp.w, b:-viewp.h, t:0};
+		self.draw();
+		orthogonal=tempOrtho;
+		gl.viewport(0, 0, canvas.width, canvas.height);
+	};
 };
 
 var ColorPanel= function(x,y,w,h,cID){ 
@@ -697,6 +721,7 @@ function drawScene() {
 	
 	var l=img_panels.length;
 	if(l>0){
+		
 		//this draws the image
 		img_panels[l-1].changeColor(mapCIndices[0]);//changeColor(id) here takes the index of the colormap in scales[]
 		img_panels[l-1].scale(img_data[0].w, img_data[0].h);//can change the dimension
