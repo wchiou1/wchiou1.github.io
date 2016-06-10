@@ -1327,7 +1327,6 @@ function linearizeLightness(cID){
 		var newLab={L: newL, a: oldLab.a, b: oldLab.b};
 		var newrgb=lab_to_rgb(newLab);
 		newScale.push({r: newrgb.R, g: newrgb.G, b: newrgb.B});
-		//console.log(newLab);
 	}
 	scales.push(newScale);
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
