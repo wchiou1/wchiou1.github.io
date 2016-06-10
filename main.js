@@ -1,4 +1,4 @@
-var version="image hitboxes2 && viewport4"
+var version="image hitboxes2 && viewport5"
 var canvas;
 var gl;
 var imageCanvas;
@@ -208,17 +208,14 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			
 		loadIdentity();	
 		mvPushMatrix();
-		console.log(mvMatrix);
-		mvTranslate([self.viewInfo.x, self.viewInfo.y, self.viewInfo.z-1.0]);
-		console.log(mvMatrix);
-		mvScale([self.viewInfo.w,self.viewInfo.h,1]);
-		console.log(mvMatrix);
+		mvTranslate([self.viewInfo.x, -self.viewInfo.y, self.viewInfo.z-1.0]);
+		//mvScale([self.viewInfo.w,self.viewInfo.h,1]);
+		mvScale([1000,1000,1]);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
 		gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
 		setMatrixUniforms();
-		console.log(mvMatrix);
 		var len=img_data[self.id].data.length;
 		for(var i=0;i<len;i++){
 			gl.drawArrays(gl.TRIANGLE_FAN, i*4, 4);
