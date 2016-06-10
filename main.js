@@ -1316,7 +1316,7 @@ function readTextToScale(text,filename){
 	colormapFileNames.push(filename);
 	drawScene();
 	//console.log(colormapFileNames);
-	computeDeltaE(scales.length-1);
+	//computeDeltaE(scales.length-1);
 }
 
 function handleImageFileSelect(evt) {
