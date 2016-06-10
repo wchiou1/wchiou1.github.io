@@ -407,8 +407,8 @@ function start() {
 }
 
 function initViewport(){
-	viewports.push(	new Viewport(canvas.width/2,150,canvas.width/4,canvas.width/4));
-	viewports.push(	new Viewport(canvas.width*0.75,150,canvas.width/4,canvas.width/4));
+	viewports.push(	new Viewport(canvas.width/2,0,canvas.width/4,canvas.width/4));
+	viewports.push(	new Viewport(canvas.width*0.75,0,canvas.width/4,canvas.width/4));
 }
 
 function initBuffers(){
