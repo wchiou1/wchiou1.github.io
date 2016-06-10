@@ -1318,5 +1318,15 @@ function download(text, name, type) {
 }
 
 function linearizeLightness(cID){
-	
+	var newScale=[];
+	var len=scales[cID].length;
+	for(var i=0;i<len;i++){
+		var newL=100*i/(len-1);
+		var oldLab=rgb_to_lab(scales[cID][i]);
+		var newLab={L: newL, a: oldLab.a, b: oldLab.b};
+		newScale.push(lab_to_rgb(newLab));
+	}
+	scales.push(newScale);
+	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
+	colormapFileNames.push(colormapFileNames[cID]+"(Adjusted Linear Lightness)");
 }
