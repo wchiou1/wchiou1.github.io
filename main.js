@@ -1,4 +1,4 @@
-var version="image hitboxes2 && viewport3 "
+var version="image hitboxes2 && viewport4"
 var canvas;
 var gl;
 var imageCanvas;
@@ -72,7 +72,7 @@ var Viewport=function(x,y,w,h){
 	this.h=h;
 	this.self=this;
 	this.clear=function(){
-		clearRectangle(self.x,-self.y+self.h,self.w,self.h);
+		clearRectangle(canvas.width/2,150,canvas.width/4,canvas.width/4));
 	};
 };
 
