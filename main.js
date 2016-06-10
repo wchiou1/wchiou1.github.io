@@ -1,4 +1,4 @@
-var version="clean"
+var version="image hitboxes"
 var canvas;
 var gl;
 var imageCanvas;
@@ -402,7 +402,7 @@ function testImageIconHit(mouseX,mouseY){
 		return -1;
 	}
 	//Test x values
-	for(var i=0;i<scales.length;i++){
+	for(var i=0;i<img_data.length;i++){
 		if(mouseX>imgIconX+10+i*(iconWidth+10)&&mouseX<imgIconX+10+iconWidth+i*(iconWidth+10)){
 			return i+10000;
 		}
@@ -580,7 +580,7 @@ function handleMouseDown(event){
 function handleMouseUp(event){
 	var mouse = getMousePos(canvas, event);
 	mouseDown = false;
-	if(dragIcon>=0){
+	if(dragIcon>=0&&dragIcon<10000){
 		var receiveIndex =  testreceiverHit(mouse.x,mouse.y);
 		if(receiveIndex!=-1){
 			mapCIndices[receiveIndex]=dragIcon;
