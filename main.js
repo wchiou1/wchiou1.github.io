@@ -1,4 +1,4 @@
-var version="iconView"
+var version="iconView2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -576,7 +576,7 @@ function handleMouseMove(event){
 	
 	if(dragIcon==-2){
 		updateIconViewOffset(mouse.x,mouse.y);
-		//updateIcons();
+		drawColorThumbnails();
 	}
 	
 	if(dragMarker!=-1){
@@ -877,7 +877,7 @@ function drawColorView(){
 function drawColorThumbnails(){
 	//this draw colormap as thumbnails;
 	for(var i=0;i<color_panels.length;i++){
-		drawThumbnail(iconX+(iconWidth+10)*i+10,iconY+10,i);
+		drawThumbnail(iconX+(iconWidth+10)*i+10-iconViewOffset,iconY+10,i);
 	}
 }
 
