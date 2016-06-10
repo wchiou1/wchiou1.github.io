@@ -67,12 +67,12 @@ var viewports=[];
 
 var Viewport=function(x,y,w,h){
 	this.x=x;
-	this.y=y;
+	this.y=-y;
 	this.w=w;
 	this.h=h;
 	this.self=this;
 	this.clear=function(){
-		clearRectangle(self.x,self.y,self.w,self.h,[0,0,0]);
+		clearRectangle(self.x,self.y,self.w,self.h);
 	};
 };
 
@@ -407,8 +407,8 @@ function start() {
 }
 
 function initViewport(){
-	viewports.push(	new Viewport(canvas.width/2,0,canvas.width/4,canvas.width/4));
-	viewports.push(	new Viewport(canvas.width*0.75,0,canvas.width/4,canvas.width/4));
+	viewports.push(	new Viewport(canvas.width/2,150,canvas.width/4,canvas.width/4));
+	viewports.push(	new Viewport(canvas.width*0.75,150,canvas.width/4,canvas.width/4));
 }
 
 function initBuffers(){
@@ -896,14 +896,12 @@ function drawText(string,x,y){
 	ctx2.fillText(string,x,y);
 }
 
-function clearRectangle(x,y,w,h,c){
+function clearRectangle(x,y,w,h){
 	gl.enable(gl.SCISSOR_TEST);
 	
 	gl.scissor(x,700-y,w,h);
-	if(!c)
-		gl.clearColor(0.5,0.5,0.5,1.0);
-	else
-		gl.clearColor(c[0],c[1],c[2],1.0);
+	
+	gl.clearColor(0,0.5,0.5,1.0);
 	
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
