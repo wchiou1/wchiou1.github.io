@@ -1322,10 +1322,11 @@ function linearizeLightness(cID){
 	var len=scales[cID].length;
 	for(var i=0;i<len;i++){
 		var newL=100*i/(len-1);
-		var oldLab=rgb_to_lab(scales[cID][i]);
+		var oldrgb=scales[cID][i];
+		var oldLab=rgb_to_lab({'R':oldrgb.r, 'G':oldrgb.g, 'B':oldrgb.b});
 		var newLab={L: newL, a: oldLab.a, b: oldLab.b};
 		newScale.push(lab_to_rgb(newLab));
-		console.log(oldLab);
+		//console.log(oldLab);
 		console.log(newLab);
 	}
 	scales.push(newScale);
