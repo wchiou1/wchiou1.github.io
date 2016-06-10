@@ -202,10 +202,8 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		var viewp=viewports[vID];
 		viewp.clear();
 		gl.viewport(viewp.x, viewp.y, viewp.w, viewp.h);
-		var tempOrtho=orthogonal;
-		orthogonal={l:0, r:viewp.w, b:-viewp.h, t:0};
 		
-		perspectiveMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
+		perspectiveMatrix = makeOrtho(0, viewp.w, viewp.h, 0, 0.1, 100.0);
 			
 		loadIdentity();	
 		mvPushMatrix();
@@ -223,7 +221,6 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		}
 		mvPopMatrix();
 		
-		orthogonal=tempOrtho;
 		gl.viewport(0, 0, canvas.width, canvas.height);
 	};
 };
@@ -1147,6 +1144,7 @@ function setMatrixUniforms() {
 
   var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
   gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
+  console.log(mvMatrix);
 }
 
 function setIdentityUniforms(){
