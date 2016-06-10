@@ -1,4 +1,4 @@
-var version="image hitboxes2 && viewport7"
+var version="image hitboxes2 && viewport8"
 var canvas;
 var gl;
 var imageCanvas;
@@ -85,7 +85,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	this.h=h;
 	this.id=dataID;
 	this.cindex=cID;
-	this.viewInfo={x:0, y:0, z:0, w:img_data[dataID].w, h:img_data[dataID].h};
+	this.viewMatrix=Matrix.I(4);
 	this.verticesBuffer=gl.createBuffer();
 	this.verticesColorBuffer=gl.createBuffer();
 	var self=this;
@@ -199,6 +199,19 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			}
 			mvPopMatrix();
 		};
+		
+	this.moveView=function(x,y,z){
+		
+	};
+	this.scaleView=function(scalar,center){
+		
+	};
+	
+
+	this.initView=function(){	
+		self.viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x((Matrix.Diagonal([img_data[self.id].w, img_data[self.id].h, 1,1]).ensure4x4()));
+	};
+	this.initView();
 	this.drawInViewport=function(vID){
 		var viewp=viewports[vID];
 		viewp.clear();
@@ -208,9 +221,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			
 		loadIdentity();	
 		mvPushMatrix();
-		mvTranslate([self.viewInfo.x, -self.viewInfo.y, self.viewInfo.z-1.0]);
-		mvScale([self.viewInfo.w,self.viewInfo.h,1]);
-
+		multMatrix(self.viewMatrix);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
@@ -899,7 +910,7 @@ function clearRectangle(x,y,w,h){
 	
 	gl.scissor(x,700-y,w,h);
 	
-	gl.clearColor(0,0.5,0.5,1.0);
+	gl.clearColor(0.5,0.5,0.5,1.0);
 	
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
