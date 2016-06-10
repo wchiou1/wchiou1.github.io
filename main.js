@@ -1,4 +1,4 @@
-var version="iconView4"
+var version="iconView5"
 var canvas;
 var gl;
 var imageCanvas;
@@ -491,7 +491,7 @@ function getColorHeight(cindex,height){
 }
 
 function getIconxy(cindex){
-	var tempx=iconX+(iconWidth+10)*cindex+10;
+	var tempx=iconX+(iconWidth+10)*cindex+10-iconViewOffset;
 	var tempy=iconY+10;
 	return [tempx,tempy];
 }
@@ -534,8 +534,8 @@ function handleMouseDown(event){
 	if(dragIcon>=0){
 		var tempxy=getIconxy(dragIcon);
 		createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
-		targ.style.left=event.clientX-iconWidth/2+'px';
-		targ.style.top=event.clientY-iconHeight/2+'px';
+		targ.style.left=mouse.X-iconWidth/2+'px';
+		targ.style.top=mouse.y-iconHeight/2+'px';
 	}
 	
 	lastMouseX=mouse.x;
@@ -569,8 +569,8 @@ function handleMouseMove(event){
 		return;
 	}
 	if(dragIcon>=0){
-		targ.style.left=event.clientX-iconWidth/2+'px';
-		targ.style.top=event.clientY-iconHeight/2+'px';
+		targ.style.left=mouse.x-iconWidth/2+'px';
+		targ.style.top=mouse.y-iconHeight/2+'px';
 	}
 	
 	
@@ -682,7 +682,6 @@ function drawScene() {
 		}
 	}
 	
-	drawColorView();
 	drawColorThumbnails();
 	//drawReceiveThumbnails();
 	drawPanels();
@@ -881,9 +880,18 @@ function drawColorThumbnails(){
 	
 	//this draw colormap as thumbnails;
 	for(var i=0;i<color_panels.length;i++){
+		if((iconWidth+10)*i+10-iconViewOffset<iconWidth||(iconWidth+10)*i+10-iconViewOffset>iconViewWidth){
+			continue;
+		}
 		drawThumbnail(iconX+(iconWidth+10)*i+10-iconViewOffset,iconY+10,i);
 	}
 	
+	//Draw the borders
+	drawColorView();
+	
+	//Clear the edges
+	clearRectangle(iconX-6,iconY+iconViewHeight,iconWidth+3,iconViewHeight);
+	clearRectangle(iconX+3+iconViewWidth,iconY+iconViewHeight,iconWidth+3,iconViewHeight);
 }
 
 function drawThumbnail(x,y,cindex){
