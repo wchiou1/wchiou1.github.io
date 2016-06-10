@@ -861,15 +861,15 @@ function drawReceiveThumbnails(){
 function drawColorView(){
 	var rectangle=Shape.rectangle;
 	rectangle.scale(iconViewWidth+6,3);
-	rectangle.move(iconX-3,iconY-3,-1);
+	rectangle.move(iconX-3,iconY-3,-.5);
 	rectangle.changeColor(1.0,0.0,0.0);
 	rectangle.draw();
-	rectangle.move(iconX-3,iconY+iconViewHeight);
+	rectangle.move(iconX-3,iconY+iconViewHeight,-.5);
 	rectangle.draw();
 	rectangle.scale(3,iconViewHeight+6);
-	rectangle.move(iconX-3,iconY-3,-1);
+	rectangle.move(iconX-3,iconY-3,-.5);
 	rectangle.draw();
-	rectangle.move(iconX+iconViewWidth,iconY-3);
+	rectangle.move(iconX+iconViewWidth,iconY-3,-.5);
 	rectangle.draw();
 }
 
@@ -900,7 +900,7 @@ function drawThumbnail(x,y,cindex){
 	var increment = 1.0/iconWidth;
 
 	for(var i=0;i<iconWidth;i++){
-		rectangle.move(x+i,y,0);
+		rectangle.move(x+i,y,.5);
 		var color=getColorHeight(cindex,increment*i);
 		rectangle.changeColor(color.r/255.0,color.g/255.0,color.b/255.0);
 		rectangle.draw();
