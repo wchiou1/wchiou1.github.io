@@ -1,4 +1,4 @@
-var version="filename"
+var version="filename2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -726,11 +726,15 @@ function drawInfoBoxes(){
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30,0,0,1);
 	drawInfoBox(scaleWidth*.525+receiveX,receiveY+scaleHeight+30,0,2,3);
+	drawText(colormapFileNames[mapCIndices[0]],receiveX+10,receiveY+scaleWidth/4);
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
 	drawInfoBox(scaleWidth*.525+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
+	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleWidth/4);
+	
+	
 }
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
