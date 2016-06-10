@@ -880,7 +880,7 @@ function drawColorThumbnails(){
 	
 	//this draw colormap as thumbnails;
 	for(var i=0;i<color_panels.length;i++){
-		if((iconWidth+10)*i+10-iconViewOffset<iconWidth||(iconWidth+10)*i+10-iconViewOffset>iconViewWidth){
+		if((iconWidth+10)*i+10-iconViewOffset+iconWidth<0||(iconWidth+10)*i+10-iconViewOffset>iconViewWidth){
 			continue;
 		}
 		drawThumbnail(iconX+(iconWidth+10)*i+10-iconViewOffset,iconY+10,i);
