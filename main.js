@@ -65,13 +65,13 @@ var orthogonal={
 var viewports=[];
 var viewMatrix=Matrix.I(4);
 function initView(id){
-	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x((Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4()));
+	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
 }
-function moveView(x,y,z){
-	
+function moveView(x,y){
+	viewMatrix=Matrix.Translation($V([x,y])).ensure4x4().x(viewMatrix);
 }
 function scaleView(scalar,center){
-	
+	viewMatrix=Matrix.Diagonal([scalar,scalar,1,1]).ensure4x4().x(viewMatrix);
 }
 
 
@@ -210,7 +210,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 
 
 	this.drawInViewport=function(vID){
-		initView(self.id);
+		
 		var viewp=viewports[vID];
 		viewp.clear();
 		gl.viewport(viewp.x, canvas.height-viewp.y-viewp.h, viewp.w, viewp.h);
@@ -754,6 +754,7 @@ function drawScene() {
 	rectangle.draw();*/
 	
 	if(img_panels.length!=0){
+		initView(imgIndex); //if possible, move this line to where imgIndex update
 		var panel = img_panels[imgIndex];
 		//this draws the image
 		panel.changeColor(mapCIndices[0]);//changeColor(id) here takes the index of the colormap in scales[]
