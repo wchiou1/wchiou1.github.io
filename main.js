@@ -1,4 +1,4 @@
-var version="image hitboxes2 && scroll"
+var version="image hitboxes2 && scroll 1"
 var canvas;
 var gl;
 var imageCanvas;
@@ -39,6 +39,7 @@ var scaleWidth = 400;
 var scaleHeight = 100;
 var markerLocs = [] //2d array which contains the marker locations in color height
 var dragMarker = -1;
+var dragView=false;
 
 var img_data=[];
 var scales=[];
@@ -637,6 +638,9 @@ function handleMouseDown(event){
 		targ.style.left=mouse.x-iconWidth/2+'px';
 		targ.style.top=mouse.y-iconHeight/2+'px';
 	}
+	if(true){////////////////////////////////////////////////////////////////////////
+		dragView=true;
+	}
 	console.log(dragIcon);
 	
 	lastMouseX=mouse.x;
@@ -662,7 +666,7 @@ function handleMouseUp(event){
 	dragIcon=-1;
 	dragMarker=-1;
 	clearDrag();
-	
+	dragView=false;
 }
 
 //Called when the mouse moves
@@ -688,6 +692,9 @@ function handleMouseMove(event){
 		drawPanels();
 		drawMarkers();
 		drawInfoBoxes();
+	}
+	else if(dragView){
+		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
 	}
 	
 	lastMouseX=mouse.x;
