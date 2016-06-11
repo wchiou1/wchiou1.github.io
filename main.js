@@ -1,4 +1,4 @@
-var version="image hitboxes2 && scroll 2"
+var version="image hitboxes2 && scroll 3"
 var canvas;
 var gl;
 var imageCanvas;
@@ -695,7 +695,7 @@ function handleMouseMove(event){
 	}
 	if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
-	}
+	}console.log(dragView);
 	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
