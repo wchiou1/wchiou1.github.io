@@ -67,13 +67,22 @@ var viewMatrix=Matrix.I(4);
 function initView(id){
 	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
 }
+//not finished
 function moveView(x,y){
-	viewMatrix=Matrix.Translation($V([x,y])).ensure4x4().x(viewMatrix);
+	viewMatrix=Matrix.Translation($V([x,y,0])).ensure4x4().x(viewMatrix);
+	img_panels[imgIndex].changeColor(mapCIndices[0]);
+	img_panels[imgIndex].drawInViewport(0);
+	img_panels[imgIndex].changeColor(mapCIndices[1]);
+	img_panels[imgIndex].drawInViewport(1);
 }
 function scaleView(scalar,center){
 	viewMatrix=Matrix.Diagonal([scalar,scalar,1,1]).ensure4x4().x(viewMatrix);
+	img_panels[imgIndex].changeColor(mapCIndices[0]);
+	img_panels[imgIndex].drawInViewport(0);
+	img_panels[imgIndex].changeColor(mapCIndices[1]);
+	img_panels[imgIndex].drawInViewport(1);
 }
-
+//
 
 var Viewport=function(x,y,w,h){
 	this.x=x;
