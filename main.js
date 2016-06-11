@@ -673,7 +673,7 @@ function handleMouseUp(event){
 function handleMouseMove(event){
 	var mouse = getMousePos(canvas, event);
 	updateFilenameIndicator(mouse.x,mouse.y);
-	if(dragIcon==-1&&dragMarker==-1){
+	if(dragIcon==-1&&dragMarker==-1&&!dragView){
 		return;
 	}
 	if(dragIcon>=0){
@@ -695,7 +695,7 @@ function handleMouseMove(event){
 	}
 	if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
-	}console.log(dragView);
+	}
 	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
