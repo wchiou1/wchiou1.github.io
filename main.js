@@ -1,4 +1,4 @@
-var version="image hitboxes2 && scroll 4"
+var version="image hitboxes2 && scroll 5"
 var canvas;
 var gl;
 var imageCanvas;
@@ -563,7 +563,7 @@ function testIconHit(mouseX,mouseY){
 }
 
 //test if mouse is in image viewport
-inViewport(mouse){
+function testViewportHit(mouse){
 	for(var i=0;i<viewports.length;i++){
 		var viewp=viewports[i];
 		if(mouse.x>viewp.x&&mouse.x<viewp.x+viewp.w&&mouse.y>viewp.y&&mouse.y<viewp.y+viewp.h){
@@ -651,7 +651,7 @@ function handleMouseDown(event){
 		targ.style.left=mouse.x-iconWidth/2+'px';
 		targ.style.top=mouse.y-iconHeight/2+'px';
 	}
-	if(inViewport(mouse)){
+	if(testViewportHit(mouse)){
 		dragView=true;
 	}
 	console.log(dragIcon);
