@@ -1,4 +1,4 @@
-var version="image hitboxes2 && viewport8"
+var version="image hitboxes2 && scroll"
 var canvas;
 var gl;
 var imageCanvas;
@@ -699,6 +699,7 @@ function MouseWheelHandler(e) {
 	// cross-browser wheel delta
 	var e = window.event || e; // old IE support
 	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+	console.log("mousewheel:"+delta);
 	if(delta>0)
 		scaleView(1.1);
 	else if(delta<0)
