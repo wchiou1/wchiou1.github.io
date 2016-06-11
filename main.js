@@ -83,7 +83,6 @@ var Viewport=function(x,y,w,h){
 	var self=this;
 	this.clear=function(){
 		clearRectangle(self.x,self.y+self.h,self.w,self.h);
-		//console.log([self.x,self.y+self.h,self.w,self.h]);
 	};
 };
 
@@ -211,6 +210,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 
 
 	this.drawInViewport=function(vID){
+		initView(self.id);
 		var viewp=viewports[vID];
 		viewp.clear();
 		gl.viewport(viewp.x, canvas.height-viewp.y-viewp.h, viewp.w, viewp.h);
