@@ -398,6 +398,10 @@ function start() {
 		document.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
 		document.onmousemove = 	handleMouseMove;
+		document.addEventListener("mousewheel", MouseWheelHandler, false);
+		// Firefox
+		document.addEventListener("DOMMouseScroll", MouseWheelHandler, false);
+		
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
 		gl.clearDepth(1.0);                 // Clear everything
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -689,6 +693,16 @@ function handleMouseMove(event){
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
 	return false;
+}
+
+function MouseWheelHandler(e) {
+	// cross-browser wheel delta
+	var e = window.event || e; // old IE support
+	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+	if(delta>0)
+		scaleView(1.1);
+	else if(delta<0)
+		scaleView(0.9);
 }
 
 function updateFilenameIndicator(mouseX,mouseY){
