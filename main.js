@@ -1,4 +1,4 @@
-var version="image hitboxes2 && scroll 3"
+var version="image hitboxes2 && scroll 4"
 var canvas;
 var gl;
 var imageCanvas;
@@ -561,6 +561,19 @@ function testIconHit(mouseX,mouseY){
 	}
 	return -1;
 }
+
+//test if mouse is in image viewport
+inViewport(mouse){
+	for(var i=0;i<viewports.length;i++){
+		var viewp=viewports[i];
+		if(mouse.x>viewp.x&&mouse.x<viewp.x+viewp.w&&mouse.y>viewp.y&&mouse.y<viewp.y+viewp.h){
+			return true;
+		}
+	}
+	return false;
+	
+}
+
 //Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
 function getColorHeight(cindex,height){
 	if(height>=1.0||height<0.0){
@@ -638,7 +651,7 @@ function handleMouseDown(event){
 		targ.style.left=mouse.x-iconWidth/2+'px';
 		targ.style.top=mouse.y-iconHeight/2+'px';
 	}
-	if(true){////////////////////////////////////////////////////////////////////////
+	if(inViewport(mouse)){
 		dragView=true;
 	}
 	console.log(dragIcon);
