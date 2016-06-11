@@ -1,4 +1,4 @@
-var version="image hitboxes2 && scroll 5"
+var version="optimize image rendering"
 var canvas;
 var gl;
 var imageCanvas;
