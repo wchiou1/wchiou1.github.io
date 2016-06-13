@@ -1,5 +1,5 @@
 
-var version="clear background 2 && testing scroll overwrite2"
+var version="clear background 3 && testing scroll overwrite2"
 
 var canvas;
 var gl;
@@ -1309,14 +1309,14 @@ function FileListenerInit(){
 			var select1 = document.getElementById('selector1');
 			var select2 = document.getElementById('selector2');
 			
-			drop1.style.left= imgIconX+'px';
-			drop1.style.top= imgIconY+"px";
+			drop1.style.left= imgIconX-10+'px';
+			drop1.style.top= imgIconY-10+"px";
 			drop1.style.width=iconViewWidth+"px";
 			drop1.style.height=iconViewHeight+"px";
 			drop1.style.position= 'absolute';
 			
-			drop2.style.left= iconX+'px';
-			drop2.style.top= iconY+"px";
+			drop2.style.left= iconX-3+'px';
+			drop2.style.top= iconY-3+"px";
 			drop2.style.width=iconViewWidth+"px";
 			drop2.style.height=iconViewHeight+"px";
 			drop2.style.position= 'absolute';
@@ -1477,23 +1477,25 @@ function handleColorFileSelect(evt) {
 }
 
 //change background 0 to -1
-function fillBackground(data,w,h){ //data = 2d array flattened to 1d
+function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
+	var data=data0;
 	var spreadable=[];
+	const bg=1;
 	//mark the 4 corners as spreadable
 	if(data[(0)*w+(0)]===0){
-		data[(0)*w+(0)]=-1;
+		data[(0)*w+(0)]=bg;
 		spreadable.push([0,0]);
 	}
 	if(data[(0)*w+(h-1)]===0){
-		data[(0)*w+(h-1)]=-1;
+		data[(0)*w+(h-1)]=bg;
 		spreadable.push([0,h-1]);
 	}
 	if(data[(w-1)*w+(0)]===0){
-		data[(w-1)*w+(0)]=-1;
+		data[(w-1)*w+(0)]=bg;
 		spreadable.push([w-1,0]);
 	}
 	if(data[(w-1)*w+(h-1)]===0){
-		data[(w-1)*w+(h-1)]=-1;
+		data[(w-1)*w+(h-1)]=bg;
 		spreadable.push([w-1,h-1]);
 	}
 	
@@ -1503,22 +1505,22 @@ function fillBackground(data,w,h){ //data = 2d array flattened to 1d
 		var y=spread[1];
 		//spread upward
 		if(y+1<h && data[(x)*w+(y+1)]===0){
-			data[(x)*w+(y+1)]=-1;
+			data[(x)*w+(y+1)]=bg;
 			spreadable.push([x,y+1]);
 		}
 		//spread downward
 		if(y-1>=0 && data[(x)*w+(y-1)]===0){
-			data[(x)*w+(y-1)]=-1;
+			data[(x)*w+(y-1)]=bg;
 			spreadable.push([x,y-1]);
 		}
 		//spread right
 		if(x+1<w && data[(x+1)*w+(y)]===0){
-			data[(x+1)*w+(y)]=-1;
+			data[(x+1)*w+(y)]=bg;
 			spreadable.push([x+1,y]);
 		}
 		//spread left
 		if(x-1>=0 && data[(x-1)*w+(y)]===0){
-			data[(x-1)*w+(y)]=-1;
+			data[(x-1)*w+(y)]=bg;
 			spreadable.push([x-1,y]);
 		}
 	}
