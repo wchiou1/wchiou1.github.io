@@ -50,8 +50,8 @@
 		
 		void main(void) {
 			vec4 val = texture2D(uTexVal, vTexCoord);
-			float unpack = DecodeFloatRGBA(val.rbg);
-			gl_FragColor = vec4(texture2D(uColormap, vec2(unpack,0)).rbg,val.a);
+			float unpack = DecodeFloatRGBA(val.rgb);
+			gl_FragColor = vec4(texture2D(uColormap, vec2(unpack,0)).rgb,val.a);
 		}
     </script>
 
