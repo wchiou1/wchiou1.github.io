@@ -958,12 +958,11 @@ function drawScene() {
 	
 	
 	
-
+	drawImgIcons();
 	if(img_panels.length!=0){
 		//initialize and draw img in viewports
 		initView(imgIndex);
 		drawView();
-		drawImgIcons();
 	}
 	
 	drawColorThumbnails();
@@ -984,7 +983,7 @@ function drawImgIcons(){
 	rectangle.changeColor(0.0,0.0,0.0);
 	rectangle.draw();
 	
-	//clearRectangle(imgIconX,imgIconY+iconViewHeight,iconViewWidth,iconViewHeight);
+	clearRectangle(imgIconX,imgIconY+iconViewHeight,iconViewWidth,iconViewHeight);
 	for(var i=0;i<img_panels.length;i++){
 			img_panels[i].changeColor(null);
 			img_panels[i].scale(iconWidth, iconHeight);
