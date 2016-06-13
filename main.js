@@ -625,13 +625,13 @@ function initShape(){
 }
 
 function testImageIconHit(mouseX,mouseY){
-	//First test y value
-	if(mouseY<imgIconY+10||mouseY>imgIconY+10+iconHeight){
+	//First test x value
+	if(mouseX<imgIconX+10||mouseX>imgIconX+10+iconWidth){
 		return -1;
 	}
-	//Test x values
-	for(var i=0;i<img_data.length;i++){
-		if(mouseX>imgIconX+10+i*(iconWidth+10)&&mouseX<imgIconX+10+iconWidth+i*(iconWidth+10)){
+	//Test y values
+	for(var i=0;i<scales.length;i++){
+		if(mouseY>imgIconY+10+i*(iconHeight+10)&&mouseY<imgIconY+10+iconHeight+i*(iconHeight+10)){
 			return i+10000;
 		}
 	}
@@ -712,7 +712,7 @@ function testIconHit(mouseX,mouseY){
 	if(mouseX<iconX+10||mouseX>iconX+10+iconWidth){
 		return -1;
 	}
-	//Test x values
+	//Test y values
 	for(var i=0;i<scales.length;i++){
 		if(mouseY>iconY+10+i*(iconHeight+10)-iconViewOffset&&mouseY<iconY+10+iconHeight+i*(iconHeight+10)-iconViewOffset){
 			return i;
