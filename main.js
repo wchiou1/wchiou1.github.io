@@ -68,19 +68,21 @@ var viewports=[];
 var viewMatrix=Matrix.I(4);
 function initView(id){
 	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
+	drawView();
 }
 //not finished
 function moveView(x,y){
 	if(imgIndex<0) return;
 	viewMatrix=Matrix.Translation($V([x,y,0])).ensure4x4().x(viewMatrix);
-	img_panels[imgIndex].changeColor(mapCIndices[0]);
-	img_panels[imgIndex].drawInViewport(0);
-	img_panels[imgIndex].changeColor(mapCIndices[1]);
-	img_panels[imgIndex].drawInViewport(1);
+	drawView();
 }
 function scaleView(scalar,center){
 	if(imgIndex<0) return;
 	viewMatrix=Matrix.Diagonal([scalar,scalar,1,1]).ensure4x4().x(viewMatrix);
+	drawView();
+}
+
+function drawView(){
 	img_panels[imgIndex].changeColor(mapCIndices[0]);
 	img_panels[imgIndex].drawInViewport(0);
 	img_panels[imgIndex].changeColor(mapCIndices[1]);
@@ -817,6 +819,8 @@ function handleMouseUp(event){
 	}
 	if(dragIcon>=10000){
 		imgIndex = dragIcon-10000;
+		initView(imgIndex); //if possible, move this line to where imgIndex update
+
 	}
 	dragIcon=-1;
 	dragMarker=-1;
@@ -940,17 +944,8 @@ function drawScene() {
 	rectangle.draw();*/
 	
 	if(img_panels.length!=0){
-		initView(imgIndex); //if possible, move this line to where imgIndex update
-		var panel = img_panels[imgIndex];
-		//this draws the image
-		panel.changeColor(mapCIndices[0]);//changeColor(id) here takes the index of the colormap in scales[]
-		panel.scale(img_data[imgIndex].w, img_data[imgIndex].h);//can change the dimension
-		//panel.move(600,150,0); //you can change z value, things in the front block things in the back
-		panel.drawInViewport(0);
-		//draw with another colormap
-		panel.changeColor(mapCIndices[1]);
-		//panel.move(850,150,1);
-		panel.drawInViewport(1);
+		//initialize and draw img in viewports
+		initView(imgIndex);
 		
 		for(var i=0;i<img_panels.length;i++){
 			img_panels[i].changeColor(null);
@@ -1467,7 +1462,6 @@ function createImage(x,y,w,h){
 	myImageData.data.set(pixelData);
 	ctx.putImageData(myImageData,0,0);
 }
-
 
 function drawGraph(x,y,w,h,cID,relative){
 	var scale=scales[cID];
