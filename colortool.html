@@ -11,35 +11,96 @@
 	<script type="text/javascript" src="lib/convert.js"></script>
 	<script type="text/javascript" src="lib/convert_extend.js"></script>
 	
-
-	<!-- Vertex shader program -->
-
-    <script id="shader-vs" type="x-shader/x-vertex">
+	<!--shader with texture of 2d values and 1d lookup table-->
+    <script id="img-shader-vs" type="x-shader/x-vertex">
 		attribute vec3 aVertexPosition;
-		attribute vec4 aVertexColor;
+		attribute vec2 aVertexTexCoord;
 
 		uniform mat4 uMVMatrix;
 		uniform mat4 uPMatrix;
-
-		varying lowp vec4 vColor;
+		
+		varying vec2 vTexCoord;
 
 		void main(void) {
 			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-			vColor = aVertexColor;
+			vTexCoord = aVertexTexCoord;
+		}
+    </script>
+
+    <script id="img-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		
+		varying vec2 vTexCoord;
+		
+		uniform sampler2D uTexVal;
+		uniform sampler2D uColormap;
+		
+		const vec4 bitDec = 1./vec4(1.,256.,65536.,16777216.);
+		
+		float DecodeFloatRGBA (vec4 v) {
+			return dot(v, bitDec);
+		}
+		
+		void main(void) {
+			vec4 val = texture2D(uTexVal, vTexCoord);
+			float unpack = DecodeFloatRGBA(val);
+			gl_FragColor = texture2D(uColormap, vec2(unpack,0));
+		}
+    </script>
+
+
+	<!--shader with 1d texture-->
+    <script id="colormap-shader-vs" type="x-shader/x-vertex">
+		attribute vec3 aVertexPosition;
+		attribute vec2 aVertexTexCoord;
+
+		uniform mat4 uMVMatrix;
+		uniform mat4 uPMatrix;
+		
+		varying vec2 vTexCoord;
+
+		void main(void) {
+			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			vTexCoord = aTexCoord;
+		}
+    </script>
+
+    <script id="colormap-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		
+		varying vec2 vTexCoord;
+		
+		uniform sampler2D uColormap;
+		
+		void main(void) {
+			gl_FragColor = texture2D(uColormap, vTexCoord);
 		}
     </script>
 	
-    <!-- Fragment shader program -->
-
-    <script id="shader-fs" type="x-shader/x-fragment">
-		varying lowp vec4 vColor;
+	<!--simple shader-->
+	    <script id="simple-shader-vs" type="x-shader/x-vertex">
+		attribute vec3 aVertexPosition;
+		attribute vec4 aVertexColor;
+		
+		uniform mat4 uMVMatrix;
+		uniform mat4 uPMatrix;
 
 		void main(void) {
-			//gl_FragColor=vec4(1,1,1,1);
+			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			vTexCoord = aTexCoord;
+		}
+    </script>
+	
+
+    <script id="simple-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		
+		varying vec4 vColor;
+		
+		void main(void) {
 			gl_FragColor = vColor;
 		}
     </script>
-
     
   </head>
 
