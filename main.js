@@ -1,5 +1,5 @@
 
-var version="clear background 4 && testing scroll overwrite2"
+var version="border testing"
 
 var canvas;
 var gl;
