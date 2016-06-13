@@ -1,5 +1,4 @@
-
-var version="clear background 0"
+var version="clear background 0 && testing scroll overwrite"
 
 var canvas;
 var gl;
@@ -885,7 +884,7 @@ function MouseWheelHandler(e) {
 		else if(delta<0)
 			scaleView(0.9);
 		drawView();
-		return -1;
+		return false;
 	}
 }
 
