@@ -35,16 +35,23 @@
 		uniform sampler2D uTexVal;
 		uniform sampler2D uColormap;
 		
-		const vec4 bitDec = 1./vec4(1.,256.,65536.,16777216.);
+		/*const vec4 bitDec = 1./vec4(1.,256.,65536.,16777216.); 
 		
 		float DecodeFloatRGBA (vec4 v) {
+			return dot(v, bitDec);
+		}
+		*/
+		
+		const vec3 bitDec = 1./vec3(1.,256.,65536.);
+		
+		float DecodeFloatRGBA (vec3 v) {
 			return dot(v, bitDec);
 		}
 		
 		void main(void) {
 			vec4 val = texture2D(uTexVal, vTexCoord);
-			float unpack = DecodeFloatRGBA(val);
-			gl_FragColor = texture2D(uColormap, vec2(unpack,0));
+			float unpack = DecodeFloatRGBA(val.rbg);
+			gl_FragColor = vec4(texture2D(uColormap, vec2(unpack,0)).rbg,val.a);
 		}
     </script>
 

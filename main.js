@@ -1,5 +1,5 @@
 
-var version="optimize image rendering"
+var version="clear background 0"
 
 var canvas;
 var gl;
@@ -140,13 +140,16 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 					self.colormap=color_panels[cID].texture;
 	};
 
+	//### Drop encoding to alpha channel for background
 	function EncodeFloatRGBA(f){
+		if(f<0) return [0,0,0,0];
 		if(f==1.0) return [255,255,255,255];
 		var r = ((256*f)|0)&255;
 		var g = ((65536*f)|0)&255;
 		var b = ((16777216*f)|0)&255;
 		var a = ((4294967296*f)|0)&255;
-		return [r,g,b,a];
+		//return [r,g,b,a];
+		return [r,g,b,255];
 	}
 	
 	function EncodeImgTexture(img){
@@ -1468,6 +1471,54 @@ function handleColorFileSelect(evt) {
     readFiles(files,"color");
 }
 
+//change background 0 to -1
+function fillBackground(data,w,h){ //data = 2d array flattened to 1d
+	var spreadable=[];
+	//mark the 4 corners as spreadable
+	if(data[(0)*w+(0)]===0){
+		data[(0)*w+(0)]=-1;
+		spreadable.push([0,0]);
+	}
+	if(data[(0)*w+(h-1)]===0){
+		data[(0)*w+(h-1)]=-1;
+		spreadable.push([0,h-1]);
+	}
+	if(data[(w-1)*w+(0)]===0){
+		data[(w-1)*w+(0)]=-1;
+		spreadable.push([w-1,0]);
+	}
+	if(data[(w-1)*w+(h-1)]===0){
+		data[(w-1)*w+(h-1)]=-1;
+		spreadable.push([w-1,h-1]);
+	}
+	
+	while(spreadable.length>0){
+		var spread=spreadable.pop();
+		var x=spread[0];
+		var y=spread[1];
+		//spread upward
+		if(y+1<h && data[(x)*w+(y+1)]===0){
+			data[(x)*w+(y+1)]=-1;
+			spreadable.push([x,y+1]);
+		}
+		//spread downward
+		if(y-1>=0 && data[(x)*w+(y-1)]===0){
+			data[(x)*w+(y-1)]=-1;
+			spreadable.push([x,y-1]);
+		}
+		//spread right
+		if(x+1<w && data[(x+1)*w+(y)]===0){
+			data[(x+1)*w+(y)]=-1;
+			spreadable.push([x+1,y]);
+		}
+		//spread left
+		if(x-1>=0 && data[(x-1)*w+(y)]===0){
+			data[(x-1)*w+(y)]=-1;
+			spreadable.push([x-1,y]);
+		}
+	}
+	return data;
+}
 
 function createImage(x,y,w,h){
 	var myImageData=ctx.createImageData(w,h); //uint8clampedarray
