@@ -237,7 +237,6 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		setMatrixUniforms();
 		var len=img_data[self.id].data.length;
 		for(var i=0;i<len;i++){
-		for(var i=0;i<len;i++){
 			gl.drawArrays(gl.TRIANGLE_FAN, i*4, 4);
 		}
 		mvPopMatrix();
