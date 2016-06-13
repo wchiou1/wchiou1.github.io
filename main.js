@@ -975,7 +975,7 @@ function drawScene() {
 		for(var i=0;i<img_panels.length;i++){
 			img_panels[i].changeColor(null);
 			img_panels[i].scale(iconWidth, iconHeight);
-			img_panels[i].move(i*(iconWidth+10)+imgIconX+10,imgIconY+10,0);
+			img_panels[i].move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
 			img_panels[i].draw();
 		}
 	}
