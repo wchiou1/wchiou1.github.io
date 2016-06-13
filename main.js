@@ -1,5 +1,7 @@
 
-var version="clear background 5 && testing scroll overwrite2"
+
+var version="border testing &&clear background"
+
 
 var canvas;
 var gl;
@@ -69,8 +71,10 @@ var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal
 var viewports=[];
 var viewMatrix=Matrix.I(4);
 function initView(id){
-	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
-	moveView((viewports[0].w-img_data[id].w)/2,(img_data[id].h-viewports[0].h)/2);
+	if(viewMatrix!=Matrix.I(4)){
+		viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
+		moveView((viewports[0].w-img_data[id].w)/2,(img_data[id].h-viewports[0].h)/2);
+	}
 }
 
 function moveView(x,y){
@@ -625,13 +629,13 @@ function initShape(){
 }
 
 function testImageIconHit(mouseX,mouseY){
-	//First test y value
-	if(mouseY<imgIconY+10||mouseY>imgIconY+10+iconHeight){
+	//First test x value
+	if(mouseX<imgIconX+10||mouseX>imgIconX+10+iconWidth){
 		return -1;
 	}
-	//Test x values
-	for(var i=0;i<img_data.length;i++){
-		if(mouseX>imgIconX+10+i*(iconWidth+10)&&mouseX<imgIconX+10+iconWidth+i*(iconWidth+10)){
+	//Test y values
+	for(var i=0;i<scales.length;i++){
+		if(mouseY>imgIconY+10+i*(iconHeight+10)&&mouseY<imgIconY+10+iconHeight+i*(iconHeight+10)){
 			return i+10000;
 		}
 	}
@@ -712,7 +716,7 @@ function testIconHit(mouseX,mouseY){
 	if(mouseX<iconX+10||mouseX>iconX+10+iconWidth){
 		return -1;
 	}
-	//Test x values
+	//Test y values
 	for(var i=0;i<scales.length;i++){
 		if(mouseY>iconY+10+i*(iconHeight+10)-iconViewOffset&&mouseY<iconY+10+iconHeight+i*(iconHeight+10)-iconViewOffset){
 			return i;
@@ -958,12 +962,11 @@ function drawScene() {
 	
 	
 	
-
+	drawImgIcons();
 	if(img_panels.length!=0){
 		//initialize and draw img in viewports
 		initView(imgIndex);
 		drawView();
-		drawImgIcons();
 	}
 	
 	drawColorThumbnails();
@@ -979,7 +982,7 @@ function drawScene() {
 function drawImgIcons(){
 	//Draw the border for the img icons
 	var rectangle=Shape.rectangle;
-	rectangle.scale(iconViewWidth+6,iconiewHeight+6);
+	rectangle.scale(iconViewWidth+6,iconViewHeight+6);
 	rectangle.move(imgIconX-3,imgIconY-3,0.5);
 	rectangle.changeColor(0.0,0.0,0.0);
 	rectangle.draw();
@@ -1315,14 +1318,14 @@ function FileListenerInit(){
 			var select1 = document.getElementById('selector1');
 			var select2 = document.getElementById('selector2');
 			
-			drop1.style.left= imgIconX-10+'px';
-			drop1.style.top= imgIconY-10+"px";
+			drop1.style.left= imgIconX-1+'px';
+			drop1.style.top= imgIconY-1+"px";
 			drop1.style.width=iconViewWidth+"px";
 			drop1.style.height=iconViewHeight+"px";
 			drop1.style.position= 'absolute';
 			
-			drop2.style.left= iconX-3+'px';
-			drop2.style.top= iconY-3+"px";
+			drop2.style.left= iconX-1+'px';
+			drop2.style.top= iconY-1+"px";
 			drop2.style.width=iconViewWidth+"px";
 			drop2.style.height=iconViewHeight+"px";
 			drop2.style.position= 'absolute';
