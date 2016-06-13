@@ -87,6 +87,9 @@ function scaleView(scalar,center){
 }
 
 function drawView(){
+	if(img_panels[imgIndex]==null){
+		return;
+	}
 	img_panels[imgIndex].changeColor(mapCIndices[0]);
 	img_panels[imgIndex].drawInViewport(0);
 	img_panels[imgIndex].changeColor(mapCIndices[1]);
