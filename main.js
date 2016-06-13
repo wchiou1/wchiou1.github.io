@@ -145,7 +145,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 
 	//### Drop encoding to alpha channel for background
 	function EncodeFloatRGBA(f){
-		if(f<0) return [0,0,0,0];
+		if(f<0) return [255,255,255,255];
 		if(f>=1.0) return [255,255,255,255];
 		var r = ((256*f)|0)&255;
 		var g = ((65536*f)|0)&255;
@@ -1486,7 +1486,7 @@ function handleColorFileSelect(evt) {
 function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 	var data=data0;
 	var spreadable=[];
-	const bg=1;
+	const bg=-1;
 	//mark the 4 corners as spreadable
 	if(data[(0)*w+(0)]===0){
 		data[(0)*w+(0)]=bg;
@@ -1509,6 +1509,13 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 		var spread=spreadable.pop();
 		var x=spread[0];
 		var y=spread[1];
+		//check neighbor empty
+
+		if(data[(x)*w+(y+1)]>0 || data[(x)*w+(y-1)]>0 || data[(x+1)*w+(y)]> 0|| data[(x-1)*w+(y)]>0||
+		data[(x+1)*w+(y+1)]>0||data[(x-1)*w+(y-1)]>0||data[(x+1)*w+(y-1)]>0||data[(x-1)*w+(y+1)]>0){
+			continue;
+		}
+		
 		//spread upward
 		if(y+1<h && data[(x)*w+(y+1)]===0){
 			data[(x)*w+(y+1)]=bg;
