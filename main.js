@@ -145,7 +145,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 
 	//### Drop encoding to alpha channel for background
 	function EncodeFloatRGBA(f){
-		if(f<0) return [0.5,0.5,0.5,0];
+		if(f<0) return [0,0,0,0];
 		if(f==1.0) return [255,255,255,255];
 		var r = ((256*f)|0)&255;
 		var g = ((65536*f)|0)&255;
@@ -443,6 +443,8 @@ function start() {
 		
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
 		gl.clearDepth(1.0);                 // Clear everything
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+		gl.enable(gl.BLEND);
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
 		gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
 
