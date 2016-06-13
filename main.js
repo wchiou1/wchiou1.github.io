@@ -1,4 +1,4 @@
-var version="image hitboxes2 && scroll 5"
+var version="image hitboxes2 && scroll 6"
 var canvas;
 var gl;
 var imageCanvas;
