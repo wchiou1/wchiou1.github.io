@@ -890,10 +890,10 @@ function MouseWheelHandler(e) {
 		else if(delta<0)
 			scaleView(0.9);
 		drawView();
+		event.preventDefault();
+		event.returnValue=false;
+		return false;
 	}
-	event.preventDefault();
-    event.returnValue=false;
-	return false;
 }
 
 function updateFilenameIndicator(mouseX,mouseY){
