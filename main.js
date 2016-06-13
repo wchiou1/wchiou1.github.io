@@ -1,5 +1,5 @@
 
-var version="clear background 3 && testing scroll overwrite2"
+var version="clear background 4 && testing scroll overwrite2"
 
 var canvas;
 var gl;
@@ -1440,7 +1440,7 @@ function readTextToImage(text,filename){
 	var imgData ={
 		w: imageWidth,
 		h: imageHeight,
-		data: image2DArray
+		data: fillBackground(image2DArray,imageWidth,imageHeight)
 	};
 	img_data.push(imgData);
 	img_panels.push(new ImagePanel(0,0,1,1,img_data.length-1,null));
