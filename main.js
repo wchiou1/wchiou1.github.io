@@ -100,6 +100,11 @@ var Viewport=function(x,y,w,h){
 	this.h=h;
 	var self=this;
 	this.clear=function(){
+		var rectangle=Shape.rectangle;
+		rectangle.scale(self.w+6,self.h+6);
+		rectangle.move(self.x-3,self.y-3,0.5);
+		rectangle.changeColor(0.0,0.0,0.0);
+		rectangle.draw();
 		clearRectangle(self.x,self.y+self.h,self.w,self.h);
 	};
 };
@@ -454,8 +459,9 @@ function start() {
 }
 
 function initViewport(){
-	viewports.push(	new Viewport(receiveX+scaleWidth+100,0,canvas.height/2,canvas.height/2));
-	viewports.push(	new Viewport(receiveX+scaleWidth+100,canvas.height/2,canvas.height/2,canvas.height/2));
+	var temp = canvas.height/2-20;
+	viewports.push(	new Viewport(receiveX+scaleWidth+100,10,temp,temp));
+	viewports.push(	new Viewport(receiveX+scaleWidth+100,temp+30,temp,temp));
 }
 
 function initBuffers(){
@@ -1179,8 +1185,8 @@ function drawColorThumbnails(){
 	drawColorView();
 	
 	//Clear the edges
-	clearRectangle(iconX,iconY,iconViewWidth,iconHeight+3);
-	clearRectangle(iconX,iconY+iconViewHeight+iconHeight+3,iconViewWidth,iconHeight+3);
+	clearRectangle(iconX,iconY-3,iconViewWidth,iconHeight+3);
+	clearRectangle(iconX,iconY+iconViewHeight+iconHeight+6,iconViewWidth,iconHeight+3);
 }
 
 function drawThumbnail(x,y,cindex){
