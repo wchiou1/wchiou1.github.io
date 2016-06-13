@@ -979,7 +979,7 @@ function drawScene() {
 function drawImgIcons(){
 	//Draw the border for the img icons
 	var rectangle=Shape.rectangle;
-	rectangle.scale(iconViewWidth+6,iconiewHeight+6);
+	rectangle.scale(iconViewWidth+6,iconViewHeight+6);
 	rectangle.move(imgIconX-3,imgIconY-3,0.5);
 	rectangle.changeColor(0.0,0.0,0.0);
 	rectangle.draw();
