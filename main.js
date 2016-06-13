@@ -1,5 +1,5 @@
 
-var version="clear background 1 && testing scroll overwrite2"
+var version="clear background 2 && testing scroll overwrite2"
 
 var canvas;
 var gl;
@@ -205,7 +205,6 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 				gl.enableVertexAttribArray(attributes.imgShader.vertexPositionAttribute);
 				gl.enableVertexAttribArray(attributes.imgShader.vertexTexCoordAttribute);
 			}
-			
 			gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 			gl.vertexAttribPointer(attributes.imgShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
@@ -249,7 +248,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			gl.enableVertexAttribArray(attributes.imgShader.vertexPositionAttribute);
 			gl.enableVertexAttribArray(attributes.imgShader.vertexTexCoordAttribute);
 		}
-			
+		gl.enable(gl.BLEND);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		gl.vertexAttribPointer(attributes.imgShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
@@ -281,6 +280,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		mvPopMatrix();
 		
 		gl.viewport(0, 0, canvas.width, canvas.height);
+		gl.disable(gl.BLEND);
 	};
 };
 
@@ -443,8 +443,7 @@ function start() {
 		
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
 		gl.clearDepth(1.0);                 // Clear everything
-		//gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-		//gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
 		gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
 
