@@ -1,5 +1,5 @@
 
-var version="clear background 0"
+var version="clear background 1"
 
 var canvas;
 var gl;
