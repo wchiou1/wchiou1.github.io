@@ -769,13 +769,13 @@ function updateMarkerLoc(mouseX,mouseY){
 }
 
 function updateIconViewOffset(mouseX,mouseY){
-	var dx=lastMouseX-mouseX;
-	iconViewOffset = iconViewOffset+dx;
+	var dy=lastMouseY-mouseY;
+	iconViewOffset = iconViewOffset+dy;
 	if(iconViewOffset<0){
 		iconViewOffset=0;
 	}
-	if(0<scales.length*60-iconViewWidth+10&&iconViewOffset>scales.length*60-iconViewWidth+10){
-		iconViewOffset=scales.length*60-iconViewWidth+10;
+	if(0<scales.length*60-iconViewHeight+10&&iconViewOffset>scales.length*60-iconViewHeight+10){
+		iconViewOffset=scales.length*60-iconViewHeight+10;
 	}
 }
 
