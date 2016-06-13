@@ -68,18 +68,20 @@ var viewports=[];
 var viewMatrix=Matrix.I(4);
 function initView(id){
 	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
-	drawView();
+	moveView((viewports[0].w-img_data[id].w)/2,(img_data[id].h-viewports[0].h)/2);
 }
-//not finished
+
 function moveView(x,y){
 	if(imgIndex<0) return;
 	viewMatrix=Matrix.Translation($V([x,y,0])).ensure4x4().x(viewMatrix);
-	drawView();
 }
 function scaleView(scalar,center){
 	if(imgIndex<0) return;
+	if(!center)
+		center=[viewports[0].w/2, viewports[0].h/2];
+	moveView(-center[0],center[1]);
 	viewMatrix=Matrix.Diagonal([scalar,scalar,1,1]).ensure4x4().x(viewMatrix);
-	drawView();
+	moveView(center[0],-center[1]);
 }
 
 function drawView(){
@@ -88,7 +90,6 @@ function drawView(){
 	img_panels[imgIndex].changeColor(mapCIndices[1]);
 	img_panels[imgIndex].drawInViewport(1);
 }
-//
 
 var Viewport=function(x,y,w,h){
 	this.x=x;
@@ -451,8 +452,8 @@ function start() {
 }
 
 function initViewport(){
-	viewports.push(	new Viewport(canvas.width/2,150,canvas.width/4,canvas.width/4));
-	viewports.push(	new Viewport(canvas.width*0.75,150,canvas.width/4,canvas.width/4));
+	viewports.push(	new Viewport(canvas.width*0.45,200,canvas.width/4,canvas.width/4));
+	viewports.push(	new Viewport(canvas.width*0.725,200,canvas.width/4,canvas.width/4));
 }
 
 function initBuffers(){
@@ -819,8 +820,8 @@ function handleMouseUp(event){
 	}
 	if(dragIcon>=10000){
 		imgIndex = dragIcon-10000;
-		initView(imgIndex); //if possible, move this line to where imgIndex update
-
+		initView(imgIndex);
+		drawView();
 	}
 	dragIcon=-1;
 	dragMarker=-1;
@@ -854,6 +855,7 @@ function handleMouseMove(event){
 	}
 	if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
+		drawView();
 	}
 	
 	lastMouseX=mouse.x;
@@ -862,14 +864,17 @@ function handleMouseMove(event){
 }
 
 function MouseWheelHandler(e) {
-	// cross-browser wheel delta
-	var e = window.event || e; // old IE support
-	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-	console.log("mousewheel:"+delta);
-	if(delta>0)
-		scaleView(1.1);
-	else if(delta<0)
-		scaleView(0.9);
+	var mouse = getMousePos(canvas,e);
+	if(testViewportHit(mouse)){
+		// cross-browser wheel delta
+		var e = window.event || e; // old IE support
+		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+		if(delta>0)
+			scaleView(1.1);
+		else if(delta<0)
+			scaleView(0.9);
+		drawView();
+	}
 }
 
 function updateFilenameIndicator(mouseX,mouseY){
@@ -946,6 +951,7 @@ function drawScene() {
 	if(img_panels.length!=0){
 		//initialize and draw img in viewports
 		initView(imgIndex);
+		drawView();
 		
 		for(var i=0;i<img_panels.length;i++){
 			img_panels[i].changeColor(null);
