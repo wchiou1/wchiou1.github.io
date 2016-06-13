@@ -248,7 +248,6 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			gl.enableVertexAttribArray(attributes.imgShader.vertexPositionAttribute);
 			gl.enableVertexAttribArray(attributes.imgShader.vertexTexCoordAttribute);
 		}
-		gl.enable(gl.BLEND);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		gl.vertexAttribPointer(attributes.imgShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
@@ -280,7 +279,6 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		mvPopMatrix();
 		
 		gl.viewport(0, 0, canvas.width, canvas.height);
-		gl.disable(gl.BLEND);
 	};
 };
 
