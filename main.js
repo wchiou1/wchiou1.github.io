@@ -695,7 +695,7 @@ function handleMouseMove(event){
 	}
 	
 	
-	if(dragIcon==-2&&iconViewWidth<scales.length*60+10){
+	if(dragIcon==-2&&iconViewHeight<scales.length*60+10){
 		updateIconViewOffset(mouse.x,mouse.y);
 		drawColorThumbnails();
 	}
