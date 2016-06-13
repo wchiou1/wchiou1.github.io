@@ -885,6 +885,7 @@ function MouseWheelHandler(e) {
 		else if(delta<0)
 			scaleView(0.9);
 		drawView();
+		return -1;
 	}
 }
 
