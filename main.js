@@ -589,14 +589,14 @@ function getColorHeight(cindex,height){
 
 function getImageIconxy(iindex){
 	iindex = iindex-10000;
-	var tempx=imgIconX+(iconWidth+10)*iindex+10;
-	var tempy=imgIconY+10;
+	var tempx=imgIconX+10;
+	var tempy=imgIconY+(iconHeight+10)*iindex+10;
 	return [tempx,tempy];
 }
 
 function getIconxy(cindex){
-	var tempx=iconX+(iconWidth+10)*cindex+10-iconViewOffset;
-	var tempy=iconY+10;
+	var tempx=iconX+10;
+	var tempy=iconY+(iconHeight+10)*cindex+10-iconViewOffset;
 	return [tempx,tempy];
 }
 
