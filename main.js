@@ -1,5 +1,5 @@
 
-var version="clear background 1 && testing scroll overwrite"
+var version="clear background 1 && testing scroll overwrite2"
 
 var canvas;
 var gl;
@@ -890,6 +890,7 @@ function MouseWheelHandler(e) {
 		drawView();
 		return false;
 	}
+	return false;
 }
 
 function updateFilenameIndicator(mouseX,mouseY){
