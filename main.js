@@ -124,7 +124,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	};
 	this.changeColor=function(cID){
 				self.cindex=cID;
-				if(!cID)
+				if(cID==null)
 					self.colormap=null;
 				else
 					self.colormap=color_panels[cID].texture;
@@ -140,9 +140,10 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	}
 	
 	function EncodeImgTexture(img){
+		var len=img.length;
 		var array=[];
-		for (var i=0;i<img.length;i++){
-			array.concat(EncodeFloatRGBA(img[i]));
+		for (var i=0;i<len;i++){
+			Array.prototype.push.apply(array, EncodeFloatRGBA(img[i]));
 		}
 		return new Uint8Array(array);
 	}
@@ -152,7 +153,10 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		var step=255/(len-1);
 		for(var i=0;i<len;i++){
 			var v=step*i;
-			array.concat([v,v,v,255]);
+			array.push(v);
+			array.push(v);
+			array.push(v);
+			array.push(255);
 		}
 		return new Uint8Array(array);
 	}
@@ -165,13 +169,14 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 				gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0, 1,0,0, 1,-1,0]), gl.STATIC_DRAW);
 				gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
-				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
+				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0, 0,1, 1,0, 1,1]), gl.STATIC_DRAW);
+				
 				gl.bindTexture(gl.TEXTURE_2D, self.texture);
-				setTexParameter();
 				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, EncodeImgTexture(image2DArray));
-				gl.bindTexture(gl.TEXTURE_2D, self.defaultColor);
 				setTexParameter();
+				gl.bindTexture(gl.TEXTURE_2D, self.defaultColor);
 				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 129, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,blackWhite(129));
+				setTexParameter();
 		};
 	this.create(this.id);
 	this.changeColor(this.cindex);
@@ -302,8 +307,8 @@ var ColorPanel= function(x,y,w,h,cID){
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
-		setTexParameter();
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, scales[id].length, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,flatten(scales[id]));
+		setTexParameter();
 	};
 	this.create(cID);
 	this.draw=function(){
@@ -334,7 +339,7 @@ var ColorPanel= function(x,y,w,h,cID){
 		mvTranslate([self.x, self.y, self.z-1.0]);
 		mvScale([self.w,self.h,1]);
 
-		setMatrixUniforms();
+		setMatrixUniforms(shaderProgram.colormapShader);
 
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 		
@@ -460,10 +465,10 @@ function initMarkers(){
 }
 
 function setTexParameter(){
-	gl.texParameteri(gl.TETXURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TETXURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TETXURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-	gl.texParameteri(gl.TETXURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 }
 
 //
@@ -505,7 +510,7 @@ function initShaders() {
 	}
 	attributes.imgShader={
 		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.imgShader, "aVertexPosition"),
-		vertexTexCoordAttribute : gl.getAttribLocation(shaderProgram.imgShader, "aVertexTexCoord");
+		vertexTexCoordAttribute : gl.getAttribLocation(shaderProgram.imgShader, "aVertexTexCoord")
 	};
 	
 	var colormap_vertexShader = getShader(gl, "colormap-shader-vs");
@@ -519,7 +524,7 @@ function initShaders() {
 	}
 	attributes.colormapShader={
 		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexPosition"),
-		vertexTexCoordAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexTexCoord");
+		vertexTexCoordAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexTexCoord")
 	};
 	
 	var simple_vertexShader = getShader(gl, "simple-shader-vs");
@@ -533,7 +538,7 @@ function initShaders() {
 	}
 	attributes.simpleShader={
 		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.simpleShader, "aVertexPosition"),
-		vertexColorAttribute : gl.getAttribLocation(shaderProgram.simpleShader, "aVertexColor");
+		vertexColorAttribute : gl.getAttribLocation(shaderProgram.simpleShader, "aVertexColor")
 	};
 
 
@@ -792,7 +797,6 @@ function handleMouseDown(event){
 	if(testViewportHit(mouse)){
 		dragView=true;
 	}
-	console.log(dragIcon);
 	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
