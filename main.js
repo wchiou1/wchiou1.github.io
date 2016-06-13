@@ -21,10 +21,10 @@ var verticesColorBuffer;
 var colorMaps = [];//2d array of objects which stores the colors
 var iconHeight = 50;
 var iconWidth = 50;
-var iconX = 60;
-var iconY = 60;
+var iconX = 50;
+var iconY = 150;
 var imgIconX=1100;
-var imgIconY=60;
+var imgIconY=150;
 var receiveX = 200;
 var receiveY = 150;
 var receiveDelta = 325;
@@ -236,6 +236,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
 		setMatrixUniforms();
 		var len=img_data[self.id].data.length;
+		for(var i=0;i<len;i++){
 		for(var i=0;i<len;i++){
 			gl.drawArrays(gl.TRIANGLE_FAN, i*4, 4);
 		}
@@ -549,13 +550,13 @@ function testreceiverHit(mouseX,mouseY){
 
 //Returns which index of the color map the icon represents or -1 if no icon was hit
 function testIconHit(mouseX,mouseY){
-	//First test y value
-	if(mouseY<iconY+10||mouseY>iconY+10+iconHeight){
+	//First test x value
+	if(mouseX<iconX+10||mouseX>iconX+10+iconWidth){
 		return -1;
 	}
 	//Test x values
 	for(var i=0;i<scales.length;i++){
-		if(mouseX>iconX+10+i*(iconWidth+10)-iconViewOffset&&mouseX<iconX+10+iconWidth+i*(iconWidth+10)-iconViewOffset){
+		if(mouseY>iconY+10+i*(iconHeight+10)-iconViewOffset&&mouseY<iconY+10+iconHeight+i*(iconHeight+10)-iconViewOffset){
 			return i;
 		}
 	}
@@ -1017,18 +1018,18 @@ function drawColorThumbnails(){
 	
 	//this draw colormap as thumbnails;
 	for(var i=0;i<color_panels.length;i++){
-		if((iconWidth+10)*i+10-iconViewOffset+iconWidth<0||(iconWidth+10)*i+10-iconViewOffset>iconViewWidth){
+		if((iconHeight+10)*i+10-iconViewOffset+iconHeight<0||(iconHeight+10)*i+10-iconViewOffset>iconViewHeight){
 			continue;
 		}
-		drawThumbnail(iconX+(iconWidth+10)*i+10-iconViewOffset,iconY+10,i);
+		drawThumbnail(iconX+10,iconY+(iconHeight+10)*i+10-iconViewOffset,i);
 	}
 	
 	//Draw the borders
 	drawColorView();
 	
 	//Clear the edges
-	clearRectangle(iconX-6-iconWidth,iconY+iconViewHeight,iconWidth+3,iconViewHeight);
-	clearRectangle(iconX+3+iconViewWidth,iconY+iconViewHeight,iconWidth+3,iconViewHeight);
+	clearRectangle(iconX,iconY,iconViewWidth,iconHeight+3);
+	clearRectangle(iconX,iconY+iconViewHeight+iconHeight+3,iconViewWidth,iconHeight+3);
 }
 
 function drawThumbnail(x,y,cindex){
