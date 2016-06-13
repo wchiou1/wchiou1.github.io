@@ -146,7 +146,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	//### Drop encoding to alpha channel for background
 	function EncodeFloatRGBA(f){
 		if(f<0) return [0,0,0,0];
-		if(f==1.0) return [255,255,255,255];
+		if(f>=1.0) return [255,255,255,255];
 		var r = ((256*f)|0)&255;
 		var g = ((65536*f)|0)&255;
 		var b = ((16777216*f)|0)&255;
