@@ -956,25 +956,14 @@ function drawScene() {
   gl.clearColor(.5, .5, .5, 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
-	//this draws a rectangle
-	/*
-	var rectangle=Shape.rectangle;
-	rectangle.scale(100,100);
-	rectangle.move(300,300,0.5);
-	rectangle.changeColor(0.5,0.5,0.5);
-	rectangle.draw();*/
 	
+	
+
 	if(img_panels.length!=0){
 		//initialize and draw img in viewports
 		initView(imgIndex);
 		drawView();
-		
-		for(var i=0;i<img_panels.length;i++){
-			img_panels[i].changeColor(null);
-			img_panels[i].scale(iconWidth, iconHeight);
-			img_panels[i].move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
-			img_panels[i].draw();
-		}
+		drawImgIcons();
 	}
 	
 	drawColorThumbnails();
@@ -985,6 +974,23 @@ function drawScene() {
 	drawInfoBoxes();
 	drawText();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
+}
+
+function drawImgIcons(){
+	//Draw the border for the img icons
+	var rectangle=Shape.rectangle;
+	rectangle.scale(iconViewWidth+6,iconiewHeight+6);
+	rectangle.move(imgIconX-3,imgIconY-3,0.5);
+	rectangle.changeColor(0.0,0.0,0.0);
+	rectangle.draw();
+	
+	clearRectangle(imgIconX,imgIconY+iconViewHeight,iconViewWidth,iconViewHeight);
+	for(var i=0;i<img_panels.length;i++){
+			img_panels[i].changeColor(null);
+			img_panels[i].scale(iconWidth, iconHeight);
+			img_panels[i].move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
+			img_panels[i].draw();
+		}
 }
 
 function drawLine(x,y,x2,y2,color){
