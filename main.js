@@ -454,8 +454,8 @@ function start() {
 }
 
 function initViewport(){
-	viewports.push(	new Viewport(canvas.width*0.45,200,canvas.width/4,canvas.width/4));
-	viewports.push(	new Viewport(canvas.width*0.725,200,canvas.width/4,canvas.width/4));
+	viewports.push(	new Viewport(receiveX+scaleWidth+100,0,canvas.height/2,canvas.height/2));
+	viewports.push(	new Viewport(receiveX+scaleWidth+100,canvas.height/2,canvas.height/2,canvas.height/2));
 }
 
 function initBuffers(){
