@@ -785,6 +785,7 @@ function testViewportHit(mouse){
 function testCanvas2Hit(mouse){
 	var c2left=canvas2.style.left.slice(0,-2);
 	var c2top=canvas2.style.top.slice(0,-2);
+	console.log(c2left);console.log(c2top);
 	return(mouse.x>c2left&&mouse.x<c2left+canvas2.width&&mouse.y>c2top&&mouse.y<c2top+canvas2.height);
 }
 
@@ -1331,8 +1332,7 @@ function drawLabSpace(){
 	var s=transform2.scale;
 
 	var mvMatrix2 = Matrix.I(4).ensure4x4().x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
-	//console.log(mvMatrix2);
-	//console.log(radx+" "+rady+" "+s);
+
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
 	
