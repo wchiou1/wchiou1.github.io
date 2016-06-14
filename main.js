@@ -52,6 +52,7 @@ var markerLocs = [] //2d array which contains the marker locations in color heig
 var dragMarker = -1;
 var dragView=false;
 var imageSet = false;
+var rotCanvas2=false;
 
 var img_data=[];
 var scales=[];
@@ -429,9 +430,10 @@ var Rectangle= function(){
 var Shape={};
 function start() {
 	console.log("version:"+version);
-	  canvas = document.getElementById("glcanvas");
-	  canvas2 = document.getElementById("glcanvas2");
-
+	canvas = document.getElementById("glcanvas");
+	canvas2 = document.getElementById("glcanvas2");
+	canvas2.style.top="0px";
+	canvas2.style.left=canvas.width+10+"px";
 		initWebGL(canvas);      // Initialize the GL context
 	  // Only continue if WebGL is available and working
 
@@ -464,7 +466,7 @@ function start() {
 		initShape();
 
 		//setInterval(drawScene, 15);
-
+		drawLabSpace();
 		//drawScene();
 	  }
 	  
@@ -783,6 +785,12 @@ function testViewportHit(mouse){
 	
 }
 
+function testCanvas2Hit(mouse){
+	var c2left=canvas2.style.left.slice(0,-2);
+	var c2top=canvas2.style.top.slice(0,-2);
+	return(mouse.x>c2left&&mouse.x<c2left+canvas2.width&&mouse.y>c2top&&mouse.y<c2top+canvas2.height);
+}
+
 //Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
 function getColorHeight(cindex,height){
 	if(height>=1.0||height<0.0){
@@ -860,7 +868,11 @@ function handleMouseDown(event){
 		targ.style.left=mouse.x-iconWidth/2+'px';
 		targ.style.top=mouse.y-iconHeight/2+'px';
 	}
-	if(testViewportHit(mouse)){
+	
+	if(testCanvas2Hit(mouse)){
+		rotCanvas2=true;
+	}
+	else if(testViewportHit(mouse)){
 		dragView=true;
 	}
 	
@@ -889,6 +901,7 @@ function handleMouseUp(event){
 	dragIcon=-1;
 	dragMarker=-1;
 	clearDrag();
+	rotCanvas2=false;
 	dragView=false;
 }
 
@@ -915,6 +928,10 @@ function handleMouseMove(event){
 		drawPanels();
 		drawMarkers();
 		drawInfoBoxes();
+	}
+	if(rotCanvas2){
+		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
+		drawLabSpace();
 	}
 	if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
@@ -1262,11 +1279,36 @@ function drawThumbnail(x,y,cindex){
 	}
 }
 
+var pMatrix2=makeOrtho(-1,1,-1,1,-1,1);
 var lastShader2;
-var mvMatrix2;
-var pMatrix2;
+var transform2={
+	degx: 0,
+	degy: 0,
+	scale: 1
+};
 
-function drawLabSpace(cID){
+function initT2(){
+	transform2.degx=0;
+	transform2.degy=0;
+	transform2.scale=1;
+}
+
+function rotateT2(x,y){
+	transform2.degy+=x;
+	transform2.degx+=-y;
+	if(transform2.degy>=360)
+		transform2.degy-=360;
+	else if(transform2.degy<= -360)
+		transform2.degy+=360;
+	if(transform2.degx<-90)
+		transform2.degx=-90;
+	else if(transform2.degx>90)
+		transform2.degx=90;
+}
+function scaleT2(scalar){
+	transform2.scale*=scalar;
+}
+function drawLabSpace(){
 	gl2.clearColor(.5, .5, .5, 1);
 	gl2.clear(gl2.COLOR_BUFFER_BIT | gl2.DEPTH_BUFFER_BIT);
 	if(lastShader2!=="simple"){
@@ -1287,15 +1329,17 @@ function drawLabSpace(cID){
 	gl2.bindBuffer(gl2.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer2);
 	gl2.bufferData(gl2.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl2.STATIC_DRAW);
 	
-	pMatrix2=makeOrtho(-1,1,-1,1,-1,1);
-	mvMatrix2=Matrix.I(4);
+	var radx = transform2.degx * Math.PI / 180.0;
+	var rady = transform2.degy * Math.PI / 180.0;
+	var s=transform2.scalar;
+
+	var mvMatrix2 = (Matrix.Rotation(radx, $V([1,0,0])).ensure4x4()).x(Matrix.Rotation(rady, $V([0,1,0])).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]));
 	
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
 	
 	gl2.drawElements(gl2.LINES, 6, gl2.UNSIGNED_SHORT, 0);
-		
-
+	
 }
 
 
