@@ -11,6 +11,7 @@ var ctx;
 var mvMatrix;
 var shaderProgram={};
 var attributes={};
+var uniforms={};
 var perspectiveMatrix;
 var lastShader=null;
 
@@ -218,11 +219,8 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 			gl.vertexAttribPointer(attributes.imgShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 			
-			var uTexValLoc = gl.getUniformLocation(shaderProgram.imgShader, "uTexVal");
-			var uColormapLoc = gl.getUniformLocation(shaderProgram.imgShader, "uColormap");
- 
-			gl.uniform1i(uTexValLoc, 0);  // texture unit 0
-			gl.uniform1i(uColormapLoc, 1);  // texture unit 1
+			gl.uniform1i(uniforms.imgShader.uTexValLoc, 0);  // texture unit 0
+			gl.uniform1i(uniforms.imgShader.uColormapLoc, 1);  // texture unit 1
 			gl.activeTexture(gl.TEXTURE0);
 			gl.bindTexture(gl.TEXTURE_2D, self.texture);
 			gl.activeTexture(gl.TEXTURE1);
@@ -236,7 +234,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			mvPushMatrix();
 			mvTranslate([self.x, self.y, self.z-1.0]);
 			mvScale([self.w,self.h,1]);
-			setMatrixUniforms(shaderProgram.imgShader);
+			setMatrixUniforms(uniforms.imgShader);
 			
 			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 			mvPopMatrix();
@@ -261,11 +259,8 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 		gl.vertexAttribPointer(attributes.imgShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 			
-		var uTexValLoc = gl.getUniformLocation(shaderProgram.imgShader, "uTexVal");
-		var uColormapLoc = gl.getUniformLocation(shaderProgram.imgShader, "uColormap");
- 
-		gl.uniform1i(uTexValLoc, 0);  // texture unit 0
-		gl.uniform1i(uColormapLoc, 1);  // texture unit 1
+		gl.uniform1i(uniforms.imgShader.uTexValLoc, 0);  // texture unit 0
+		gl.uniform1i(uniforms.imgShader.uColormapLoc, 1);  // texture unit 1
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
 		gl.activeTexture(gl.TEXTURE1);
@@ -280,7 +275,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		mvPushMatrix();
 		multMatrix(viewMatrix);
 		
-		setMatrixUniforms(shaderProgram.imgShader);
+		setMatrixUniforms(uniforms.imgShader);
 
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 		mvPopMatrix();
@@ -345,13 +340,10 @@ var ColorPanel= function(x,y,w,h,cID){
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 		gl.vertexAttribPointer(attributes.colormapShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
-			
-		var uColormapLoc = gl.getUniformLocation(shaderProgram.colormapShader, "uColormap");
- 
-		gl.uniform1i(uColormapLoc, 0);  
+		
+		gl.uniform1i(uniforms.colormapShader.uColormapLoc, 0);  
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
-		
 		
 		perspectiveMatrix = orthoMatrix;
 
@@ -360,7 +352,7 @@ var ColorPanel= function(x,y,w,h,cID){
 		mvTranslate([self.x, self.y, self.z-1.0]);
 		mvScale([self.w,self.h,1]);
 
-		setMatrixUniforms(shaderProgram.colormapShader);
+		setMatrixUniforms(uniforms.colormapShader);
 
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 		
@@ -535,6 +527,12 @@ function initShaders() {
 		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.imgShader, "aVertexPosition"),
 		vertexTexCoordAttribute : gl.getAttribLocation(shaderProgram.imgShader, "aVertexTexCoord")
 	};
+	uniforms.imgShader={
+		pUniform : gl.getUniformLocation(shaderProgram.imgShader, "uPMatrix"),
+		mvUniform : gl.getUniformLocation(shaderProgram.imgShader, "uMVMatrix"),
+		uTexValLoc : gl.getUniformLocation(shaderProgram.imgShader, "uTexVal"),
+		uColormapLoc : gl.getUniformLocation(shaderProgram.imgShader, "uColormap")
+	};
 	
 	var colormap_vertexShader = getShader(gl, "colormap-shader-vs");
 	var colormap_fragmentShader = getShader(gl, "colormap-shader-fs");
@@ -548,6 +546,11 @@ function initShaders() {
 	attributes.colormapShader={
 		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexPosition"),
 		vertexTexCoordAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexTexCoord")
+	};
+	uniforms.colormapShader={
+		pUniform : gl.getUniformLocation(shaderProgram.colormapShader, "uPMatrix"),
+		mvUniform : gl.getUniformLocation(shaderProgram.colormapShader, "uMVMatrix"),
+		uColormapLoc : gl.getUniformLocation(shaderProgram.colormapShader, "uColormap")
 	};
 	
 	var simple_vertexShader = getShader(gl, "simple-shader-vs");
@@ -563,7 +566,10 @@ function initShaders() {
 		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.simpleShader, "aVertexPosition"),
 		vertexColorAttribute : gl.getAttribLocation(shaderProgram.simpleShader, "aVertexColor")
 	};
-
+	uniforms.simpleShader={
+		pUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uPMatrix"),
+		mvUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uMVMatrix")
+	};
 
 }
 
@@ -1280,21 +1286,11 @@ function mvRotate(angle, v) {
 
 function setMatrixUniforms(shader) {
 	if(!shader)
-		shader = shaderProgram.simpleShader;
-  var pUniform = gl.getUniformLocation(shader, "uPMatrix");
-  gl.uniformMatrix4fv(pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
-
-  var mvUniform = gl.getUniformLocation(shader, "uMVMatrix");
-  gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
+		shader = uniforms.simpleShader;
+  gl.uniformMatrix4fv(shader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
+  gl.uniformMatrix4fv(shader.mvUniform, false, new Float32Array(mvMatrix.flatten()));
 }
 
-function setIdentityUniforms(){
-	var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-	gl.uniformMatrix4fv(pUniform, false, new Float32Array(Matrix.I(4).flatten()));
-
-	var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-	gl.uniformMatrix4fv(mvUniform, false, new Float32Array(Matrix.I(4).flatten()));
-}
 //
 //handle the File drop event and selecting files
 //
