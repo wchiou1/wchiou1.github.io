@@ -49,11 +49,11 @@
 		}
 		
 		void main(void) {
+			vec4 val = texture2D(uTexVal, vTexCoord);
 			if(val.a==0){
 				gl_FragColor=vec4(0.5,0.5,0.5,1);
 			}
 			else{
-				vec4 val = texture2D(uTexVal, vTexCoord);
 				float unpack = DecodeFloatRGBA(val.rgb);
 				gl_FragColor = vec4(texture2D(uColormap, vec2(unpack,0)).rgb,1);
 			}
