@@ -1495,20 +1495,20 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 	var spreadable=[];
 	const bg=-1;
 	//mark the 4 corners as spreadable
-	if(data[(0)*w+(0)]===0){
-		data[(0)*w+(0)]=bg;
+	if(data[(0)*h+(0)]===0){
+		data[(0)*h+(0)]=bg;
 		spreadable.push([0,0]);
 	}console.log(data[(0)*w+(0)]);
-	if(data[(0)*w+(h-1)]===0){
-		data[(0)*w+(h-1)]=bg;
+	if(data[(0)*h+(h-1)]===0){
+		data[(0)*h+(h-1)]=bg;
 		spreadable.push([0,h-1]);
 	}console.log(data[(0)*w+(h-1)]);
-	if(data[(w-1)*w+(0)]===0){
-		data[(w-1)*w+(0)]=bg;
+	if(data[(w-1)*h+(0)]===0){
+		data[(w-1)*h+(0)]=bg;
 		spreadable.push([w-1,0]);
 	}console.log(data[(w-1)*w+(0)]);
-	if(data[(w-1)*w+(h-1)]===0){
-		data[(w-1)*w+(h-1)]=bg;
+	if(data[(w-1)*h+(h-1)]===0){
+		data[(w-1)*h+(h-1)]=bg;
 		spreadable.push([w-1,h-1]);
 	}console.log(data[(w-1)*w+(h-1)]);
 	
@@ -1523,23 +1523,23 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 		}
 		
 		//spread upward
-		if(y+1<h && data[(x)*w+(y+1)]===0){
-			data[(x)*w+(y+1)]=bg;
+		if(y+1<h && data[(x)*h+(y+1)]===0){
+			data[(x)*h+(y+1)]=bg;
 			spreadable.push([x,y+1]);
 		}
 		//spread downward
-		if(y-1>=0 && data[(x)*w+(y-1)]===0){
-			data[(x)*w+(y-1)]=bg;
+		if(y-1>=0 && data[(x)*h+(y-1)]===0){
+			data[(x)*h+(y-1)]=bg;
 			spreadable.push([x,y-1]);
 		}
 		//spread right
-		if(x+1<w && data[(x+1)*w+(y)]===0){
-			data[(x+1)*w+(y)]=bg;
+		if(x+1<w && data[(x+1)*h+(y)]===0){
+			data[(x+1)*h+(y)]=bg;
 			spreadable.push([x+1,y]);
 		}
 		//spread left
-		if(x-1>=0 && data[(x-1)*w+(y)]===0){
-			data[(x-1)*w+(y)]=bg;
+		if(x-1>=0 && data[(x-1)*h+(y)]===0){
+			data[(x-1)*h+(y)]=bg;
 			spreadable.push([x-1,y]);
 		}
 	}
