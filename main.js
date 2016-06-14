@@ -999,7 +999,7 @@ function drawScene() {
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
-	gl2.clearColor(.5, .5, .5, 1);
+		gl2.clearColor(.5, .5, .5, 1);
 	gl2.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	drawImgIcons();

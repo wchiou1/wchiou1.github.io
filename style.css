@@ -16,6 +16,9 @@
 	left: 1210px; 
 }
 
+#imagecanvas{
+	position: absolute; 
+}
 .dragme{
 	position:absolute;
 	width: 270px;
