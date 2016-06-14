@@ -1517,8 +1517,7 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 		var y=spread[1];
 		//check neighbor empty
 
-		if(data[(x)*w+(y+1)]>0 || data[(x)*w+(y-1)]>0 || data[(x+1)*w+(y)]> 0|| data[(x-1)*w+(y)]>0||
-		data[(x+1)*w+(y+1)]>0||data[(x-1)*w+(y-1)]>0||data[(x+1)*w+(y-1)]>0||data[(x-1)*w+(y+1)]>0){
+		if(data[(x)*w+(y+1)]>0 || data[(x)*w+(y-1)]>0 || data[(x+1)*w+(y)]> 0|| data[(x-1)*w+(y)]>0){
 			continue;
 		}
 		
