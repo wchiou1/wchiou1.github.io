@@ -1,6 +1,6 @@
 
 
-var version="zoomtesting &&clear background 0"
+var version="zoomtesting && another gl canvas"
 
 
 var canvas;
@@ -590,16 +590,16 @@ function initShaders() {
 	gl2.attachShader(shaderProgram.simpleShader2, simple_vertexShader2);
 	gl2.attachShader(shaderProgram.simpleShader2, simple_fragmentShader2);
 	gl2.linkProgram(shaderProgram.simpleShader2);
-	if (!gl.getProgramParameter(shaderProgram.simpleShader2, gl.LINK_STATUS)) {
+	if (!gl2.getProgramParameter(shaderProgram.simpleShader2, gl2.LINK_STATUS)) {
 		alert("Unable to initialize the shader program: " );
 	}
 	attributes.simpleShader2={
-		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.simpleShader2, "aVertexPosition"),
-		vertexColorAttribute : gl.getAttribLocation(shaderProgram.simpleShader2, "aVertexColor")
+		vertexPositionAttribute : gl2.getAttribLocation(shaderProgram.simpleShader2, "aVertexPosition"),
+		vertexColorAttribute : gl2.getAttribLocation(shaderProgram.simpleShader2, "aVertexColor")
 	};
 	uniforms.simpleShader2={
-		pUniform : gl.getUniformLocation(shaderProgram.simpleShader2, "uPMatrix"),
-		mvUniform : gl.getUniformLocation(shaderProgram.simpleShader2, "uMVMatrix")
+		pUniform : gl2.getUniformLocation(shaderProgram.simpleShader2, "uPMatrix"),
+		mvUniform : gl2.getUniformLocation(shaderProgram.simpleShader2, "uMVMatrix")
 	};
 
 }
