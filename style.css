@@ -10,7 +10,7 @@ canvas{
 	left: 0px; 
 }
 
- .dragme{
+.dragme{
 	position:absolute;
 	width: 270px;
 	height: 203px;
@@ -35,6 +35,4 @@ canvas{
 	position: absolute;
 	top:700px;
 	left:600px;
-	
-	
 }
