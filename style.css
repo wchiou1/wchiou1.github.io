@@ -1,45 +1,41 @@
-#scale_selection{
-	height:100px;
-	width:250px;
-	border: 3px solid green;
-}
 
 #glcanvas{
 	position: absolute; 
 	top: 0px;
-	left: 0px; 
+	left: 0px;
+	z-index: 0;
 }
 
 #glcanvas2{
 	position: absolute; 
 	top: 0px;
-	left: 1210px; 
+	left: 1210px;
+	z-index: 4;
 }
 
 #imagecanvas{
 	position: absolute; 
 	top: 0px;
 	left: 0px; 
+	z-index: 3;
 }
 
 #text{
 	position: absolute; 
 	top: 0px;
-	left: 0px; 
-}
-.dragme{
-	position:absolute;
-	width: 270px;
-	height: 203px;
+	left: 0px;
+	z-index: 2;
 }
 
 #drop1 {
   border: 1px solid blue;
+  z-index: 1;
 }
 
 #drop2 {
 
   border: 1px solid orange;
+  z-index: 1;
 }
 
 #selector1{
