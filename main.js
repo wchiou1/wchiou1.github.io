@@ -44,6 +44,7 @@ var scaleHeight = 100;
 var markerLocs = [] //2d array which contains the marker locations in color height
 var dragMarker = -1;
 var dragView=false;
+var imageSet = false;
 
 var img_data=[];
 var scales=[];
@@ -71,15 +72,17 @@ var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal
 var viewports=[];
 var viewMatrix=Matrix.I(4);
 function initView(id){
-	if(viewMatrix!=Matrix.I(4)){
-		viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
-		moveView((viewports[0].w-img_data[id].w)/2,(img_data[id].h-viewports[0].h)/2);
+	if(imageSet){
+		return;
 	}
+	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
+	moveView((viewports[0].w-img_data[id].w)/2,(img_data[id].h-viewports[0].h)/2);
 }
 
 function moveView(x,y){
 	if(imgIndex<0) return;
 	viewMatrix=Matrix.Translation($V([x,y,0])).ensure4x4().x(viewMatrix);
+	imageSet=true;
 }
 function scaleView(scalar,center){
 	if(imgIndex<0) return;
