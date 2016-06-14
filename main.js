@@ -1,6 +1,6 @@
 
 
-var version="border testing &&clear background"
+var version="zoomtesting &&clear background"
 
 
 var canvas;
