@@ -18,6 +18,14 @@
 
 #imagecanvas{
 	position: absolute; 
+	top: 0px;
+	left: 0px; 
+}
+
+#text{
+	position: absolute; 
+	top: 0px;
+	left: 0px; 
 }
 .dragme{
 	position:absolute;
