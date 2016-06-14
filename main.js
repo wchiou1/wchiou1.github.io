@@ -909,7 +909,15 @@ function handleMouseUp(event){
 function handleMouseMove(event){
 	var mouse = getMousePos(canvas, event);
 	updateFilenameIndicator(mouse.x,mouse.y);
-	if(dragIcon==-1&&dragMarker==-1&&!dragView){
+	if(rotCanvas2){
+		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
+		drawLabSpace();
+	}
+	else if(dragView){
+		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
+		drawView();
+	}
+	else if(dragIcon==-1&&dragMarker==-1){
 		return;
 	}
 	if(dragIcon>=0){
@@ -929,14 +937,7 @@ function handleMouseMove(event){
 		drawMarkers();
 		drawInfoBoxes();
 	}
-	else if(rotCanvas2){console.log('rotate');
-		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
-		drawLabSpace();
-	}
-	else if(dragView){
-		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
-		drawView();
-	}
+
 	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
