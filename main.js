@@ -8,6 +8,9 @@ var gl;
 var imageCanvas;
 var ctx;
 
+var canvas2;
+var gl2;
+
 var mvMatrix;
 var shaderProgram={};
 var attributes={};
@@ -424,9 +427,9 @@ var Shape={};
 function start() {
 	console.log("version:"+version);
 	  canvas = document.getElementById("glcanvas");
+	  canvas2 = document.getElementById("glcanvas2");
 
-	  initWebGL(canvas);      // Initialize the GL context
-
+		initWebGL(canvas);      // Initialize the GL context
 	  // Only continue if WebGL is available and working
 
 	  if (gl) {
@@ -443,21 +446,26 @@ function start() {
 		//gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
 		gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-
-		// Initialize the shaders; this is where all the lighting for the
-		// vertices and so forth is established.
-
+		
+		if(gl2){
+				gl2.clearColor(0.0, 0.0, 0.0, 1.0);
+				gl2.clearDepth(1.0);
+				gl2.enable(gl.DEPTH_TEST);
+				gl2.depthFunc(gl.LEQUAL);
+		}
 		initBuffers();
 		initMarkers();
 		
 		initShaders();
 		initViewport();
 		initShape();
-		// Set up to draw the scene periodically.
+
 		//setInterval(drawScene, 15);
-		// no need to update screen every 15ms
+
 		//drawScene();
 	  }
+	  
+	  
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
 }
@@ -486,12 +494,7 @@ function setTexParameter(){
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 }
 
-//
-// initWebGL
-//
-// Initialize WebGL, returning the GL context or null if
-// WebGL isn't available or could not be initialized.
-//
+
 function initWebGL() {
   gl = null;
 
@@ -500,10 +503,19 @@ function initWebGL() {
   }
   catch(e) {
   }
-
-  // If we don't have a GL context, give up now
-
   if (!gl) {
+    alert("Unable to initialize WebGL. Your browser may not support it.");
+  }
+  
+  //second gl canvas
+   gl2 = null;
+
+  try {
+    gl2 = canvas2.getContext("experimental-webgl");
+  }
+  catch(e) {
+  }
+  if (!gl2) {
     alert("Unable to initialize WebGL. Your browser may not support it.");
   }
 }
@@ -521,7 +533,7 @@ function initShaders() {
 	gl.attachShader(shaderProgram.imgShader, img_fragmentShader);
 	gl.linkProgram(shaderProgram.imgShader);
 	if (!gl.getProgramParameter(shaderProgram.imgShader, gl.LINK_STATUS)) {
-		alert("Unable to initialize the shader program: " + gl.getProgramInfoLog(shader));
+		alert("Unable to initialize the shader program: " );
 	}
 	attributes.imgShader={
 		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.imgShader, "aVertexPosition"),
@@ -541,7 +553,7 @@ function initShaders() {
 	gl.attachShader(shaderProgram.colormapShader, colormap_fragmentShader);
 	gl.linkProgram(shaderProgram.colormapShader);
 	if (!gl.getProgramParameter(shaderProgram.colormapShader, gl.LINK_STATUS)) {
-		alert("Unable to initialize the shader program: " + gl.getProgramInfoLog(shader));
+		alert("Unable to initialize the shader program: ");
 	}
 	attributes.colormapShader={
 		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexPosition"),
@@ -560,7 +572,7 @@ function initShaders() {
 	gl.attachShader(shaderProgram.simpleShader, simple_fragmentShader);
 	gl.linkProgram(shaderProgram.simpleShader);
 	if (!gl.getProgramParameter(shaderProgram.simpleShader, gl.LINK_STATUS)) {
-		alert("Unable to initialize the shader program: " + gl.getProgramInfoLog(shader));
+		alert("Unable to initialize the shader program: " );
 	}
 	attributes.simpleShader={
 		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.simpleShader, "aVertexPosition"),
@@ -569,6 +581,25 @@ function initShaders() {
 	uniforms.simpleShader={
 		pUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uPMatrix"),
 		mvUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uMVMatrix")
+	};
+	
+	//second gl 
+	var simple_vertexShader2 = getShader(gl2, "simple-shader-vs");
+	var simple_fragmentShader2 = getShader(gl2, "simple-shader-fs");
+	shaderProgram.simpleShader2 = gl2.createProgram();
+	gl2.attachShader(shaderProgram.simpleShader2, simple_vertexShader2);
+	gl2.attachShader(shaderProgram.simpleShader2, simple_fragmentShader2);
+	gl2.linkProgram(shaderProgram.simpleShader2);
+	if (!gl.getProgramParameter(shaderProgram.simpleShader2, gl.LINK_STATUS)) {
+		alert("Unable to initialize the shader program: " );
+	}
+	attributes.simpleShader2={
+		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.simpleShader2, "aVertexPosition"),
+		vertexColorAttribute : gl.getAttribLocation(shaderProgram.simpleShader2, "aVertexColor")
+	};
+	uniforms.simpleShader2={
+		pUniform : gl.getUniformLocation(shaderProgram.simpleShader2, "uPMatrix"),
+		mvUniform : gl.getUniformLocation(shaderProgram.simpleShader2, "uMVMatrix")
 	};
 
 }

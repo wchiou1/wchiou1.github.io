@@ -4,10 +4,16 @@
 	border: 3px solid green;
 }
 
-canvas{
+#glcanvas{
 	position: absolute; 
 	top: 0px;
 	left: 0px; 
+}
+
+#glcanvas2{
+	position: absolute; 
+	top: 0px;
+	left: 1210px; 
 }
 
 .dragme{
