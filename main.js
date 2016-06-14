@@ -1,6 +1,6 @@
 
 
-var version="zoomtesting && another gl canvas02"
+var version="zoomtesting && another gl canvas03"
 
 
 var canvas;
@@ -466,7 +466,7 @@ function start() {
 		initShape();
 
 		//setInterval(drawScene, 15);
-		drawLabSpace();
+		
 		//drawScene();
 	  }
 	  
@@ -929,11 +929,11 @@ function handleMouseMove(event){
 		drawMarkers();
 		drawInfoBoxes();
 	}
-	if(rotCanvas2){
+	else if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		drawLabSpace();
 	}
-	if(dragView){
+	else if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		drawView();
 	}
@@ -1333,7 +1333,7 @@ function drawLabSpace(){
 	var rady = transform2.degy * Math.PI / 180.0;
 	var s=transform2.scalar;
 
-	var mvMatrix2 = (Matrix.Rotation(radx, $V([1,0,0])).ensure4x4()).x(Matrix.Rotation(rady, $V([0,1,0])).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]));
+	var mvMatrix2 = (Matrix.Rotation(radx, $V([1,0,0])).ensure4x4()).x(Matrix.Rotation(rady, $V([0,1,0])).ensure4x4()).x(Matrix.Diagonal([s,s,s,1])).ensure4x4();
 	
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
