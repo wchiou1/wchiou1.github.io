@@ -785,8 +785,11 @@ function testViewportHit(mouse){
 function testCanvas2Hit(mouse){
 	var c2left=canvas2.style.left.slice(0,-2);
 	var c2top=canvas2.style.top.slice(0,-2);
-	console.log(c2left);console.log(c2top);
-	return(mouse.x>c2left&&mouse.x<c2left+canvas2.width&&mouse.y>c2top&&mouse.y<c2top+canvas2.height);
+	if(mouse.x>c2left&&mouse.x<c2left+canvas2.width&&mouse.y>c2top&&mouse.y<c2top+canvas2.height){
+		console.log("incanvas2");
+		return true;
+	}
+	return false;
 }
 
 //Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
