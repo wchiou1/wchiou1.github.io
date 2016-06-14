@@ -9,7 +9,9 @@ canvas{
 	top: 0px;
 	left: 0px; 
 }
-
+body{
+	background-color: rgb(128, 128, 128);
+}
  .dragme{
 	position:absolute;
 	width: 270px;
