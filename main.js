@@ -1496,20 +1496,20 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 	//mark the 4 corners as spreadable
 	if(data[(0)*w+(0)]===0){
 		data[(0)*w+(0)]=bg;
-		spreadable.push([0,0]);console.log("push 0 0");
-	}
+		spreadable.push([0,0]);
+	}console.log(data[(0)*w+(0)]);
 	if(data[(0)*w+(h-1)]===0){
 		data[(0)*w+(h-1)]=bg;
-		spreadable.push([0,h-1]);console.log("push 0 h-1");
-	}
+		spreadable.push([0,h-1]);
+	}console.log(data[(0)*w+(h-1)]);
 	if(data[(w-1)*w+(0)]===0){
 		data[(w-1)*w+(0)]=bg;
-		spreadable.push([w-1,0]);console.log("push w-1 0");
-	}
+		spreadable.push([w-1,0]);
+	}console.log(data[(w-1)*w+(0)]);
 	if(data[(w-1)*w+(h-1)]===0){
 		data[(w-1)*w+(h-1)]=bg;
-		spreadable.push([w-1,h-1]);console.log("push w-1 h-1");
-	}
+		spreadable.push([w-1,h-1]);
+	}console.log(data[(w-1)*w+(h-1)]);
 	
 	while(spreadable.length>0){
 		var spread=spreadable.pop();
