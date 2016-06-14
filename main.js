@@ -1490,6 +1490,7 @@ function handleColorFileSelect(evt) {
 
 //change background 0 to -1
 function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
+	console.log("width and height:"+w+","+h);
 	var data=data0;
 	var spreadable=[];
 	const bg=-1;
