@@ -1,6 +1,4 @@
-
-
-var version="zoomtesting && another gl canvas03"
+var version="zoomtesting && another gl canvas04"
 
 
 var canvas;
@@ -1333,7 +1331,7 @@ function drawLabSpace(){
 	var rady = transform2.degy * Math.PI / 180.0;
 	var s=transform2.scalar;
 
-	var mvMatrix2 = (Matrix.Rotation(radx, $V([1,0,0])).ensure4x4()).x(Matrix.Rotation(rady, $V([0,1,0])).ensure4x4()).x(Matrix.Diagonal([s,s,s,1])).ensure4x4();
+	var mvMatrix2 = (Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1])).ensure4x4();
 	
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
@@ -1391,12 +1389,6 @@ function mvPopMatrix() {
   return mvMatrix;
 }
 
-function mvRotate(angle, v) {
-  var inRadians = angle * Math.PI / 180.0;
-
-  var m = Matrix.Rotation(inRadians, $V([v[0], v[1], v[2]])).ensure4x4();
-  multMatrix(m);
-}
 
 function setMatrixUniforms(shader) {
 	if(!shader)
