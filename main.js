@@ -1,6 +1,6 @@
 
 
-var version="zoomtesting && another gl canvas00"
+var version="zoomtesting && another gl canvas01"
 
 
 var canvas;
@@ -1284,11 +1284,11 @@ function drawLabSpace(cID){
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
 	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([1,1,1,	1,1,1,	1,1,1, 1,1,1,	1,1,1,	1,1,1]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesIndexBuffer2);
+	gl2.bindBuffer(gl2.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer2);
 	gl2.bufferData(gl2.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl2.STATIC_DRAW);
 	
 	pMatrix2=makeOrtho(-1,1,-1,1,-1,1);
-	mvMatrix=Matrix.I(4);
+	mvMatrix2=Matrix.I(4);
 	
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
