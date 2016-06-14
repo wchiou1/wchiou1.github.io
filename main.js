@@ -24,6 +24,9 @@ var lastMouseY;
 
 var verticesBuffer;
 var verticesColorBuffer;
+var verticesBuffer2;
+var verticesColorBuffer2;
+var verticesIndexBuffer2;
 
 //Color stuffs
 var colorMaps = [];//2d array of objects which stores the colors
@@ -479,6 +482,9 @@ function initViewport(){
 function initBuffers(){
 	verticesBuffer = gl.createBuffer();
 	verticesColorBuffer = gl.createBuffer();
+	verticesBuffer2=gl2.createBuffer();
+	verticesColorBuffer2=gl2.createBuffer();
+	verticesIndexBuffer2=gl2.createBuffer();
 }
 
 function initMarkers(){
@@ -998,10 +1004,7 @@ function updateIconViewOffset(mouseX,mouseY){
 function drawScene() {
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
-		gl2.clearColor(.5, .5, .5, 1);
-	gl2.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
+
 	drawImgIcons();
 	if(img_panels.length!=0){
 		//initialize and draw img in viewports
@@ -1257,6 +1260,42 @@ function drawThumbnail(x,y,cindex){
 		rectangle.changeColor(color.r/255.0,color.g/255.0,color.b/255.0);
 		rectangle.draw();
 	}
+}
+
+var lastShader2;
+var mvMatrix2;
+var pMatrix2;
+
+function drawLabSpace(cID){
+	gl2.clearColor(.5, .5, .5, 1);
+	gl2.clear(gl2.COLOR_BUFFER_BIT | gl2.DEPTH_BUFFER_BIT);
+	if(lastShader2!=="simple"){
+			lastShader="simple";
+			gl2.useProgram(shaderProgram.simpleShader2);
+			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
+			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
+		}
+	gl2.lineWidth(5);
+
+
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-1,0,0,	1,0,0, 0,-1,0,	0,1,0, 0,0,-1, 0,0,1]), gl2.STATIC_DRAW);
+	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([1,1,1,	1,1,1,	1,1,1, 1,1,1,	1,1,1,	1,1,1]), gl2.STATIC_DRAW);
+	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesIndexBuffer2);
+	gl2.bufferData(gl2.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl2.STATIC_DRAW);
+	
+	pMatrix2=makeOrtho(-1,1,-1,1,-1,1);
+	mvMatrix=Matrix.I(4);
+	
+	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
+	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
+	
+	gl2.drawElements(gl2.LINES, 6, gl2.UNSIGNED_SHORT, 0);
+		
+
 }
 
 
