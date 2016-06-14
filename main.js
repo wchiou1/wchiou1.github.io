@@ -1,6 +1,6 @@
 
 
-var version="zoomtesting &&clear background"
+var version="zoomtesting &&clear background 0"
 
 
 var canvas;
@@ -1498,19 +1498,19 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 	if(data[(0)*h+(0)]===0){
 		data[(0)*h+(0)]=bg;
 		spreadable.push([0,0]);
-	}console.log(data[(0)*w+(0)]);
+	}console.log(data[(0)*h+(0)]);
 	if(data[(0)*h+(h-1)]===0){
 		data[(0)*h+(h-1)]=bg;
 		spreadable.push([0,h-1]);
-	}console.log(data[(0)*w+(h-1)]);
+	}console.log(data[(0)*h+(h-1)]);
 	if(data[(w-1)*h+(0)]===0){
 		data[(w-1)*h+(0)]=bg;
 		spreadable.push([w-1,0]);
-	}console.log(data[(w-1)*w+(0)]);
+	}console.log(data[(w-1)*h+(0)]);
 	if(data[(w-1)*h+(h-1)]===0){
 		data[(w-1)*h+(h-1)]=bg;
 		spreadable.push([w-1,h-1]);
-	}console.log(data[(w-1)*w+(h-1)]);
+	}console.log(data[(w-1)*h+(h-1)]);
 	
 	while(spreadable.length>0){
 		var spread=spreadable.pop();
@@ -1518,7 +1518,7 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 		var y=spread[1];
 		//check neighbor empty
 
-		if(data[(x)*w+(y+1)]>0 || data[(x)*w+(y-1)]>0 || data[(x+1)*w+(y)]> 0|| data[(x-1)*w+(y)]>0){
+		if(data[(x)*h+(y+1)]>0 || data[(x)*h+(y-1)]>0 || data[(x+1)*h+(y)]> 0|| data[(x-1)*h+(y)]>0){
 			continue;
 		}
 		
