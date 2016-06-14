@@ -1330,8 +1330,9 @@ function drawLabSpace(){
 	var rady = transform2.degy * Math.PI / 180.0;
 	var s=transform2.scalar;
 
-	var mvMatrix2 = (Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1])).ensure4x4();
+	var mvMatrix2 = Matrix.I(4).ensure4x4().x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
 	console.log(mvMatrix2);
+	console.log(radx+" "+rady+" "+s);
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
 	
