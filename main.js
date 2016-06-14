@@ -945,11 +945,19 @@ function handleMouseMove(event){
 }
 
 function MouseWheelHandler(e) {
+	var e = window.event || e; // old IE support
+	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 	var mouse = getMousePos(canvas,e);
-	if(testViewportHit(mouse)){
-		// cross-browser wheel delta
-		var e = window.event || e; // old IE support
-		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+	if(testCanvas2Hit(mouse)){
+		if(delta>0)
+			scaleT2(1.1);
+		else if(delta<0)
+			scaleT2(0.9);
+		drawLabSpace();
+		event.preventDefault();
+		event.returnValue=false;
+	}
+	else if(testViewportHit(mouse)){
 		if(delta>0)
 			scaleView(1.1);
 		else if(delta<0)
@@ -957,8 +965,8 @@ function MouseWheelHandler(e) {
 		drawView();
 		event.preventDefault();
 		event.returnValue=false;
-		return false;
 	}
+	return false;
 }
 
 function updateFilenameIndicator(mouseX,mouseY){
