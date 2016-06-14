@@ -1,6 +1,6 @@
 
 
-var version="zoomtesting && another gl canvas"
+var version="zoomtesting && another gl canvas00"
 
 
 var canvas;
