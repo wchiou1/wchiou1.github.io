@@ -996,11 +996,11 @@ function updateIconViewOffset(mouseX,mouseY){
 // Draw the scene.
 //
 function drawScene() {
-  // Clear the canvas before we start drawing on it.
-  gl.clearColor(.5, .5, .5, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	gl.clearColor(.5, .5, .5, 1);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
-	
+	gl2.clearColor(.5, .5, .5, 1);
+	gl2.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	drawImgIcons();
 	if(img_panels.length!=0){
