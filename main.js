@@ -312,9 +312,9 @@ var ColorPanel= function(x,y,w,h,cID){
 	function flatten(scale){
 		var array=[];
 		for(var i=0;i<scale.length;i++){
-			array.push(scale[i].r);
-			array.push(scale[i].g);
-			array.push(scale[i].b);
+			array.push(Math.round(scale[i].r*255));
+			array.push(Math.round(scale[i].g*255));
+			array.push(Math.round(scale[i].b*255));
 			array.push(255);
 		}
 		return new Uint8Array(array);
