@@ -975,13 +975,13 @@ function MouseWheelHandler(e) {
 	else if(testIconViewHit(mouse.x,mouse.y)){
 		if(iconViewHeight<scales.length*60+10){
 			if(delta>0)
-				scrollIconView(5);
+				scrollIconView(-10);
 			else if(delta<0)
-				scrollIconView(-5);
+				scrollIconView(10);
 			drawColorThumbnails();
-			event.preventDefault();
-			event.returnValue=false;
 		}
+		event.preventDefault();
+		event.returnValue=false;
 	}
 	return false;
 }
