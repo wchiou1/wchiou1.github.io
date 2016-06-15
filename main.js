@@ -1078,7 +1078,7 @@ function drawResetIcon(){
 	rectangle.move(resetIconX,resetIconY,0.5);
 	rectangle.changeColor(1.0,0.0,0.0);
 	rectangle.draw();
-	drawText("RESET",resetIconX,resetIconY+18);
+	drawText("RESET",resetIconX+5,resetIconY+16);
 }
 
 function drawImgIcons(){
