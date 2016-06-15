@@ -1385,7 +1385,7 @@ function drawLabSpace(){
 			list_rgba.push(rgb.g);
 			list_rgba.push(rgb.b);
 			list_rgba.push(1);
-			var lab=rgb_to_lab({'R':rgb.r, 'G':rgb.g, 'B':rgb.b});
+			var lab=rgb_to_lab({'R':rgb.r*255, 'G':rgb.g*255, 'B':rgb.b*255});
 			list_pos.push(lab.a);
 			list_pos.push(lab.L-50);
 			list_pos.push(lab.b);
