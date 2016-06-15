@@ -683,7 +683,7 @@ function testImageIconHit(mouseX,mouseY){
 		return -1;
 	}
 	//Test y values
-	for(var i=0;i<scales.length;i++){
+	for(var i=0;i<img_data.length;i++){
 		if(mouseY>imgIconY+10+i*(iconHeight+10)&&mouseY<imgIconY+10+iconHeight+i*(iconHeight+10)){
 			return i+10000;
 		}
