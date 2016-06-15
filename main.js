@@ -972,7 +972,28 @@ function MouseWheelHandler(e) {
 		event.preventDefault();
 		event.returnValue=false;
 	}
+	else if(testIconViewHit(mouse.x,mouse.y)){
+		if(iconViewHeight<scales.length*60+10){
+			if(delta>0)
+				scrollIconView(5);
+			else if(delta<0)
+				scrollIconView(-5);
+			drawColorThumbnails();
+			event.preventDefault();
+			event.returnValue=false;
+		}
+	}
 	return false;
+}
+
+function scrollIconView(delta){
+	iconViewOffset = iconViewOffset+delta;
+	if(iconViewOffset<0){
+		iconViewOffset=0;
+	}
+	if(0<scales.length*60-iconViewHeight+10&&iconViewOffset>scales.length*60-iconViewHeight+10){
+		iconViewOffset=scales.length*60-iconViewHeight+10;
+	}
 }
 
 function updateFilenameIndicator(mouseX,mouseY){
@@ -1019,13 +1040,7 @@ function updateMarkerLoc(mouseX,mouseY){
 
 function updateIconViewOffset(mouseX,mouseY){
 	var dy=lastMouseY-mouseY;
-	iconViewOffset = iconViewOffset+dy;
-	if(iconViewOffset<0){
-		iconViewOffset=0;
-	}
-	if(0<scales.length*60-iconViewHeight+10&&iconViewOffset>scales.length*60-iconViewHeight+10){
-		iconViewOffset=scales.length*60-iconViewHeight+10;
-	}
+	scrollIconView(dy);
 }
 
 //
