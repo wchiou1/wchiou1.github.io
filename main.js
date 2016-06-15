@@ -1,4 +1,4 @@
-var version="zoomtesting && another gl canvas05"
+var version="floats"
 
 var canvas;
 var gl;
