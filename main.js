@@ -43,6 +43,8 @@ var setColorHeight = [0,0];
 var iconViewOffset = 0;
 var iconViewWidth = 70;
 var iconViewHeight = 400;
+var resetIconX = 600;
+var resetIconY = 5;
 var scaleWidth = 400;
 var scaleHeight = 100;
 var markerLocs = [] //2d array which contains the marker locations in color height
@@ -1067,6 +1069,16 @@ function drawScene() {
 	drawInfoBoxes();
 	drawText();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
+	drawResetIcon();
+}
+
+function drawResetIcon(){
+	var rectangle=Shape.rectangle;
+	rectangle.scale(20,20);
+	rectangle.move(resetIconX,resetIconY,0.5);
+	rectangle.changeColor(1.0,0.0,0.0);
+	rectangle.draw();
+	drawText("RESET",resetIconX,resetIconY);
 }
 
 function drawImgIcons(){
