@@ -485,6 +485,8 @@ function initBuffers(){
 	verticesBuffer2=gl2.createBuffer();
 	verticesColorBuffer2=gl2.createBuffer();
 	verticesIndexBuffer2=gl2.createBuffer();
+	pointBuffer2=gl2.createBuffer();
+	pointColorBuffer2=gl2.createBuffer();
 	
 }
 
@@ -1321,7 +1323,7 @@ function rotateT2(x,y){
 function scaleT2(scalar){
 	transform2.scale*=scalar;
 }
-
+var tempid;
 function drawLabSpace(){
 	gl2.clearColor(.5, .5, .5, 1);
 	gl2.clear(gl2.COLOR_BUFFER_BIT | gl2.DEPTH_BUFFER_BIT);
@@ -1354,23 +1356,38 @@ function drawLabSpace(){
 	gl2.drawElements(gl2.LINES, 6, gl2.UNSIGNED_SHORT, 0);
 	
 	//draw colors
-	
 	var len=scales[LabSpaceColor].length;
-	var scale=scales[LabSpaceColor];
-	for(var i=0; i<len;i++){
-		var rgb=scale[i];
-		var lab=rgb_to_lab({'R':rgb.r, 'G':rgb.g, 'B':rgb.b});
-		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
-		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,0,0]), gl2.STATIC_DRAW);
-		gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
-		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
-		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([rgb.r/255,rgb.g/255,rgb.b/255,1]), gl2.STATIC_DRAW);
-		gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
-		
-		mvMatrix2 = Matrix.I(4).x(Matrix.Diagonal([s,s,s,1]).ensure4x4()).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Translation($V([lab.a,lab.L-50,lab.b])));
-		gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
-		gl2.drawArrays(gl2.POINTS, 0, 1);
+
+	
+	if(tempid!=LabSpaceColor){
+		tempid=LabSpaceColor;
+		var scale=scales[LabSpaceColor];
+		var list_rgba=[];
+		var list_pos=[];
+		for(var i=0;i<len;i++){
+			var rgb=scale[i];
+			list_rgba.push(rgb.r/255);
+			list_rgba.push(rgb.g/255);
+			list_rgba.push(rgb.b/255);
+			list_rgba.push(1);
+			var lab=rgb_to_lab({'R':rgb.r, 'G':rgb.g, 'B':rgb.b});
+			list_pos.push(lab.a);
+			list_pos.push(lab.L-50);
+			list_pos.push(lab.b);
+		}
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
 	}
+
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2);
+	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2);
+	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+	
+	gl2.drawArrays(gl2.POINTS, 0, len);
+	
 }
 
 
