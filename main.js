@@ -872,6 +872,7 @@ function handleMouseDown(event){
 		createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
 		targ.style.left=mouse.x-iconWidth/2+'px';
 		targ.style.top=mouse.y-iconHeight/2+'px';
+		targ.style.display="inline";
 	}
 	
 	if(testCanvas2Hit(mouse)){
@@ -1011,6 +1012,7 @@ function clearDrag(){
 	createImage(0,0,iconWidth,iconHeight);
 	targ.style.left='0px';
 	targ.style.top='0px';
+	targ.style.display="none";
 }
 
 function updateMarkerLoc(mouseX,mouseY){
