@@ -57,6 +57,7 @@ var img_panels=[];
 var color_panels=[];
 var colormapFileNames=[];
 var imgFileNames=[];
+var LabSpaceColor=0;
 
 var textCanvas = document.getElementById("text");
 var ctx2 = textCanvas.getContext("2d");
@@ -484,6 +485,7 @@ function initBuffers(){
 	verticesBuffer2=gl2.createBuffer();
 	verticesColorBuffer2=gl2.createBuffer();
 	verticesIndexBuffer2=gl2.createBuffer();
+	
 }
 
 function initMarkers(){
@@ -860,6 +862,8 @@ function handleMouseDown(event){
 		var tempxy;
 		if(dragIcon<10000){
 			tempxy=getIconxy(dragIcon);
+			LabSpaceColor=dragIcon;
+			drawLabSpace();
 		}
 		else{
 			tempxy=getImageIconxy(dragIcon);
@@ -1288,7 +1292,7 @@ function drawThumbnail(x,y,cindex){
 	}
 }
 
-var pMatrix2=makeOrtho(-1,1,-1,1,-1,1);
+var pMatrix2=makeOrtho(-300,300,-300,300,-1000,1000);
 var lastShader2;
 var transform2={
 	degx: 0,
@@ -1317,38 +1321,56 @@ function rotateT2(x,y){
 function scaleT2(scalar){
 	transform2.scale*=scalar;
 }
+
 function drawLabSpace(){
 	gl2.clearColor(.5, .5, .5, 1);
 	gl2.clear(gl2.COLOR_BUFFER_BIT | gl2.DEPTH_BUFFER_BIT);
 	if(lastShader2!=="simple"){
-			lastShader="simple";
+			lastShader2="simple";
 			gl2.useProgram(shaderProgram.simpleShader2);
 			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
 			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
 		}
 	gl2.lineWidth(5);
+	
+	var radx = transform2.degx * Math.PI / 180.0;
+	var rady = transform2.degy * Math.PI / 180.0;
+	var s=transform2.scale;
 
+	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
 
+	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
+	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
+	
+	//draw axes
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-1,0,0,	1,0,0, 0,-1,0,	0,1,0, 0,0,-1, 0,0,1]), gl2.STATIC_DRAW);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,0,0,	128,0,0, 0,-50,0,	0,50,0, 0,0,-128, 0,0,128]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
 	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 1,1,1,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	gl2.bindBuffer(gl2.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer2);
 	gl2.bufferData(gl2.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl2.STATIC_DRAW);
-	
-	var radx = transform2.degx * Math.PI / 180.0;
-	var rady = transform2.degy * Math.PI / 180.0;
-	var s=transform2.scale;
-
-	var mvMatrix2 = Matrix.I(4).ensure4x4().x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
-
-	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
-	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
-	
 	gl2.drawElements(gl2.LINES, 6, gl2.UNSIGNED_SHORT, 0);
 	
+	//draw colors
+	
+	var len=scales[LabSpaceColor].length;
+	var scale=scales[LabSpaceColor];
+	for(var i=0; i<len;i++){
+		var rgb=scale[i];
+		var lab=rgb_to_lab({'R':rgb.r, 'G':rgb.g, 'B':rgb.b});
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,0,0]), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([rgb.r/255,rgb.g/255,rgb.b/255,1]), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+		
+		mvMatrix2 = Matrix.I(4).x(Matrix.Diagonal([s,s,s,1]).ensure4x4()).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Translation($V([lab.a,lab.L-50,lab.b])));
+		gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
+		gl2.drawArrays(gl2.POINTS, 0, 1);
+	}
 }
 
 
