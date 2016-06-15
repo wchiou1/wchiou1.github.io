@@ -43,7 +43,7 @@ var setColorHeight = [0,0];
 var iconViewOffset = 0;
 var iconViewWidth = 70;
 var iconViewHeight = 400;
-var resetIconX = 650;
+var resetIconX = 630;
 var resetIconY = 10;
 var scaleWidth = 400;
 var scaleHeight = 100;
@@ -1074,11 +1074,11 @@ function drawScene() {
 
 function drawResetIcon(){
 	var rectangle=Shape.rectangle;
-	rectangle.scale(40,20);
+	rectangle.scale(60,20);
 	rectangle.move(resetIconX,resetIconY,0.5);
 	rectangle.changeColor(1.0,0.0,0.0);
 	rectangle.draw();
-	drawText("RESET",resetIconX,resetIconY+20);
+	drawText("RESET",resetIconX,resetIconY+18);
 }
 
 function drawImgIcons(){
