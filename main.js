@@ -609,7 +609,6 @@ function initShaders() {
 		pUniform : gl2.getUniformLocation(shaderProgram.simpleShader2, "uPMatrix"),
 		mvUniform : gl2.getUniformLocation(shaderProgram.simpleShader2, "uMVMatrix")
 	};
-
 }
 
 //
@@ -1100,7 +1099,7 @@ function drawLine(x,y,x2,y2,color){
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-thickness,-y,-1,	x+thickness,-y,-1,	x2+thickness,-y2,-1, x2-thickness,-y2,-1]), gl.STATIC_DRAW);
 		
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1, color.r/255,color.g/255,color.b/255,1,	color.r/255,color.g/255,color.b/255,1]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r,color.g,color.b,1,	color.r,color.g,color.b,1, color.r,color.g,color.b,1,	color.r,color.g,color.b,1]), gl.STATIC_DRAW);
 
 	perspectiveMatrix = orthoMatrix;
 	
