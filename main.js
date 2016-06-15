@@ -65,7 +65,6 @@ var ctx2 = textCanvas.getContext("2d");
 var targ = document.getElementById("imageCanvas");
 targ.width="50";
 targ.height="50";
-console.log("target:"+targ);
 
 var orthogonal={
 	l: 0,
