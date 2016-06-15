@@ -116,6 +116,39 @@
 			gl_FragColor = vColor;
 		}
     </script>
+	
+	    <!-- 3D Tube shader program -->
+
+	<script id="tube-shader-vs" type="x-shader/x-vertex">
+		attribute vec3 aVertexPosition;
+		attribute vec2 aVertexNormal;
+		attribute float aVertexWeight;
+		
+		uniform mat4 uMVMatrix;
+		uniform mat4 uPMatrix;
+		
+		varying vec2 vWeight;
+		varying vec3 vNormal;
+
+		void main(void) {
+			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			vNormal = mat3(uMVMatrix)*aVertexNormal;
+			vWeight=aVertexWeight;
+		}
+    </script>
+
+    <script id="tube-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		
+		varying float vWeight;
+		
+		uniform sampler2D uColormap;
+		
+		void main(void) {
+			float lightWeight=max(dot(vNormal,vec3(0,0,1)),0) +0.1;
+			gl_FragColor = vec4(    texture2D(uColormap, vec2(vWeight,0)).rgb*lightWeight	   ,1);
+		}
+    </script>
     
   </head>
 

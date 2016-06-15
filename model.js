@@ -6,7 +6,7 @@ var perspectiveMatrix;
 var shaderProgram;
 var vertexPositionAttribute;
 var vertexNormalAttribute;
-//var vertexWeightAttribute;
+var vertexWeightAttribute;
 
 var verticesPositionBuffer;
 var verticesNormalBuffer;
@@ -19,13 +19,11 @@ var Tube=function(points){
 	this.points=points;//[x,y,z],magnitude
 	this.verticesPositionBuffer=gl.createBuffer();
 	this.verticesNormalBuffer=gl.createBuffer();
-	this.verticesValueBuffer=gl.createBuffer();
+	this.verticesWeightBuffer=gl.createBuffer();
 	this.indices=gl.createBuffer();
-	
+	this.boundingBox={};
 
-	function createVerticesBuffer(){
-	
-	}
+
 	var vertices=[];
 	var weights=[];
 	var normals=[];
@@ -37,7 +35,6 @@ var Tube=function(points){
 	
 
 
-	function TubeVerticesNormals(){
 		
 		for(var i=0;i<numSlice;i++){
 			var angle=i*2*PI/numSlice;
@@ -95,47 +92,61 @@ var Tube=function(points){
 			normals.push(normal.e(3));
 			weights.push(points[c].magnitude);
 		}
-	}
 	
-	function createIndices(plen,numslice){
-		var indices=[];
+	
+	//function createIndices(plen,numslice){
+
 		var plen=plen;
 		var vlen=plen*numslice;
 		
 		var nx=0;
 		var px=0;
-		
-		while(nx<numslice){
+		var up=true;
+		while(nx<numslice-1){
 			if(indices.length>0){
 				indices.pop();
 				nx++;
 			}
-			for(var p=0;p<plen;p++){
-				if(nx==numslice-1){
-					indices.push(p*numslice+nx);
-					indices.push(p*numslice+0);
+			if(up){
+				for(var p=0;p<plen;p++){
+					if(nx==numslice-1){
+						indices.push(p*numslice+nx);
+						indices.push(p*numslice+0);
+					}
+					else{
+						indices.push(p*numslice+nx);
+						indices.push(p*numslice+nx+1);
+					}
 				}
-				else{
-					indices.push(p*numslice+nx);
-					indices.push(p*numslice+nx+1);
-				}
+				up=false;
 			}
-			indices.pop();
-			nx++;
-			for(var p=plen-1;p>=0;p--){
-				if(nx==numslice-1){
-					indices.push(p*numslice+nx);
-					indices.push(p*numslice+0);
+			else{
+				for(var p=plen-1;p>=0;p--){
+					if(nx==numslice-1){
+						indices.push(p*numslice+nx);
+						indices.push(p*numslice+0);
+					}
+					else{
+						indices.push(p*numslice+nx);
+						indices.push(p*numslice+nx+1);
+					}
 				}
-				else{
-					indices.push(p*numslice+nx);
-					indices.push(p*numslice+nx+1);
-				}
+				up=true;
 			}
 		}
-		return indices;
-	}
+	//}
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesPositionBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesNormalBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesWeightBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(weights), gl.STATIC_DRAW);
+
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
 	
 	//create vertices buffer
