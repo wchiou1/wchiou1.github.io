@@ -1160,19 +1160,19 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	
 	//Draw color boxes
 	rectangle.scale(width/2-2,6);
-	rectangle.changeColor(color1.r/255,color1.g/255,color1.b/255);
+	rectangle.changeColor(color1.r,color1.g,color1.b);
 	rectangle.move(x+2,y+2);
 	rectangle.draw();
-	rectangle.changeColor(color2.r/255,color2.g/255,color2.b/255);
+	rectangle.changeColor(color2.r,color2.g,color2.b);
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
 	//write rgb values
-	drawText(Math.round(color1.r)+" "+Math.round(color1.g)+" "+Math.round(color1.b),x+2,y+25);
-	drawText(Math.round(color2.r)+" "+Math.round(color2.g)+" "+Math.round(color2.b),x+width/2+2,y+25);
+	drawText(Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+2,y+25);
+	drawText(Math.round(color2.r*255)+" "+Math.round(color2.g*255)+" "+Math.round(color2.b*255),x+width/2+2,y+25);
 	
 	//write lab values
-	var lab1=rgb_to_lab({'R':color1.r, 'G':color1.g, 'B':color1.b});
-	var lab2=rgb_to_lab({'R':color2.r, 'G':color2.g, 'B':color2.b});
+	var lab1=rgb_to_lab({'R':color1.r*255, 'G':color1.g*255, 'B':color1.b*255});
+	var lab2=rgb_to_lab({'R':color2.r*255, 'G':color2.g*255, 'B':color2.b*255});
 	drawText(Math.round(lab1.L)+" "+Math.round(lab1.a)+" "+Math.round(lab1.b),x+2,y+45);
 	drawText(Math.round(lab2.L)+" "+Math.round(lab2.a)+" "+Math.round(lab2.b),x+width/2+2,y+45);
 	
@@ -1304,7 +1304,7 @@ function drawThumbnail(x,y,cindex){
 	for(var i=0;i<iconWidth;i++){
 		rectangle.move(x+i,y,.5);
 		var color=getColorHeight(cindex,increment*i);
-		rectangle.changeColor(color.r/255.0,color.g/255.0,color.b/255.0);
+		rectangle.changeColor(color.r,color.g,color.b);
 		rectangle.draw();
 	}
 }
@@ -1381,9 +1381,9 @@ function drawLabSpace(){
 		var list_pos=[];
 		for(var i=0;i<len;i++){
 			var rgb=scale[i];
-			list_rgba.push(rgb.r/255);
-			list_rgba.push(rgb.g/255);
-			list_rgba.push(rgb.b/255);
+			list_rgba.push(rgb.r);
+			list_rgba.push(rgb.g);
+			list_rgba.push(rgb.b);
 			list_rgba.push(1);
 			var lab=rgb_to_lab({'R':rgb.r, 'G':rgb.g, 'B':rgb.b});
 			list_pos.push(lab.a);
@@ -1726,13 +1726,13 @@ function drawGraph(x,y,w,h,cID,relative){
 	var len=scale.length;
 	var rect=Shape.rectangle;
 	var cref=getColorHeight(cID,relative);
-	var labref=rgb_to_lab({'R':cref.r, 'G':cref.g, 'B':cref.b});
+	var labref=rgb_to_lab({'R':cref.r*255, 'G':cref.g*255, 'B':cref.b*255});
 	
-	rect.changeColor(cref.r/255.0,cref.g/255.0,cref.b/255.0);
+	rect.changeColor(cref.r,cref.g,cref.b);
 	for(var i=0; i<len; i++){
 		var barWidth=w/len;
 		var color=getColorHeight(cID,i/len);
-		var lab=rgb_to_lab({'R':color.r, 'G':color.g, 'B':color.b});
+		var lab=rgb_to_lab({'R':color.r*255, 'G':color.g*255, 'B':color.b*255});
 		var barHeight=ciede2000(labref,lab);
 		rect.scale(barWidth,barHeight);
 		rect.move(x+(barWidth*i),y+h-barHeight);
