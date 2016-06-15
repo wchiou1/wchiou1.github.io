@@ -1,4 +1,4 @@
-var version="floats"
+var version="floats2"
 
 var canvas;
 var gl;
