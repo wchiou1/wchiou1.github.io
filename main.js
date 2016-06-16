@@ -1483,7 +1483,6 @@ function drawLine(x,y,x2,y2,color){
 
 function drawInfoBoxes(){
 
-	clearText();
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30,0,0);
@@ -1499,12 +1498,14 @@ function drawInfoBoxes(){
 }
 
 function drawInfoBox(x,y,graphIndex, marker){
+	
 	if(mapCIndices[graphIndex]>=scales.length){
 		return;
 	}
 	var rectangle=Shape.rectangle;
 	var width = scaleWidth*.45;
 	var height = 75;
+	ctx2.clearRect(x,y,width.height);
 	rectangle.scale(width,height);
 	rectangle.move(x,y);
 	rectangle.changeColor(1,1,1);
