@@ -24,6 +24,7 @@ var verticesBuffer2;
 var verticesColorBuffer2;
 var verticesIndexBuffer2;
 
+
 //Color stuffs
 var colorMaps = [];//2d array of objects which stores the colors
 var iconHeight = 50;
@@ -79,6 +80,22 @@ var orthogonal={
 };
 var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
 
+/*/WIP//////////////////
+var thumbnails={
+	framebuffer: null,
+	thumbnailTexture: null,
+	size: null,
+	maxSize: null,
+	createThumbnail: function(obj){
+		gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+
+
+		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		return coordx,coordy,w,h;
+	}
+	
+};
+*////////////////////////////////////////
 var viewports=[];
 
 function updateViewportText(){
@@ -531,7 +548,7 @@ var Tube=function(points){
 	this.verticesIndexBuffer=gl.createBuffer();
 	var self=this;
 	const PI=Math.PI;
-	const radius=1;
+	const radius=0.5;
 	const numSlice=6;
 	var vertices=[];
 	var weights=[];
@@ -769,8 +786,8 @@ function start() {
 		// Firefox
 		document.addEventListener("DOMMouseScroll", MouseWheelHandler, false);
 		
-		gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
-		gl.clearDepth(1.0);                 // Clear everything
+		gl.clearColor(0.5, 0.5, 0.5, 1.0);  
+		gl.clearDepth(1.0);
 		//gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
 		gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
@@ -781,9 +798,10 @@ function start() {
 				gl2.enable(gl.DEPTH_TEST);
 				gl2.depthFunc(gl.LEQUAL);
 		}
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		initBuffers();
 		initMarkers();
-		
+		//initTextureFramebuffer();
 		initShaders();
 		initViewport();
 		initShape();
@@ -855,6 +873,27 @@ function initWebGL() {
   }
 }
 
+function initTextureFramebuffer(){
+	framebuffer = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+    Framebuffer.width = 512;
+    Framebuffer.height = 512;
+	thumbnailTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, thumbnailTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+    gl.generateMipmap(gl.TEXTURE_2D);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, Framebuffer.width, Framebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+	var renderbuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, Framebuffer.width, Framebuffer.height);
+	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, thumbnailTexture, 0);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+	
+	gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+}
 //
 // initShaders
 //
@@ -1028,6 +1067,10 @@ function testResetButtonHit(mouseX,mouseY){
 		}
 	}
 	return false;
+}
+
+function generateThumbnail(){
+	
 }
 
 function testImageIconHit(mouseX,mouseY){
