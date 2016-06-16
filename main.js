@@ -82,6 +82,16 @@ var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal
 
 var viewports=[];
 
+function updateViewportText(){
+	var temp = canvas.height/2-20;
+	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
+	//Draw text within the view
+	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,20);
+	drawText(colormapFileNames[mapCIndices[0]],receiveX+scaleWidth+100,32);
+	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,temp+20);
+	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+32);
+}
+
 function initView(){
 	if(!view3D){
 		init2DView();
@@ -115,13 +125,7 @@ function drawView(){
 	else{
 		draw3DView();
 	}
-	var temp = canvas.height/2-20;
-	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
-	//Draw text within the view
-	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,10);
-	drawText(colormapFileNames[mapCIndices[0]],receiveX+scaleWidth+100,20);
-	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,temp+30);
-	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+40);
+	updateViewportText();
 }
 
 var viewMatrix=Matrix.I(4);//2D
