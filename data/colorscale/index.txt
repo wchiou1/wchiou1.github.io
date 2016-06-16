@@ -2,3 +2,9 @@ dMRI-diverging-discrete.txt
 dMRI-saturation-discrete.txt
 fMRI-hue-continuous.txt
 fMRI-lightness-continuous.txt
+smooth-cool-warm.txt
+bent-cool-warm.txt
+black-body.txt
+extended-black-body.txt
+kindlmann.txt
+extended-kindlmann.txt
