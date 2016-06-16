@@ -83,10 +83,13 @@ var viewports=[];
 
 function updateViewportText(){
 	var imgFileName;
-	if(view3D)
+	console.log("v3D"+view3D);
+	if(view3D){
 		imageFileName = tubesFileNames[TubesIndex];
-	else
+	}else{
 		imageFileName = imgFileNames[imgIndex];
+	}
+	console.log("imageFile:"+imageFileName);
 	var temp = canvas.height/2-20;
 	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
 	//Draw text within the view
