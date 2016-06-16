@@ -784,7 +784,7 @@ function start() {
 
 		//setInterval(drawScene, 15);
 		
-		//drawScene();
+		drawHelpText();
 	  }
 	  
 	  
@@ -1424,14 +1424,15 @@ function drawScene() {
 	drawInfoBoxes();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
 	drawResetIcon();
-	drawHelpText();
 }
 
 function drawHelpText(){
 	//Draw notifications for drag and drop
-	drawText("Drag new color maps into the box above to create more icons",iconX,iconY+iconViewHeight);
+	drawText("Drag new color maps into the box",iconX-20,iconY+iconViewHeight+10);
+	drawText("into the box above",iconX-20,iconY+iconViewHeight+22);
 	
-	drawText("Drag new image files into the box above to create more icons",imgIconX,imgIconY+iconViewHeight);
+	drawText("Drag new image files",imgIconX-20,imgIconY+iconViewHeight+10);
+	drawText("into the box above",imgIconX-20,imgIconY+iconViewHeight+22);
 }
 
 function drawResetIcon(){
