@@ -53,6 +53,7 @@ var imageSet = false;
 var rotCanvas2=false;
 var view3D=false;
 var TubesIndex=0;
+var toolTipText = "Init";
 
 var img_data=[];
 var scales=[];
@@ -1423,6 +1424,14 @@ function drawScene() {
 	drawInfoBoxes();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
 	drawResetIcon();
+	drawHelpText();
+}
+
+function drawHelpText(){
+	//Draw notifications for drag and drop
+	drawText("Drag new color maps into the box above to create more icons",iconX,iconY+iconViewHeight);
+	
+	drawText("Drag new image files into the box above to create more icons",imgIconX,imgIconY+iconViewHeight);
 }
 
 function drawResetIcon(){
