@@ -83,12 +83,17 @@ var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal
 var viewports=[];
 
 function updateViewportText(){
+	var imgFileName;
+	if(view3D)
+		imageFileName = tubesFileNames[TubesIndex];
+	else
+		imageFileName = imgFileNames[imgIndex];
 	var temp = canvas.height/2-20;
 	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
 	//Draw text within the view
-	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,20);
+	drawText(imgFileName,receiveX+scaleWidth+100,20);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+scaleWidth+100,32);
-	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,temp+40);
+	drawText(imgFileName,receiveX+scaleWidth+100,temp+40);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+52);
 }
 
@@ -1454,7 +1459,6 @@ function drawResetIcon(){
 	rectangle.move(resetIconX,resetIconY,0.5);
 	rectangle.changeColor(1.0,0.0,0.0);
 	rectangle.draw();
-	ctx2.clearRect(resetIconX+6,resetIconY+16,50,30);
 	drawText("RESET",resetIconX+6,resetIconY+16);
 }
 
