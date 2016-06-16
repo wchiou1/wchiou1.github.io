@@ -1410,7 +1410,7 @@ function drawScene() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	drawImgIcons();
-	if(img_panels.length!=0&&color_panels.length!=0){
+	if(img_panels.length!=0&&color_panels.length>1){
 		//initialize and draw img in viewports
 		initView();
 		drawView();
