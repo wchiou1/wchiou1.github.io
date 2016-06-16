@@ -1562,7 +1562,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
 	//write rgb values
-	drawText("RGB:"+Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+2,y+25);
+	drawText("rgb:"+Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+2,y+25);
 	drawText(Math.round(color2.r*255)+" "+Math.round(color2.g*255)+" "+Math.round(color2.b*255),x+width/2+2,y+25);
 	
 	//write lab values
