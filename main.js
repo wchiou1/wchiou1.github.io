@@ -1037,7 +1037,7 @@ function testMarkerHit(mouseX,mouseY){
 	}
 	for(var i=0;i<markerLocs[scale].length;i++){
 		if(mouseX>1.0*scaleWidth*markerLocs[scale][i]-4+receiveX&&mouseX<1.0*scaleWidth*markerLocs[scale][i]+4+receiveX){
-			return scale*4+i;
+			return scale*markerLocs[0].length+i;
 		}
 	}
 	return -1;
@@ -1355,8 +1355,8 @@ function clearDrag(){
 
 function updateMarkerLoc(mouseX,mouseY){
 	var dx=lastMouseX-mouseX;
-	var scaleIndex = Math.floor(dragMarker/2);
-	var markerIndex = dragMarker%2;
+	var scaleIndex = Math.floor(dragMarker/markerLocs[0].length);
+	var markerIndex = dragMarker%markerLocs[0].length;
 	console.log("si:"+scaleIndex+" mi:"+dragMarker);
 	var tempx = markerLocs[scaleIndex][markerIndex];
 	tempx=tempx-dx/scaleWidth;
