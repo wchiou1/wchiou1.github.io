@@ -850,7 +850,7 @@ function handleMouseDown(event){
 	//Get the mouse x and y
 	var mouse = getMousePos(canvas, event);
 	//Test if resetbutton was pressed
-	if(testResetButtonHit(mouse.x,mouse.y)){
+	if(testResetButtonHit(mouse.x,mouse.y)&&img_panels.length!=0){
 		imageSet=false;
 		initView(imgIndex);
 		drawView();
