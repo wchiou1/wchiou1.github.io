@@ -533,20 +533,22 @@ var Tube=function(points){
 	var normals=[];
 	var indices=[];
 	var plen=points.length;
-	this.vlen=plen*numSlice;
+	this.ilen=null;
 	
+	//base
+	var va=$V(points[0+1].position).subtract($V(points[0].position)).toUnitVector();
+	if(va.e(1)!=0||va.e(2)!=0)
+		var uu=va.cross($V([0,0,1])).toUnitVector();
+	else
+		var uu=va.cross($V([0,1,0])).toUnitVector();
+	var vv=va.cross(uu).toUnitVector();
+		
 	for(var i=0;i<numSlice;i++){
 		var angle=i*2*PI/numSlice;
-		var va=$V(points[0+1].position).subtract($V(points[0].position)).toUnitVector();
-		if(va.e(1)!=0||va.e(2)!=0)
-			var uu=va.cross($V([0,0,1])).toUnitVector();
-		else
-			var uu=va.cross($V([0,1,0])).toUnitVector();
-		var vv=va.cross(uu).toUnitVector();
-			
+		
 		var normal=uu.x(Math.cos(angle)).add(vv.x(Math.sin(angle)));
 		var vertex=$V(points[0].position).add(normal.multiply(radius));
-			
+	
 		vertices.push(Number(vertex.e(1)));
 		vertices.push(Number(vertex.e(2)));
 		vertices.push(Number(vertex.e(3)));
@@ -555,7 +557,8 @@ var Tube=function(points){
 		normals.push(Number(normal.e(3)));
 		weights.push(Number(points[0].magnitude));
 	}
-		
+	
+	//mid 
 	for(var c=1;c<points.length-1;c++){
 		for(var i=0;i<numSlice;i++){
 			var va=$V(points[c].position).subtract($V(points[c-1].position)).toUnitVector();
@@ -574,14 +577,14 @@ var Tube=function(points){
 			weights.push(Number(points[c].magnitude));
 		}
 	}
-	
+	//top
 	for(var i=0;i<numSlice;i++){
 		var c=points.length-1;
 		var va=$V(points[c].position).subtract($V(points[c-1].position)).toUnitVector();
 		var nidx=((c-1)*numSlice+i)*3;
 		var normal=va.cross($V([normals[nidx],normals[nidx+1],normals[nidx+2]])).cross(va).toUnitVector();
 		var vertex=$V(points[c].position).add(normal.multiply(radius));
-			
+		
 		vertices.push(Number(vertex.e(1)));
 		vertices.push(Number(vertex.e(2)));
 		vertices.push(Number(vertex.e(3)));
@@ -628,8 +631,8 @@ var Tube=function(points){
 			up=true;
 		}
 	}
-		
-		
+	this.ilen=indices.length;
+	
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.verticesBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 		
@@ -641,7 +644,7 @@ var Tube=function(points){
 
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.verticesIndexBuffer);
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-
+	
 	this.draw=function(){
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		gl.vertexAttribPointer(attributes.tubeShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
@@ -653,7 +656,7 @@ var Tube=function(points){
 		gl.vertexAttribPointer(attributes.tubeShader.vertexWeightAttribute, 1, gl.FLOAT, false, 0, 0);
 		
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, self.verticesIndexBuffer);
-		gl.drawElements(gl.TRIANGLE_STRIP, self.vlen, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(gl.TRIANGLE_STRIP, self.ilen, gl.UNSIGNED_SHORT, 0);
 	};
 };//Tube
 	
@@ -661,6 +664,7 @@ var Tubes3D = function(text){
 	this.tubes=[];
 	this.boundingBox={l:null,r:null,b:null,t:null,n:null,f:null};
 	this.center=null;
+	this.halfDimension=null;
 	this.color=0;
 	var self=this;
 	//SVL_Split_Tubes(text)
@@ -702,7 +706,7 @@ var Tubes3D = function(text){
 		this.tubes.push(new Tube(points));
 	}
 	this.center=[(this.boundingBox.l+this.boundingBox.r)/2,(this.boundingBox.t+this.boundingBox.b)/2,-(this.boundingBox.n+this.boundingBox.f)/2];
-	
+	this.halfDimension=Math.max(this.boundingBox.r-this.boundingBox.l,this.boundingBox.t-this.boundingBox.b,this.boundingBox.f-this.boundingBox.n)/2;
 	this.changeColor=function(cID){
 		self.color=cID;
 	};
@@ -729,7 +733,7 @@ var Tubes3D = function(text){
 
 		gl.bindTexture(gl.TEXTURE_2D, color_panels[self.color].texture);
 		
-		perspectiveMatrix = makeOrtho(50,200,50,200,-200,200);
+		perspectiveMatrix = makeOrtho(self.center[0]-self.halfDimension,self.center[0]+self.halfDimension,self.center[1]-self.halfDimension,self.center[1]+self.halfDimension,-10000,10000);
 		
 		gl.uniformMatrix4fv(uniforms.tubeShader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
 		gl.uniformMatrix4fv(uniforms.tubeShader.mvUniform, false, new Float32Array(viewMatrix3D.flatten()));
