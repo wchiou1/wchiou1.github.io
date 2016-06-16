@@ -1,5 +1,5 @@
 
-var version="viewport text"
+var version="viewport text2"
 
 var canvas;
 var gl;
