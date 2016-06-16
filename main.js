@@ -1,5 +1,5 @@
 
-var version="cleanup4 + readfile on load 2"
+var version="cleanup5 + readfile on load 2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -83,13 +83,10 @@ var viewports=[];
 
 function updateViewportText(){
 	var imgFileName;
-	console.log("v3D"+view3D);
-	if(view3D){
+	if(view3D)
 		imageFileName = tubesFileNames[TubesIndex];
-	}else{
+	else
 		imageFileName = imgFileNames[imgIndex];
-	}
-	console.log("imageFile:"+imageFileName);
 	var temp = canvas.height/2-20;
 	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
 	//Draw text within the view
