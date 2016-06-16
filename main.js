@@ -1516,14 +1516,14 @@ function drawInfoBoxes(){
 
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30,0,0,1);
-	drawInfoBox(scaleWidth*.525+receiveX,receiveY+scaleHeight+30,0,2,3);
+	drawInfoBox(scaleWidth*.0+receiveX,receiveY+scaleHeight+30,0,0,1);
+	drawInfoBox(scaleWidth*.51+receiveX,receiveY+scaleHeight+30,0,2,3);
 	ctx2.clearRect(receiveX,receiveY,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+10,receiveY+scaleHeight/4);
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.01+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
+	drawInfoBox(scaleWidth*.0+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
 	drawInfoBox(scaleWidth*.51+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
 	ctx2.clearRect(receiveX,receiveY+receiveDelta,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleHeight/4);
