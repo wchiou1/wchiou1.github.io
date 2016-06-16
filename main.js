@@ -1431,8 +1431,8 @@ function drawHelpText(){
 	drawText("Drag new color maps",iconX-24,iconY+iconViewHeight+15);
 	drawText("into the box above",iconX-20,iconY+iconViewHeight+29);
 	
-	drawText("Drag new image files",imgIconX-24,imgIconY+iconViewHeight+15);
-	drawText("into the box above",imgIconX-20,imgIconY+iconViewHeight+29);
+	drawText("Drag new image files",imgIconX-34,imgIconY+iconViewHeight+15);
+	drawText("into the box above",imgIconX-30,imgIconY+iconViewHeight+29);
 }
 
 function drawResetIcon(){
