@@ -1523,7 +1523,7 @@ function drawInfoBoxes(){
 	drawText("-LAB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+30+45);
 	ctx2.clearRect(receiveX,receiveY,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+10,receiveY+scaleHeight/4);
-	rectangle.scale(scaleWidth*.045,75);
+	rectangle.scale(scaleWidth*.095,75);
 	rectangle.move(receiveX+scaleWidth/2-20,receiveY+scaleHeight+30);
 	rectangle.changeColor(.9,.9,.9);
 	rectangle.draw();
@@ -1536,7 +1536,7 @@ function drawInfoBoxes(){
 	drawText("-LAB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+receiveDelta+30+45);
 	ctx2.clearRect(receiveX,receiveY+receiveDelta,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleHeight/4);
-	rectangle.scale(scaleWidth*.045,75);
+	rectangle.scale(scaleWidth*.095,75);
 	rectangle.move(receiveX+scaleWidth/2-20,receiveY+scaleHeight+receiveDelta+30);
 	rectangle.changeColor(.9,.9,.9);
 	rectangle.draw();
