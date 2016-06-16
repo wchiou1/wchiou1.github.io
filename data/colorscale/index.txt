@@ -1,4 +1,4 @@
-dMRI-diverging-discrete
-dMRI-saturation-discrete
-fMRI-hue-continuous
-fMRI-lightness-continuous
+dMRI-diverging-discrete.txt
+dMRI-saturation-discrete.txt
+fMRI-hue-continuous.txt
+fMRI-lightness-continuous.txt
