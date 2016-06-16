@@ -1453,7 +1453,7 @@ function drawResetIcon(){
 	rectangle.move(resetIconX,resetIconY,0.5);
 	rectangle.changeColor(1.0,0.0,0.0);
 	rectangle.draw();
-	ctx2.clearRect(resetIconX+6,resetIconY+16,50,14);
+	ctx2.clearRect(resetIconX+6,resetIconY+16,50,30);
 	drawText("RESET",resetIconX+6,resetIconY+16);
 }
 
