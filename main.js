@@ -1357,7 +1357,7 @@ function updateMarkerLoc(mouseX,mouseY){
 	var dx=lastMouseX-mouseX;
 	var scaleIndex = Math.floor(dragMarker/2);
 	var markerIndex = dragMarker%2;
-	console.log("si:"+scaleIndex+" mi:"+markerIndex);
+	console.log("si:"+scaleIndex+" mi:"+dragMarker);
 	var tempx = markerLocs[scaleIndex][markerIndex];
 	tempx=tempx-dx/scaleWidth;
 	
