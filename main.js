@@ -1,4 +1,4 @@
-var version="cleanup3 + readfile on load 2"
+var version="cleanup3 + simplify draw color thumbnails"
 
 var canvas;
 var gl;
@@ -1685,16 +1685,9 @@ function drawColorThumbnails(){
 }
 
 function drawThumbnail(x,y,cindex){
-	var rectangle=Shape.rectangle;
-	rectangle.scale(1,iconHeight);
-	var increment = 1.0/iconWidth;
-
-	for(var i=0;i<iconWidth;i++){
-		rectangle.move(x+i,y,.5);
-		var color=getColorHeight(cindex,increment*i);
-		rectangle.changeColor(color.r,color.g,color.b);
-		rectangle.draw();
-	}
+	color_panels[cindex].scale(iconWidth,iconHeight);
+	color_panels[cindex].move(x,y);
+	color_panels[cindex].draw();
 }
 
 var pMatrix2=makeOrtho(-300,300,-300,300,-1000,1000);
