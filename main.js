@@ -796,7 +796,7 @@ function initBuffers(){
 
 function initMarkers(){
 	for(var i=0;i<mapCIndices.length;i++){
-		markerLocs[i] = [.2,.4,.6,.8];
+		markerLocs[i] = [0,.5];
 	}
 }
 
@@ -1473,20 +1473,19 @@ function drawInfoBoxes(){
 	clearText();
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30,0,0,1);
-	drawInfoBox(scaleWidth*.525+receiveX,receiveY+scaleHeight+30,0,2,3);
+	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30,0,0);
+	drawInfoBox(scaleWidth*.525+receiveX,receiveY+scaleHeight+30,0,1);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+10,receiveY+scaleHeight/4);
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
-	drawInfoBox(scaleWidth*.525+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
+	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0);
+	drawInfoBox(scaleWidth*.525+receiveX,receiveY+scaleHeight+30+receiveDelta,1,1);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleHeight/4);
-	
 	
 }
 
-function drawInfoBox(x,y,graphIndex, marker1, marker2){
+function drawInfoBox(x,y,graphIndex, marker){
 	if(mapCIndices[graphIndex]>=scales.length){
 		return;
 	}
@@ -1499,13 +1498,11 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.draw();
 	
 	//Draw lines to the markers
-	var marker1Loc = markerLocs[graphIndex][marker1];
-	var marker2Loc = markerLocs[graphIndex][marker2];
+	var markerLoc = markerLocs[graphIndex][marker];
 	var color1 = getColorHeight(mapCIndices[graphIndex],marker1Loc);
-	var color2 =getColorHeight(mapCIndices[graphIndex],marker2Loc)
+	var color2 = getColorHeight(mapCIndices[graphIndex],setColorHeight(graphIndex));
 	
-	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
-	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width,y,color2);
+	drawLine(receiveX+scaleWidth*markerLoc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
 	
 	//Draw color boxes
 	rectangle.scale(width/2-2,6);
