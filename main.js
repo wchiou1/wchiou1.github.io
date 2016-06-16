@@ -1,4 +1,4 @@
-var version="viewport text6"
+var version="cleanup"
 
 var canvas;
 var gl;
@@ -89,7 +89,6 @@ function updateViewportText(){
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+scaleWidth+100,32);
 	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,temp+40);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+52);
-	console.log("Draw Text");
 }
 
 function initView(){
@@ -126,7 +125,6 @@ function drawView(){
 	else{
 		draw3DView();
 	}
-	updateViewportText();
 }
 
 var viewMatrix=Matrix.I(4);//2D
