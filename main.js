@@ -785,6 +785,7 @@ function start() {
 		//setInterval(drawScene, 15);
 		
 		drawHelpText();
+		drawResetIcon();
 	  }
 	  
 	  
@@ -1433,7 +1434,7 @@ function drawScene() {
 	drawMarkers();
 	drawInfoBoxes();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
-	drawResetIcon();
+	
 }
 
 function drawHelpText(){
