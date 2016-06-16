@@ -1,4 +1,4 @@
-var version="cleanup3 + readfile on load 2"
+var version="cleanup4 + readfile on load 2"
 
 var canvas;
 var gl;
