@@ -1029,7 +1029,7 @@ function testImageIconHit(mouseX,mouseY){
 		return -1;
 	}
 	//Test y values
-	for(var i=0;i<img_data.length;i++){
+	for(var i=0;i<img_data.length+Tubes3DList.length;i++){
 		if(mouseY>imgIconY+10+i*(iconHeight+10)&&mouseY<imgIconY+10+iconHeight+i*(iconHeight+10)){
 			return i+10000;
 		}
@@ -1256,7 +1256,17 @@ function handleMouseUp(event){
 		}
 	}
 	if(dragIcon>=10000){
-		imgIndex = dragIcon-10000;
+		var temp = dragIcon-10000;
+		if(temp<img_panels.length){
+			TubesIndex=-1;
+			imgIndex=temp;
+			view3D = false;
+		}
+		else{
+			TubesIndex=temp-img_panels.length;
+			imgIndex=-1;
+			view3D = true;
+		}
 		initView();
 		drawView();
 	}
