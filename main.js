@@ -1,5 +1,5 @@
-var version="cleanup3 + simplify draw color thumbnails"
 
+var version="cleanup4 + readfile on load 2"
 var canvas;
 var gl;
 var imageCanvas;
@@ -83,16 +83,25 @@ var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal
 var viewports=[];
 
 function updateViewportText(){
+	var imgFileName;
+	if(view3D)
+		imageFileName = tubesFileNames[TubesIndex];
+	else
+		imageFileName = imgFileNames[imgIndex];
 	var temp = canvas.height/2-20;
 	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
 	//Draw text within the view
-	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,20);
+	drawText(imgFileName,receiveX+scaleWidth+100,20);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+scaleWidth+100,32);
-	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,temp+40);
+	drawText(imgFileName,receiveX+scaleWidth+100,temp+40);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+52);
 }
 
 function initView(){
+	if(imageSet){
+		return;
+	}
+	imageSet=true;
 	if(!view3D){
 		init2DView();
 	}
@@ -130,9 +139,6 @@ function drawView(){
 
 var viewMatrix=Matrix.I(4);//2D
 function init2DView(){
-	if(imageSet){
-		return;
-	}
 	var id=imgIndex;
 	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
 	moveView((viewports[0].w-img_data[id].w)/2,(img_data[id].h-viewports[0].h)/2);
@@ -141,7 +147,7 @@ function init2DView(){
 function move2DView(x,y){
 	if(imgIndex<0) return;
 	viewMatrix=Matrix.Translation($V([x,y,0])).ensure4x4().x(viewMatrix);
-	imageSet=true;
+	
 }
 function scale2DView(scalar){
 	if(imgIndex<0) return;
@@ -785,7 +791,7 @@ function start() {
 		//setInterval(drawScene, 15);
 		
 		drawHelpText();
-		drawResetIcon();
+		
 	  }
 	  
 	  
@@ -1434,6 +1440,7 @@ function drawScene() {
 	drawMarkers();
 	drawInfoBoxes();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
+	drawResetIcon();
 	
 }
 
