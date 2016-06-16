@@ -1355,8 +1355,8 @@ function clearDrag(){
 
 function updateMarkerLoc(mouseX,mouseY){
 	var dx=lastMouseX-mouseX;
-	var scaleIndex = Math.floor(dragMarker/4);
-	var markerIndex = dragMarker%4;
+	var scaleIndex = Math.floor(dragMarker/2);
+	var markerIndex = dragMarker%2;
 	var tempx = markerLocs[scaleIndex][markerIndex];
 	tempx=tempx-dx/scaleWidth;
 	
@@ -1499,7 +1499,7 @@ function drawInfoBox(x,y,graphIndex, marker){
 	
 	//Draw lines to the markers
 	var markerLoc = markerLocs[graphIndex][marker];
-	var color1 = getColorHeight(mapCIndices[graphIndex],marker1Loc);
+	var color1 = getColorHeight(mapCIndices[graphIndex],markerLoc);
 	var color2 = getColorHeight(mapCIndices[graphIndex],setColorHeight(graphIndex));
 	
 	drawLine(receiveX+scaleWidth*markerLoc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
