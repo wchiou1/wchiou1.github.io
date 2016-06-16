@@ -1211,6 +1211,7 @@ function handleMouseDown(event){
 		drawGraphs();
 		drawPanels();
 		drawMarkers();
+		drawInfoBoxes();
 	}
 	
 	if(dragIcon>=0){
