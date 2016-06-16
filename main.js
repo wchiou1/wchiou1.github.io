@@ -1969,8 +1969,8 @@ function readTextToImage(text,filename){
 	if(lines[lines.length-1]==""||lines[lines.length-1]=="\r")lines.pop();
 	imageHeight=lines.length;
 	for(var i=0;i<lines.length;i++) {
-		var values=lines[i].split(' ');if(i==0)console.log(values);
-		if(values[values.length-1]=="\r")values.pop();
+		var values=lines[i].split(' ');
+		if(values[values.length-1]=="\r"||values[values.length-1]=="")values.pop();
 		if(!imageWidth){
 			imageWidth = values.length;
 		}else if(imageWidth!=values.length){
