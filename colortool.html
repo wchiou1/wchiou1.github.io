@@ -146,7 +146,7 @@
 		uniform sampler2D uColormap;
 		
 		void main(void) {
-			float lightWeight=max(dot(vNormal,vec3(0.0,0.0,1.0)),0.0) +0.1;
+			float lightWeight=min(max(dot(vNormal,vec3(0.0,0.0,1.0)),0.0) +0.1,1.0);
 			gl_FragColor = vec4(   lightWeight * texture2D(uColormap, vec2(vWeight,0)).rgb	   ,1);
 		}
     </script>

@@ -632,7 +632,7 @@ var Tube=function(points){
 		}
 	}
 	this.ilen=indices.length;
-	
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.verticesBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 		
