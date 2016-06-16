@@ -1,10 +1,8 @@
 var version="zoomtesting && another gl canvas05"
-
 var canvas;
 var gl;
 var imageCanvas;
 var ctx;
-
 var canvas2;
 var gl2;
 
@@ -55,8 +53,10 @@ var img_data=[];
 var scales=[];
 var img_panels=[];
 var color_panels=[];
+var Tubes3DList=[];
 var colormapFileNames=[];
 var imgFileNames=[];
+var tubesFileNames=[];
 var LabSpaceColor=0;
 
 var textCanvas = document.getElementById("text");
@@ -424,6 +424,207 @@ var Rectangle= function(){
 	};
 };
 
+
+var Tube=function(points){
+	this.verticesBuffer=gl.createBuffer();
+	this.verticesNormalBuffer=gl.createBuffer();
+	this.verticesWeightBuffer=gl.createBuffer();
+	this.verticesIndexBuffer=gl.createBuffer();
+	var self=this;
+	const PI=Math.PI;
+	const radius=1;
+	const numSlice=6;
+	var vertices=[];
+	var weights=[];
+	var normals=[];
+	var indices=[];
+	var plen=points.length;
+	this.vlen=plen*numSlice;
+	
+	for(var i=0;i<numSlice;i++){
+		var angle=i*2*PI/numSlice;
+		var va=$V(points[0+1].position).subtract($V(points[0].position)).toUnitVector();
+		if(va.e(1)!=0||va.e(2)!=0)
+			var uu=va.cross($V([0,0,1])).toUnitVector();
+		else
+			var uu=va.cross($V([0,1,0])).toUnitVector();
+		var vv=va.cross(uu).toUnitVector();
+			
+		var normal=uu.x(Math.cos(angle)).add(vv.x(Math.sin(angle)));
+		var vertex=$V(points[0].position).add(normal.multiply(radius));
+			
+		vertices.push(Number(vertex.e(1)));
+		vertices.push(Number(vertex.e(2)));
+		vertices.push(Number(vertex.e(3)));
+		normals.push(Number(normal.e(1)));
+		normals.push(Number(normal.e(2)));
+		normals.push(Number(normal.e(3)));
+		weights.push(Number(points[0].magnitude));
+	}
+		
+	for(var c=1;c<points.length-1;c++){
+		for(var i=0;i<numSlice;i++){
+			var va=$V(points[c].position).subtract($V(points[c-1].position)).toUnitVector();
+			var vb=$V(points[c+1].position).subtract($V(points[c].position)).toUnitVector();
+			var vc=va.add(vb).toUnitVector();
+			var nidx=((c-1)*numSlice+i)*3;
+			var normal=vc.cross($V([normals[nidx],normals[nidx+1],normals[nidx+2]])).cross(vc).toUnitVector();
+			var vertex=$V(points[c].position).add(normal.multiply(radius));
+			
+			vertices.push(Number(vertex.e(1)));
+			vertices.push(Number(vertex.e(2)));
+			vertices.push(Number(vertex.e(3)));
+			normals.push(Number(normal.e(1)));
+			normals.push(Number(normal.e(2)));
+			normals.push(Number(normal.e(3)));
+			weights.push(Number(points[c].magnitude));
+		}
+	}
+	
+	for(var i=0;i<numSlice;i++){
+		var c=points.length-1;
+		var va=$V(points[c].position).subtract($V(points[c-1].position)).toUnitVector();
+		var nidx=((c-1)*numSlice+i)*3;
+		var normal=va.cross($V([normals[nidx],normals[nidx+1],normals[nidx+2]])).cross(va).toUnitVector();
+		var vertex=$V(points[c].position).add(normal.multiply(radius));
+			
+		vertices.push(Number(vertex.e(1)));
+		vertices.push(Number(vertex.e(2)));
+		vertices.push(Number(vertex.e(3)));
+		normals.push(Number(normal.e(1)));
+		normals.push(Number(normal.e(2)));
+		normals.push(Number(normal.e(3)));
+		weights.push(Number(points[c].magnitude));
+	}
+	
+	
+	//createIndices(plen,numSlice)
+	var nx=0;
+	var px=0;
+	var up=true;
+	while(nx<numSlice-1){
+		if(indices.length>0){
+			indices.pop();
+			nx++;
+		}
+		if(up){
+			for(var p=0;p<plen;p++){
+				if(nx==numSlice-1){
+					indices.push(p*numSlice+nx);
+					indices.push(p*numSlice+0);
+				}
+				else{
+					indices.push(p*numSlice+nx);
+					indices.push(p*numSlice+nx+1);
+				}
+			}
+			up=false;
+		}
+		else{
+			for(var p=plen-1;p>=0;p--){
+				if(nx==numSlice-1){
+					indices.push(p*numSlice+nx);
+					indices.push(p*numSlice+0);
+				}
+				else{
+					indices.push(p*numSlice+nx);
+					indices.push(p*numSlice+nx+1);
+				}
+			}
+			up=true;
+		}
+	}
+		
+		
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.verticesBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+		
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.verticesNormalBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+		
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.verticesWeightBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(weights), gl.STATIC_DRAW);
+
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.verticesIndexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+	this.draw=function(){
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+		gl.vertexAttribPointer(attributes.tubeShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesNormalBuffer);
+		gl.vertexAttribPointer(attributes.tubeShader.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+			
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesWeightBuffer);
+		gl.vertexAttribPointer(attributes.tubeShader.vertexWeightAttribute, 1, gl.FLOAT, false, 0, 0);
+		
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, self.verticesIndexBuffer);
+		gl.drawElements(gl.TRIANGLE_STRIP, self.vlen, gl.UNSIGNED_SHORT, 0);
+	};
+};//Tube
+	
+var Tubes3D = function(text){
+	this.tubes=[];
+	//this.boundingBox={l:0,r:200,b:0,t:200,n:-100,f:200};
+	this.color=0;
+	var self=this;
+	//SVL_Split_Tubes(text)
+	var lines=text.split("\n");
+	
+	var numTubes=Number(lines[0]);
+	var i=1;
+	for(var t=0;t<numTubes;t++){
+		var numPoints=Number(lines[i]);
+		i++;
+		var points=[];
+		for(var p=0;p<numPoints;p++){
+			var point={};
+			var lineData=lines[i].split(" ");
+			var x=Number(lineData[0]);
+			var y=Number(lineData[1]);
+			var z=Number(lineData[2]);
+			point.position=[x,y,z];
+			point.magnitude=Number(lineData[4]);
+			points.push(point);
+			i++;
+		}
+		this.tubes.push(new Tube(points));
+	}
+	
+	this.changeColor=function(cID){
+		self.color=cID;
+	};
+	this.drawInViewport=function(vID){
+		var viewp=viewports[vID];
+		viewp.clear();
+		gl.viewport(viewp.x, canvas.height-viewp.y-viewp.h, viewp.w, viewp.h);
+		
+		if(lastShader!=="tubeShader"){
+			lastShader="tubeShader";
+			gl.useProgram(shaderProgram.tubeShader);
+			gl.enableVertexAttribArray(attributes.tubeShader.vertexPositionAttribute);
+			gl.enableVertexAttribArray(attributes.tubeShader.vertexNormalAttribute);
+			gl.enableVertexAttribArray(attributes.tubeShader.vertexWeightAttribute);
+		}
+
+		
+		gl.uniform1i(uniforms.tubeShader.uColormapLoc, 0); 
+		gl.activeTexture(gl.TEXTURE0);
+
+		gl.bindTexture(gl.TEXTURE_2D, color_panels[self.color].texture);
+		
+		perspectiveMatrix = makeOrtho(50,200,50,200,-200,200);
+		var viewMatrix3D=Matrix.I(4);
+		gl.uniformMatrix4fv(uniforms.tubeShader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
+		gl.uniformMatrix4fv(uniforms.tubeShader.mvUniform, false, new Float32Array(viewMatrix3D.flatten()));
+		var tlen=self.tubes.length;
+		for(var i=0;i<tlen;i++){
+			self.tubes[i].draw();
+		}
+		gl.viewport(0, 0, canvas.width, canvas.height);
+	};
+};
+
 var Shape={};
 function start() {
 	console.log("version:"+version);
@@ -591,6 +792,25 @@ function initShaders() {
 		mvUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uMVMatrix")
 	};
 	
+	var tube_vertexShader = getShader(gl, "tube-shader-vs");
+	var tube_fragmentShader = getShader(gl, "tube-shader-fs");
+	shaderProgram.tubeShader = gl.createProgram();
+	gl.attachShader(shaderProgram.tubeShader, tube_vertexShader);
+	gl.attachShader(shaderProgram.tubeShader, tube_fragmentShader);
+	gl.linkProgram(shaderProgram.tubeShader);
+	if (!gl.getProgramParameter(shaderProgram.tubeShader, gl.LINK_STATUS)) {
+		alert("Unable to initialize the shader program: ");
+	}
+	attributes.tubeShader={
+		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.tubeShader, "aVertexPosition"),
+		vertexNormalAttribute : gl.getAttribLocation(shaderProgram.tubeShader, "aVertexNormal"),
+		vertexWeightAttribute : gl.getAttribLocation(shaderProgram.tubeShader, "aVertexWeight")
+	};
+	uniforms.tubeShader={
+		pUniform : gl.getUniformLocation(shaderProgram.tubeShader, "uPMatrix"),
+		mvUniform : gl.getUniformLocation(shaderProgram.tubeShader, "uMVMatrix"),
+		uColormapLoc : gl.getUniformLocation(shaderProgram.tubeShader, "uColormap")
+	};
 	//second gl 
 	var simple_vertexShader2 = getShader(gl2, "simple-shader-vs");
 	var simple_fragmentShader2 = getShader(gl2, "simple-shader-fs");
@@ -1486,6 +1706,7 @@ function FileListenerInit(){
 			var drop2 = document.getElementById('drop2');
 			var select1 = document.getElementById('selector1');
 			var select2 = document.getElementById('selector2');
+			var select3 = document.getElementById('selector3');
 			
 			drop1.style.left= imgIconX-1+'px';
 			drop1.style.top= imgIconY-1+"px";
@@ -1520,6 +1741,7 @@ function FileListenerInit(){
 			addEventHandler(drop2,'drop', function(e){readDroppedFiles(e,'color');});
 			addEventHandler(select1,'change', handleImageFileSelect);
 			addEventHandler(select2,'change', handleColorFileSelect);
+			addEventHandler(select3,'change', handleTubesFileSelect);
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
@@ -1537,6 +1759,9 @@ function readFiles(files,type){
 			}
 			else if(type=='color'){
 				readTextToScale(e2.target.result,this.file.name);
+			}
+			else if(type=='tubes'){
+				readTextToTubes(e2.target.result,this.file.name);
 			}
 		}
 		reader.readAsText(file); // start reading the file data.
@@ -1643,7 +1868,11 @@ function readTextToScale(text,filename){
 	//console.log(colormapFileNames);
 	//computeDeltaE(scales.length-1);
 }
-
+function readTextToTubes(text,filename){
+	Tubes3DList.push(new Tubes3D(text));
+	tubesFileNames.push(filename);
+	drawScene();
+}
 function handleImageFileSelect(evt) {
     var files = evt.target.files;
     readFiles(files,"img");
@@ -1652,6 +1881,10 @@ function handleImageFileSelect(evt) {
 function handleColorFileSelect(evt) {
     var files = evt.target.files;
     readFiles(files,"color");
+}
+function handleTubesFileSelect(evt){
+	var files = evt.target.files;
+    readFiles(files,"tubes");
 }
 
 //change background 0 to -1
