@@ -1428,11 +1428,11 @@ function drawScene() {
 
 function drawHelpText(){
 	//Draw notifications for drag and drop
-	drawText("Drag new color maps into the box",iconX-20,iconY+iconViewHeight+10);
-	drawText("into the box above",iconX-20,iconY+iconViewHeight+22);
+	drawText("Drag new color maps",iconX-20,iconY+iconViewHeight+12);
+	drawText("into the box above",iconX-20,iconY+iconViewHeight+26);
 	
-	drawText("Drag new image files",imgIconX-20,imgIconY+iconViewHeight+10);
-	drawText("into the box above",imgIconX-20,imgIconY+iconViewHeight+22);
+	drawText("Drag new image files",imgIconX-20,imgIconY+iconViewHeight+12);
+	drawText("into the box above",imgIconX-20,imgIconY+iconViewHeight+26);
 }
 
 function drawResetIcon(){
