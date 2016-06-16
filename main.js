@@ -785,7 +785,7 @@ function start() {
 		//setInterval(drawScene, 15);
 		
 		drawHelpText();
-		drawResetIcon();
+		
 	  }
 	  
 	  
@@ -1434,6 +1434,7 @@ function drawScene() {
 	drawMarkers();
 	drawInfoBoxes();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
+	drawResetIcon();
 	
 }
 
@@ -1452,6 +1453,7 @@ function drawResetIcon(){
 	rectangle.move(resetIconX,resetIconY,0.5);
 	rectangle.changeColor(1.0,0.0,0.0);
 	rectangle.draw();
+	ctx2.clearRect(resetIconX+6,resetIconY+16,50,14);
 	drawText("RESET",resetIconX+6,resetIconY+16);
 }
 
