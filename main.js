@@ -1537,7 +1537,7 @@ function drawInfoBoxes(){
 	ctx2.clearRect(receiveX,receiveY+receiveDelta,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleHeight/4);
 	rectangle.scale(scaleWidth*.095,75);
-	rectangle.move(receiveX+scaleWidth/2-29,receiveY+scaleHeight+receiveDelta+30);
+	rectangle.move(receiveX+scaleWidth/2-19,receiveY+scaleHeight+receiveDelta+30);
 	rectangle.changeColor(.9,.9,.9);
 	rectangle.draw();
 	
