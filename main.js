@@ -1,4 +1,4 @@
-var version="cleanup3 + readfile on load 1"
+var version="cleanup3 + readfile on load 2"
 
 var canvas;
 var gl;
@@ -1964,7 +1964,7 @@ function readTextToImage(text,filename){
 
 	//parse the data into the array
 	var lines=text.split('\n');
-	if(lines[lines.length-1]=="")lines.pop();
+	if(lines[lines.length-1]==""||lines[lines.length-1]=="\r")lines.pop();
 	imageHeight=lines.length;
 	for(var i=0;i<lines.length;i++) {
 		var values=lines[i].split(' ');
