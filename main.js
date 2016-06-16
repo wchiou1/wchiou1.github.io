@@ -1500,7 +1500,7 @@ function drawInfoBox(x,y,graphIndex, marker){
 	//Draw lines to the markers
 	var markerLoc = markerLocs[graphIndex][marker];
 	var color1 = getColorHeight(mapCIndices[graphIndex],markerLoc);
-	var color2 = getColorHeight(mapCIndices[graphIndex],setColorHeight(graphIndex));
+	var color2 = getColorHeight(mapCIndices[graphIndex],setColorHeight[graphIndex]);
 	
 	drawLine(receiveX+scaleWidth*markerLoc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
 	
