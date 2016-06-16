@@ -121,13 +121,13 @@
 
 	<script id="tube-shader-vs" type="x-shader/x-vertex">
 		attribute vec3 aVertexPosition;
-		attribute vec2 aVertexNormal;
+		attribute vec3 aVertexNormal;
 		attribute float aVertexWeight;
 		
 		uniform mat4 uMVMatrix;
 		uniform mat4 uPMatrix;
 		
-		varying vec2 vWeight;
+		varying float vWeight;
 		varying vec3 vNormal;
 
 		void main(void) {
@@ -141,12 +141,13 @@
 		precision mediump float;
 		
 		varying float vWeight;
+		varying vec3 vNormal;
 		
 		uniform sampler2D uColormap;
 		
 		void main(void) {
-			float lightWeight=max(dot(vNormal,vec3(0,0,1)),0) +0.1;
-			gl_FragColor = vec4(    texture2D(uColormap, vec2(vWeight,0)).rgb*lightWeight	   ,1);
+			float lightWeight=max(dot(vNormal,vec3(0.0,0.0,1.0)),0.0) +0.1;
+			gl_FragColor = vec4(   lightWeight * texture2D(uColormap, vec2(vWeight,0)).rgb	   ,1);
 		}
     </script>
     
@@ -177,7 +178,7 @@
 	</DIV>
 	
 	<input type="file" id="selector2" multiple="multiple" >
-	
+	<input type="file" id="selector3" multiple="multiple" >
   </body>
   <canvas id="imageCanvas"></canvas>
   <DIV class=drop id="drop1">
