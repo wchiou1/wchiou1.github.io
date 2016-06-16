@@ -677,6 +677,15 @@ function initShape(){
 	Shape.rectangle= new Rectangle();
 }
 
+function testResetButtonHit(mouseX,mouseY){
+	if(mouseX>resetIconX&&mouseX<resetIconX+60){
+		if(mouseY>resetIconY&&mouseY<resetIconY+20){
+			return true;
+		}
+	}
+	return false;
+}
+
 function testImageIconHit(mouseX,mouseY){
 	//First test x value
 	if(mouseX<imgIconX+10||mouseX>imgIconX+10+iconWidth){
@@ -840,6 +849,12 @@ function handleMouseDown(event){
 	mouseDown=true;
 	//Get the mouse x and y
 	var mouse = getMousePos(canvas, event);
+	//Test if resetbutton was pressed
+	if(testResetButtonHit(mouse.x,mouse.y)){
+		imageSet=false;
+		initView(imgIndex);
+		drawView();
+	}
 	//Test if the icon view box was hit
 	if(testIconViewHit(mouse.x,mouse.y)){
 		
@@ -1078,7 +1093,7 @@ function drawResetIcon(){
 	rectangle.move(resetIconX,resetIconY,0.5);
 	rectangle.changeColor(1.0,0.0,0.0);
 	rectangle.draw();
-	drawText("RESET",resetIconX+5,resetIconY+16);
+	drawText("RESET",resetIconX+6,resetIconY+16);
 }
 
 function drawImgIcons(){
