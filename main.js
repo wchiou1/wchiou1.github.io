@@ -1505,7 +1505,7 @@ function drawInfoBox(x,y,graphIndex, marker){
 	var rectangle=Shape.rectangle;
 	var width = scaleWidth*.45;
 	var height = 75;
-	ctx2.clearRect(x,y,width.height);
+	ctx2.clearRect(x,y,width,height);
 	rectangle.scale(width,height);
 	rectangle.move(x,y);
 	rectangle.changeColor(1,1,1);
