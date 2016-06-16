@@ -88,8 +88,8 @@ function updateViewportText(){
 	//Draw text within the view
 	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,20);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+scaleWidth+100,32);
-	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,temp+20);
-	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+32);
+	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,temp+40);
+	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+52);
 }
 
 function initView(){
@@ -99,6 +99,7 @@ function initView(){
 	else{
 		init3DView();
 	}
+	updateViewportText();
 }
 
 function moveView(x,y){
