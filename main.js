@@ -93,6 +93,10 @@ function updateViewportText(){
 }
 
 function initView(){
+	if(imageSet){
+		return;
+	}
+	imageSet=true;
 	if(!view3D){
 		init2DView();
 	}
@@ -130,9 +134,6 @@ function drawView(){
 
 var viewMatrix=Matrix.I(4);//2D
 function init2DView(){
-	if(imageSet){
-		return;
-	}
 	var id=imgIndex;
 	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
 	moveView((viewports[0].w-img_data[id].w)/2,(img_data[id].h-viewports[0].h)/2);
@@ -141,7 +142,7 @@ function init2DView(){
 function move2DView(x,y){
 	if(imgIndex<0) return;
 	viewMatrix=Matrix.Translation($V([x,y,0])).ensure4x4().x(viewMatrix);
-	imageSet=true;
+	
 }
 function scale2DView(scalar){
 	if(imgIndex<0) return;
