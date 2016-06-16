@@ -291,7 +291,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 				gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0, 0,1, 1,0, 1,1]), gl.STATIC_DRAW);
 				
-				gl.bindTexture(gl.TEXTURE_2D, self.texture);
+				gl.bindTexture(gl.TEXTURE_2D, self.texture);console.log(image2DArray);
 				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, EncodeImgTexture(image2DArray));
 				setTexParameter();
 				gl.bindTexture(gl.TEXTURE_2D, self.defaultColor);
