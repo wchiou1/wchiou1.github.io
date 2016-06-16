@@ -83,19 +83,16 @@ var viewports=[];
 
 function updateViewportText(){
 	var imgFileName;
-	console.log("v3D"+view3D);
-	if(view3D){
+	if(view3D)
 		imageFileName = tubesFileNames[TubesIndex];
-	}else{
+	else
 		imageFileName = imgFileNames[imgIndex];
-	}
-	console.log("imageFile:"+imageFileName);
 	var temp = canvas.height/2-20;
 	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
 	//Draw text within the view
-	drawText(imgFileName,receiveX+scaleWidth+100,20);
+	drawText(imageFileName,receiveX+scaleWidth+100,20);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+scaleWidth+100,32);
-	drawText(imgFileName,receiveX+scaleWidth+100,temp+40);
+	drawText(imageFileName,receiveX+scaleWidth+100,temp+40);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+52);
 }
 
