@@ -1523,7 +1523,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	var color2 = getColorHeight(mapCIndices[graphIndex],marker2Loc);
 	
 	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
-	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color2);
+	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width,y,color2);
 	
 	//Draw color boxes
 	rectangle.scale(width/2-2,6);
