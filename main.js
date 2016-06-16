@@ -1902,7 +1902,12 @@ function readFiles(files,type){
 	}
 }
 
-$(document).on("load",readFilesFromServer("./data/colorscale/","scale"));
+$(document).on("load",readFilesOnLoad());
+
+function readFilesOnLoad(){
+	readFilesFromServer("./data/colorscale/","scale");
+	readFilesFromServer("./data/image/","image");
+}
 
 function readFilesFromServer(directory,type){//type=scale, image
 	$.ajax({
