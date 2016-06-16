@@ -1,5 +1,5 @@
 
-var version="single markers2"
+var version="viewport text"
 
 var canvas;
 var gl;
