@@ -1,5 +1,5 @@
 
-var version="viewport text2"
+var version="viewport text3"
 
 var canvas;
 var gl;
@@ -119,9 +119,9 @@ function drawView(){
 	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
 	//Draw text within the view
 	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,10);
-	drawText(colormapFileNames[mapCIndicies[0]],receiveX+scaleWidth+100,20);
+	drawText(colormapFileNames[mapCIndices[0]],receiveX+scaleWidth+100,20);
 	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,temp+30);
-	drawText(colormapFileNames[mapCIndicies[1]],receiveX+scaleWidth+100,temp+40);
+	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+40);
 }
 
 var viewMatrix=Matrix.I(4);//2D
