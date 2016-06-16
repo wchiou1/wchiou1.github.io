@@ -52,6 +52,8 @@ var dragMarker = -1;
 var dragView=false;
 var imageSet = false;
 var rotCanvas2=false;
+var view3D=false;
+var TubesIndex=0;
 
 var img_data=[];
 var scales=[];
@@ -79,30 +81,66 @@ var orthogonal={
 var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
 
 var viewports=[];
-var viewMatrix=Matrix.I(4);
-function initView(id){
+
+function initView(){
+	if(!view3D){
+		init2DView();
+	}
+	else{
+		init3DView();
+	}
+}
+
+function moveView(x,y){
+	if(!view3D){
+		move2DView(x,y);
+	}
+	else{
+		Rotate3DView(x,y);
+	}
+}
+function scaleView(scalar){
+	if(!view3D){
+		scale2DView(scalar);
+	}
+	else{
+		scale3DView(scalar);
+	}
+}
+
+function drawView(){
+	if(!view3D){
+		draw2DView();
+	}
+	else{
+		draw3DView();
+	}
+}
+
+var viewMatrix=Matrix.I(4);//2D
+function init2DView(){
 	if(imageSet){
 		return;
 	}
+	var id=imgIndex;
 	viewMatrix=(Matrix.Translation($V([0, 0, -1])).ensure4x4()).x(Matrix.Diagonal([img_data[id].w, img_data[id].h, 1,1]).ensure4x4());
 	moveView((viewports[0].w-img_data[id].w)/2,(img_data[id].h-viewports[0].h)/2);
 }
 
-function moveView(x,y){
+function move2DView(x,y){
 	if(imgIndex<0) return;
 	viewMatrix=Matrix.Translation($V([x,y,0])).ensure4x4().x(viewMatrix);
 	imageSet=true;
 }
-function scaleView(scalar,center){
+function scale2DView(scalar){
 	if(imgIndex<0) return;
-	if(!center)
-		center=[viewports[0].w/2, viewports[0].h/2];
+	var center=[viewports[0].w/2, viewports[0].h/2];
 	moveView(-center[0],center[1]);
 	viewMatrix=Matrix.Diagonal([scalar,scalar,1,1]).ensure4x4().x(viewMatrix);
 	moveView(center[0],-center[1]);
 }
 
-function drawView(){
+function draw2DView(){
 	if(img_panels[imgIndex]==null){
 		return;
 	}
@@ -110,6 +148,46 @@ function drawView(){
 	img_panels[imgIndex].drawInViewport(0);
 	img_panels[imgIndex].changeColor(mapCIndices[1]);
 	img_panels[imgIndex].drawInViewport(1);
+}
+
+var transform3D={
+	degx:0,
+	degy:0,
+	scale:1
+};
+function init3DView(){
+	transform3D.degx=0;
+	transform3D.degy=0;
+	transform3D.scale=1;
+}
+
+function Rotate3DView(x,y){
+	if(TubesIndex<0) return;
+	transform3D.degy+=x;
+	transform3D.degx+=-y;
+	if(transform3D.degy>=360)
+		transform3D.degy-=360;
+	else if(transform3D.degy<= -360)
+		transform3D.degy+=360;
+	if(transform3D.degx<-90)
+		transform3D.degx=-90;
+	else if(transform3D.degx>90)
+		transform3D.degx=90;
+}
+
+function scale3DView(scalar){
+	if(TubesIndex<0) return;
+	transform3D.scale*=scalar;
+}
+
+function draw3DView(){
+	if(Tubes3DList[TubesIndex]==null){
+		return;
+	}
+	Tubes3DList[TubesIndex].changeColor(mapCIndices[0]);
+	Tubes3DList[TubesIndex].drawInViewport(0);
+	Tubes3DList[TubesIndex].changeColor(mapCIndices[1]);
+	Tubes3DList[TubesIndex].drawInViewport(1);
 }
 
 var Viewport=function(x,y,w,h){
@@ -569,7 +647,8 @@ var Tube=function(points){
 	
 var Tubes3D = function(text){
 	this.tubes=[];
-	//this.boundingBox={l:0,r:200,b:0,t:200,n:-100,f:200};
+	this.boundingBox={l:null,r:null,b:null,t:null,n:null,f:null};
+	this.center=null;
 	this.color=0;
 	var self=this;
 	//SVL_Split_Tubes(text)
@@ -587,6 +666,22 @@ var Tubes3D = function(text){
 			var x=Number(lineData[0]);
 			var y=Number(lineData[1]);
 			var z=Number(lineData[2]);
+			if(!this.boundingBox.l){
+				this.boundingBox.l=x;
+				this.boundingBox.r=x;
+				this.boundingBox.b=y;
+				this.boundingBox.t=y;
+				this.boundingBox.n=-z;
+				this.boundingBox.f=-z;
+			}
+			else{
+				this.boundingBox.l=Math.min(this.boundingBox.l, x);
+				this.boundingBox.r=Math.max(this.boundingBox.r, x);
+				this.boundingBox.b=Math.min(this.boundingBox.b, y);
+				this.boundingBox.t=Math.max(this.boundingBox.t, y);
+				this.boundingBox.n=Math.min(this.boundingBox.n, -z);
+				this.boundingBox.f=Math.max(this.boundingBox.f, -z);
+			}
 			point.position=[x,y,z];
 			point.magnitude=Number(lineData[4]);
 			points.push(point);
@@ -594,6 +689,7 @@ var Tubes3D = function(text){
 		}
 		this.tubes.push(new Tube(points));
 	}
+	this.center=[(this.boundingBox.l+this.boundingBox.r)/2,(this.boundingBox.t+this.boundingBox.b)/2,-(this.boundingBox.n+this.boundingBox.f)/2];
 	
 	this.changeColor=function(cID){
 		self.color=cID;
@@ -610,7 +706,11 @@ var Tubes3D = function(text){
 			gl.enableVertexAttribArray(attributes.tubeShader.vertexNormalAttribute);
 			gl.enableVertexAttribArray(attributes.tubeShader.vertexWeightAttribute);
 		}
-
+		
+		var radx = transform3D.degx * Math.PI / 180.0;
+		var rady = transform3D.degy * Math.PI / 180.0;
+		var s=transform3D.scale;
+		var viewMatrix3D = Matrix.Translation($V(this.center)).ensure4x4().x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4()).x(Matrix.Translation($V([-this.center[0],-this.center[1],-this.center[2]])).ensure4x4());
 		
 		gl.uniform1i(uniforms.tubeShader.uColormapLoc, 0); 
 		gl.activeTexture(gl.TEXTURE0);
@@ -618,7 +718,7 @@ var Tubes3D = function(text){
 		gl.bindTexture(gl.TEXTURE_2D, color_panels[self.color].texture);
 		
 		perspectiveMatrix = makeOrtho(50,200,50,200,-200,200);
-		var viewMatrix3D=Matrix.I(4);
+		
 		gl.uniformMatrix4fv(uniforms.tubeShader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
 		gl.uniformMatrix4fv(uniforms.tubeShader.mvUniform, false, new Float32Array(viewMatrix3D.flatten()));
 		var tlen=self.tubes.length;
@@ -1074,7 +1174,7 @@ function handleMouseDown(event){
 	//Test if resetbutton was pressed
 	if(testResetButtonHit(mouse.x,mouse.y)&&img_panels.length!=0){
 		imageSet=false;
-		initView(imgIndex);
+		initView();
 		drawView();
 	}
 	//Test if the icon view box was hit
@@ -1139,7 +1239,7 @@ function handleMouseUp(event){
 	}
 	if(dragIcon>=10000){
 		imgIndex = dragIcon-10000;
-		initView(imgIndex);
+		initView();
 		drawView();
 	}
 	dragIcon=-1;
@@ -1294,7 +1394,7 @@ function drawScene() {
 	drawImgIcons();
 	if(img_panels.length!=0){
 		//initialize and draw img in viewports
-		initView(imgIndex);
+		initView();
 		drawView();
 	}
 	
@@ -1654,15 +1754,12 @@ function drawLabSpace(){
 	
 }
 
-
-//set the orthogonal view to view the entire image
 function setView(l,r,b,t){
 	orthogonal.l=l;
 	orthogonal.r=r;
 	orthogonal.b=b;
 	orthogonal.t=t;
 }
-
 
 //
 // Matrix utility functions
@@ -1698,11 +1795,9 @@ function mvPopMatrix() {
   if (!mvMatrixStack.length) {
     throw("Can't pop from an empty matrix stack.");
   }
-
   mvMatrix = mvMatrixStack.pop();
   return mvMatrix;
 }
-
 
 function setMatrixUniforms(shader) {
 	if(!shader)
@@ -1710,10 +1805,6 @@ function setMatrixUniforms(shader) {
   gl.uniformMatrix4fv(shader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
   gl.uniformMatrix4fv(shader.mvUniform, false, new Float32Array(mvMatrix.flatten()));
 }
-
-//
-//handle the File drop event and selecting files
-//
 
 function addEventHandler(obj, evt, handler) {
     if(obj.addEventListener) {
@@ -1949,7 +2040,6 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 		var x=spread[0];
 		var y=spread[1];
 		//check neighbor empty
-
 		if(data[(x)+(y+1)*w]>0 || data[(x)+(y-1)*w]>0 || data[(x+1)+(y)*w]> 0|| data[(x-1)+(y)*w]>0){
 			continue;
 		}
