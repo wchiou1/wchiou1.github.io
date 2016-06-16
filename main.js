@@ -137,6 +137,7 @@ function drawView(){
 	else{
 		draw3DView();
 	}
+	updateViewportText();
 }
 
 var viewMatrix=Matrix.I(4);//2D
