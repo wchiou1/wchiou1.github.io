@@ -810,7 +810,7 @@ function initBuffers(){
 
 function initMarkers(){
 	for(var i=0;i<mapCIndices.length;i++){
-		markerLocs[i] = [0,.5];
+		markerLocs[i] = [.2,.4,.6,.8];
 	}
 }
 
@@ -1502,7 +1502,7 @@ function drawInfoBoxes(){
 	
 }
 
-function drawInfoBox(x,y,graphIndex, marker){
+function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	
 	if(mapCIndices[graphIndex]>=scales.length){
 		return;
@@ -1517,11 +1517,13 @@ function drawInfoBox(x,y,graphIndex, marker){
 	rectangle.draw();
 	
 	//Draw lines to the markers
-	var markerLoc = markerLocs[graphIndex][marker];
-	var color1 = getColorHeight(mapCIndices[graphIndex],markerLoc);
-	var color2 = getColorHeight(mapCIndices[graphIndex],setColorHeight[graphIndex]);
+	var marker1Loc = markerLocs[graphIndex][marker1];
+	var marker2Loc = markerLocs[graphIndex][marker2];
+	var color1 = getColorHeight(mapCIndices[graphIndex],markerLoc1);
+	var color2 = getColorHeight(mapCIndices[graphIndex],markerLoc2);
 	
-	drawLine(receiveX+scaleWidth*markerLoc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
+	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
+	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color2);
 	
 	//Draw color boxes
 	rectangle.scale(width/2-2,6);
