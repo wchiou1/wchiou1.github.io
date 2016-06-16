@@ -1,4 +1,4 @@
-var version="cleanup"
+var version="cleanup + readfile on load"
 
 var canvas;
 var gl;
@@ -244,7 +244,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 				if(cID==null)
 					self.colormap=null;
 				else
-					self.colormap=color_panels[cID].texture;
+					self.colormap=color_panels[cID].texture||null;
 	};
 
 	//### Drop encoding to alpha channel for background
