@@ -1,5 +1,5 @@
 
-var version="floats2"
+var version="single markers"
 
 var canvas;
 var gl;
