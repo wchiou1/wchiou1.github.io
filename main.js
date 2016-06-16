@@ -1,4 +1,4 @@
-var version="viewport text5"
+var version="viewport text6"
 
 var canvas;
 var gl;
