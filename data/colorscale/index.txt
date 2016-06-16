@@ -1,4 +1,4 @@
-local_linear_rainbow.txt
-black-body.txt
-kindlmann.txt
-smooth-cool-warm.txt
+dMRI-diverging-discrete
+dMRI-saturation-discrete
+fMRI-hue-continuous
+fMRI-lightness-continuous
