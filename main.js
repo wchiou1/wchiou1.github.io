@@ -116,9 +116,7 @@ function drawView(){
 		draw3DView();
 	}
 	var temp = canvas.height/2-20;
-	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvase.height);
-	viewports.push(new Viewport(receiveX+scaleWidth+100,10,temp,temp));
-	viewports.push(new Viewport(receiveX+scaleWidth+100,temp+30,temp,temp));
+	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
 	//Draw text within the view
 	drawText(imgFileNames[imgIndex],receiveX+scaleWidth+100,10);
 	drawText(colormapFileNames[mapCIndicies[0]],receiveX+scaleWidth+100,20);
