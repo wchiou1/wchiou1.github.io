@@ -1210,6 +1210,7 @@ function handleMouseDown(event){
 	if(dragMarker==-1&&checkSetColor(mouse.x,mouse.y)){
 		drawGraphs();
 		drawPanels();
+		drawMarkers();
 	}
 	
 	if(dragIcon>=0){
@@ -1419,7 +1420,6 @@ function drawScene() {
 	drawGraphs();
 	drawMarkers();
 	drawInfoBoxes();
-	drawText();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
 	drawResetIcon();
 }
@@ -1489,12 +1489,14 @@ function drawInfoBoxes(){
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30,0,0);
 	drawInfoBox(scaleWidth*.525+receiveX,receiveY+scaleHeight+30,0,1);
+	ctx2.clearRect(receiveX,receiveY,scaleWidth,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+10,receiveY+scaleHeight/4);
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.025+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0);
 	drawInfoBox(scaleWidth*.525+receiveX,receiveY+scaleHeight+30+receiveDelta,1,1);
+	ctx2.clearRect(receiveX,receiveY+receiveDelta,scaleWidth,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleHeight/4);
 	
 }
