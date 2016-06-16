@@ -80,7 +80,7 @@ var orthogonal={
 };
 var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
 
-/*/WIP//////////////////
+/*WIP///////////////////////////////////////
 var thumbnails={
 	framebuffer: null,
 	thumbnailTexture: null,
@@ -88,14 +88,16 @@ var thumbnails={
 	maxSize: null,
 	createThumbnail: function(obj){
 		gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-
-
+		size++;
+		
+		obj.drawInRect(x,y,w,h);
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-		return coordx,coordy,w,h;
+		return id;
 	}
+	draw: function(id)
 	
 };
-*////////////////////////////////////////
+*//////////////////////////////////////////////////////////////
 var viewports=[];
 
 function updateViewportText(){
