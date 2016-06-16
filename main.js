@@ -1518,8 +1518,8 @@ function drawInfoBoxes(){
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.0+receiveX,receiveY+scaleHeight+30,0,0,1);
 	drawInfoBox(scaleWidth*.55+receiveX,receiveY+scaleHeight+30,0,2,3);
-	drawText("-RGB-",receiveX+scaleWidth/2-20,y+25);
-	drawText("-LAB-",receiveX+scaleWidth/2-20,y+45);
+	drawText("-RGB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+30+25);
+	drawText("-LAB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+30+45);
 	ctx2.clearRect(receiveX,receiveY,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+10,receiveY+scaleHeight/4);
 	
@@ -1527,8 +1527,8 @@ function drawInfoBoxes(){
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.0+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
 	drawInfoBox(scaleWidth*.55+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
-	drawText("-RGB-",receiveX+scaleWidth/2-20,y+25);
-	drawText("-LAB-",receiveX+scaleWidth/2-20,y+45);
+	drawText("-RGB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+30+25);
+	drawText("-LAB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+30+45);
 	ctx2.clearRect(receiveX,receiveY+receiveDelta,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleHeight/4);
 	
