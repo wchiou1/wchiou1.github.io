@@ -1513,7 +1513,8 @@ function drawLine(x,y,x2,y2,color){
 
 
 function drawInfoBoxes(){
-
+	var rectangle=Shape.rectangle;
+	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.0+receiveX,receiveY+scaleHeight+30,0,0,1);
@@ -1522,15 +1523,23 @@ function drawInfoBoxes(){
 	drawText("-LAB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+30+45);
 	ctx2.clearRect(receiveX,receiveY,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+10,receiveY+scaleHeight/4);
+	rectangle.scale(scaleWidth*.045,75);
+	rectangle.move(receiveX+scaleWidth/2-20,receiveY+scaleHeight+30);
+	rectangle.changeColor(.9,.9,.9);
+	rectangle.draw();
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.0+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
 	drawInfoBox(scaleWidth*.55+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
-	drawText("-RGB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+30+25);
-	drawText("-LAB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+30+45);
+	drawText("-RGB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+receiveDelta+30+25);
+	drawText("-LAB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+receiveDelta+30+45);
 	ctx2.clearRect(receiveX,receiveY+receiveDelta,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleHeight/4);
+	rectangle.scale(scaleWidth*.045,75);
+	rectangle.move(receiveX+scaleWidth/2-20,receiveY+scaleHeight+receiveDelta+30);
+	rectangle.changeColor(.9,.9,.9);
+	rectangle.draw();
 	
 }
 
