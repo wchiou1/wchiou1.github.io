@@ -1,10 +1,10 @@
 
 var version="pixels"
-var canvas;
+var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
 var ctx;
-var mainctx;
+var mainctx=canvas.getContext("2d");
 var canvas2;
 var gl2;
 
@@ -787,7 +787,7 @@ var Shape={};
 $(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
-	canvas = document.getElementById("glcanvas");
+	
 	canvas2 = document.getElementById("glcanvas2");
 	canvas2.style.top="0px";
 	canvas2.style.left=canvas.width+10+"px";
@@ -827,7 +827,6 @@ function start() {
 		drawHelpText();
 		
 	  }
-		mainctx=canvas.getContext("2d");
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
 }
