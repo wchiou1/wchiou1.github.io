@@ -1637,7 +1637,7 @@ function drawImgIcons(){
 			continue;
 		}
 		rectangle.scale(iconWidth,iconHeight);
-		rectangle.move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
+		rectangle.move(imgIconX+10,i*(iconHeight+10)+imgIconY+10-imgIconViewOffset,0);
 		rectangle.drawWithTexture(imgIconsTex[i]);
 			
 	}
