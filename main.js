@@ -1,5 +1,5 @@
 
-var version="textures"
+var version="textures2"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
