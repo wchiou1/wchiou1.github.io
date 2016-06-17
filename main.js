@@ -1,5 +1,5 @@
 
-var version="textures2"
+var version="click"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -861,14 +861,20 @@ function start() {
 		initShape();
 		readFilesOnLoad();
 		//setInterval(drawScene, 15);
-		
+		initButtons();
 		drawHelpText();
 		
 	  }
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
 }
-
+function initButtons(){
+	var imgbutton = document.getElementById("button1");
+	var colorbutton = document.getElementById("button2");
+	var tubebutton = document.getElementById("button3");
+	imgbutton.style.left = imgIconX-10+"px";
+	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
+}
 function initViewport(){
 	var temp = canvas.height/2-20;
 	viewports.push(	new Viewport(receiveX+scaleWidth+100,10,temp,temp));
