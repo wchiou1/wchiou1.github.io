@@ -1586,7 +1586,7 @@ function drawImgIcons(){
 	rectangle.draw();
 	
 	clearRectangle(imgIconX,imgIconY+iconViewHeight,iconViewWidth,iconViewHeight);
-	for(var i=0;i<img_panels.length;i++){
+	for(var i=0;i<imgIconsTex.length;i++){
 			/*
 			img_panels[i].changeColor(null);
 			img_panels[i].scale(iconWidth, iconHeight);
@@ -1597,10 +1597,10 @@ function drawImgIcons(){
 			rectangle.move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
 			rectangle.drawWithTexture(imgIconsTex[i]);
 			
-		}
+		}/*
 	for(var i=0;i<Tubes3DList.length;i++){
 			Tubes3DList[i].draw(imgIconX+10,(i+img_panels.length)*(iconHeight+10)+imgIconY+10,iconWidth, iconHeight);
-		}
+		}*/
 }
 
 function drawLine(x,y,x2,y2,color){
