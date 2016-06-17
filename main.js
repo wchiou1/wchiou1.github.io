@@ -1410,6 +1410,7 @@ function handleMouseUp(event){
 		if(receiveIndex!=-1){
 			mapCIndices[receiveIndex]=dragIcon;
 			drawScene();
+			draw2LabSpaces();
 		}
 	}
 	dragIcon=-1;
