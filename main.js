@@ -2226,6 +2226,7 @@ function readTextToTubes(text,filename){
 	Tubes3DList.push(new Tubes3D(text));
 	Tubes3DList[Tubes3DList.length-1].draw(imgIconX+10,imgIconY-30-iconHeight,iconWidth, iconHeight);
 	tubesFileNames.push(filename);
+	addNewImgIconData();
 	drawScene();
 }
 
