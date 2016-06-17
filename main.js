@@ -4,6 +4,7 @@ var canvas;
 var gl;
 var imageCanvas;
 var ctx;
+var mainctx;
 var canvas2;
 var gl2;
 
@@ -59,6 +60,7 @@ var img_data=[];
 var scales=[];
 var img_panels=[];
 var colorIconsData=[];
+var imgIconsData=[];
 var color_panels=[];
 var Tubes3DList=[];
 var colormapFileNames=[];
@@ -826,7 +828,8 @@ function start() {
 		
 	  }
 	  
-	  
+		canvas=document.getElementById("imageCanvas");
+		mainctx=canvas.getContext("2d");
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
 }
@@ -1547,10 +1550,15 @@ function drawImgIcons(){
 	
 	clearRectangle(imgIconX,imgIconY+iconViewHeight,iconViewWidth,iconViewHeight);
 	for(var i=0;i<img_panels.length;i++){
+			/*
 			img_panels[i].changeColor(null);
 			img_panels[i].scale(iconWidth, iconHeight);
 			img_panels[i].move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
 			img_panels[i].draw();
+			*/
+			var myImageData=ctx.createImageData(iconWidth,iconHeight); //uint8clampedarray
+			myImageData.data.set(imgIconsData[i]);
+			mainctx.putImageData(myImageData,imgIconX+10,i*(iconHeight+10)+imgIconY+10);
 		}
 	for(var i=0;i<Tubes3DList.length;i++){
 			Tubes3DList[i].draw(imgIconX+10,(i+img_panels.length)*(iconHeight+10)+imgIconY+10,iconWidth, iconHeight);
@@ -2104,6 +2112,12 @@ function readTextToImage(text,filename){
 	img_data.push(imgData);
 	img_panels.push(new ImagePanel(0,0,1,1,img_data.length-1,null));
 	imgFileNames.push(filename);
+	var tempIndex = img_panels.length-1;
+	img_panels[tempIndex].changeColor(null);
+	img_panels[tempIndex].scale(iconWidth, iconHeight);
+	img_panels[tempIndex].move(imgIconX+10,imgIconY-30-iconHeight,0);
+	img_panels[tempIndex].draw();
+	addNewImgIconData();
 	//setView();
 	drawScene();
 	//console.log(imgFileNames);
@@ -2126,13 +2140,13 @@ function readTextToScale(text,filename){
 	
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
 	colormapFileNames.push(filename);
-	addNewIconData(scales.length-1);
+	addNewColorIconData(scales.length-1);
 	drawScene();
 	//console.log(colormapFileNames);
 	//computeDeltaE(scales.length-1);
 }
 
-function addNewIconData(cindex){
+function addNewColorIconData(cindex){
 	var pixelData = new Uint8Array(iconWidth*iconHeight*4);//unit8array
 	var interval = 1/iconWidth;
 	var tempColor;
@@ -2142,7 +2156,6 @@ function addNewIconData(cindex){
 		pixelData[i*4+1]=Math.round(tempColor.g*255);
 		pixelData[i*4+2]=Math.round(tempColor.b*255);
 		pixelData[i*4+3]=255;
-		console.log(pixelData[i*4]+","+pixelData[i*4+1]+","+pixelData[i*4+2]+","+pixelData[i*4+3]+"|");
 	}
 	for(var i=1;i<iconHeight;i++){
 		for(var j=0;j<iconWidth*4;j++){
@@ -2151,11 +2164,23 @@ function addNewIconData(cindex){
 	}
 	colorIconsData.push(pixelData);
 }
+
 function readTextToTubes(text,filename){
 	Tubes3DList.push(new Tubes3D(text));
+	Tubes3DList[Tubes3DList.length-1].draw(imgIconX+10,imgIconY-30-iconHeight,iconWidth, iconHeight);
 	tubesFileNames.push(filename);
 	drawScene();
 }
+
+//Reads the pixel data that's in the temporary zone and adds it to the pixeldata array
+function addNewImgIconData(){
+	var w=iconWidth;
+	var h=iconHeight;
+	var pixelData = new Uint8Array(w*h*4);//unit8array
+	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
+	imgIconsData.push(pixelData);
+}
+
 function handleImageFileSelect(evt) {
     var files = evt.target.files;
     readFiles(files,"img");
