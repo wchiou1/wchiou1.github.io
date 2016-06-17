@@ -1886,8 +1886,8 @@ function scaleT2(scalar){
 var tempid=[null,null];
 function drawLabSpace(cid,bufid){
 	
-	if(!cid) cid=LabSpaceColor;
-	if(!bufid) bufid=0;
+	if(cid==null) cid=LabSpaceColor;
+	if(bufid==null) bufid=0;
 	
 	if(lastShader2!=="simple"){
 			lastShader2="simple";
