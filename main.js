@@ -2227,7 +2227,7 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 }
 
 function changeImage(cindex){
-	var myImageData=ctx.createImageData(w,h); //uint8clampedarray
+	var myImageData=ctx.createImageData(iconWidth,iconHeight); //uint8clampedarray
 	myImageData.data.set(colorIconsData[cindex]);
 	ctx.putImageData(myImageData,0,0);
 }
