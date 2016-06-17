@@ -1,10 +1,9 @@
 
-var version="pixels"
+var version="pixels2"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
 var ctx;
-var mainctx;
 var canvas2;
 var gl2;
 
@@ -827,11 +826,8 @@ function start() {
 		drawHelpText();
 		
 	  }
-		mainctx=canvas.getContext("2d");
-		console.log("wtf:"+mainctx);
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
-		console.log("wtf2:"+ctx);
 }
 
 function initViewport(){
