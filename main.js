@@ -2276,7 +2276,7 @@ function addNewImgIconData(dimension){
 		img_data.length+Tubes3DList.length
 		//Shift all the 3d textures down the array
 		for(var i=imgIconsTex.length-1;i>=img_data.length-1;i--){
-			imgIconsTex[i]=imgIconsTex[i+1];
+			imgIconsTex[i+1]=imgIconsTex[i];
 		}
 		imgIconsTex[img_data.length-1]=texture;
 	}
