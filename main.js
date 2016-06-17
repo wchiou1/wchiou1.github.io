@@ -1345,7 +1345,12 @@ function handleMouseDown(event){
 	}
 	
 	if(dragIcon==-1){
-		dragIcon = testImageIconHit(mouse.x,mouse.y);
+		if(testImageIconViewHit(mouse.x,mouse.y)){
+			dragIcon = testImageIconHit(mouse.x,mouse.y);
+			if(dragIcon==-1){
+				dragIcon=-3;
+			}
+		}
 	}
 	
 	dragMarker=testMarkerHit(mouse.x,mouse.y);
@@ -1396,7 +1401,6 @@ function handleMouseDown(event){
 	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
-	console.log("Drag: "+dragIcon);
 }
 
 
@@ -1450,7 +1454,7 @@ function handleMouseMove(event){
 		drawMarkers();
 		drawInfoBoxes();
 	}
-
+	
 	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
@@ -2256,7 +2260,7 @@ function readTextToTubes(text,filename){
 }
 
 //Reads the pixel data that's in the temporary zone and adds it to the pixeldata array
-function addNewImgIconData(){
+function addNewImgIconData(dimension){
 	var w=iconWidth;
 	var h=iconHeight;
 	var x=imgIconX+10;
@@ -2267,7 +2271,19 @@ function addNewImgIconData(){
 	gl.bindTexture(gl.TEXTURE_2D, texture);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, iconWidth, iconHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,pixelData);
 	setTexParameter();
-	imgIconsTex.push(texture);
+	//Test if the added file is 2d
+	if(dimension==2){
+		img_data.length+Tubes3DList.length
+		//Shift all the 3d textures down the array
+		for(var i=imgIconsTex.length-1;i>=img_data.length-1;i--){
+			imgIconsTex[i]=imgIconsTex[i+1];
+		}
+		imgIconsTex[img_data.length-1]=texture;
+	}
+	else{
+		//If it's 3d, just add it to the end
+		imgIconsTex.push(texture);
+	}
 }
 
 function handleImageFileSelect(evt) {
