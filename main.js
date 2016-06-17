@@ -1593,7 +1593,9 @@ function drawImgIcons(){
 			img_panels[i].move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
 			img_panels[i].draw();
 			*/
-			drawWithTexture
+			rectangle.scale(iconWidth,iconHeight);
+			rectangle.move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
+			rectangle.drawWithTexture(imgIconsTex[i]);
 			
 		}
 	for(var i=0;i<Tubes3DList.length;i++){
