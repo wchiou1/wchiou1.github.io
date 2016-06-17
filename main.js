@@ -1967,9 +1967,11 @@ function draw2LabSpaces(){
 	gl2.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	gl2.viewport(x1,y1,w,h);
-	drawLabSpace(mapCIndices[0],0);
+	if(mapCIndices[0]<scales.length)
+		drawLabSpace(mapCIndices[0],0);
 	gl2.viewport(x2,y2,w,h);
-	drawLabSpace(mapCIndices[1],1);
+	if(mapCIndices[1]<scales.length)
+		drawLabSpace(mapCIndices[1],1);
 }
 
 function setView(l,r,b,t){
