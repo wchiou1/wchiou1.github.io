@@ -23,6 +23,10 @@ var verticesColorBuffer;
 var verticesBuffer2;
 var verticesColorBuffer2;
 var verticesIndexBuffer2;
+var pointBuffer2_1;
+var pointColorBuffer2_1;
+var pointBuffer2_2;
+var pointColorBuffer2_2;
 var defaultColor;
 
 //Color stuffs
@@ -399,7 +403,7 @@ var ColorPanel= function(x,y,w,h,cID){
 	this.h=h;
 	this.cindex=cID;
 	this.verticesBuffer=Shape.rectangle.verticesBuffer;
-	this.verticesTexCoordBuffer=gl.createBuffer();
+	this.verticesTexCoordBuffer=Shape.rectangle.verticesTexCoordBuffer;
 	this.texture=gl.createTexture();
 	var self=this;
 	this.move=function(x,y,z){
@@ -427,8 +431,8 @@ var ColorPanel= function(x,y,w,h,cID){
 	function(id){
 		//gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		//gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0, 1,0,0, 1,-1,0]), gl.STATIC_DRAW);
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
+		//gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+		//gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, scales[id].length, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,flatten(scales[id]));
 		setTexParameter();
@@ -476,6 +480,7 @@ var Rectangle= function(){
 	this.h = 0;
 	this.verticesBuffer = gl.createBuffer();
 	this.verticesColorBuffer = gl.createBuffer();
+	this.verticesTexCoordBuffer=gl.createBuffer();
 	var self=this;
 	this.scale=function(w,h){
 		self.w=w;
@@ -492,6 +497,9 @@ var Rectangle= function(){
 		
 	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1,1,1,1,	1,1,1,1, 1,1,1,1,	1,1,1,1]), gl.STATIC_DRAW);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
 
 	this.changeColor= function(r,b,g,a){
 		var a= a||1;
@@ -521,6 +529,37 @@ var Rectangle= function(){
 		
 		setMatrixUniforms();
 		
+		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		
+		mvPopMatrix();
+	};
+	this.drawWithTexture=function(texture){
+		if(lastShader!=="colormapShader"){
+			lastShader="colormapShader";
+			gl.useProgram(shaderProgram.colormapShader);
+			gl.enableVertexAttribArray(attributes.colormapShader.vertexPositionAttribute);
+			gl.enableVertexAttribArray(attributes.colormapShader.vertexTexCoordAttribute);
+		}
+			
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+		gl.vertexAttribPointer(attributes.colormapShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+		gl.vertexAttribPointer(attributes.colormapShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+		
+		gl.uniform1i(uniforms.colormapShader.uColormapLoc, 0);  
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		
+		perspectiveMatrix = orthoMatrix;
+
+		loadIdentity();
+		mvPushMatrix();
+		mvTranslate([self.x, self.y, self.z-1.0]);
+		mvScale([self.w,self.h,1]);
+
+		setMatrixUniforms(uniforms.colormapShader);
+
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 		
 		mvPopMatrix();
@@ -842,8 +881,10 @@ function initBuffers(){
 	verticesBuffer2=gl2.createBuffer();
 	verticesColorBuffer2=gl2.createBuffer();
 	verticesIndexBuffer2=gl2.createBuffer();
-	pointBuffer2=gl2.createBuffer();
-	pointColorBuffer2=gl2.createBuffer();
+	pointBuffer2_1=gl2.createBuffer();
+	pointColorBuffer2_1=gl2.createBuffer();
+	pointBuffer2_2=gl2.createBuffer();
+	pointColorBuffer2_2=gl2.createBuffer();
 	defaultColor=gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, defaultColor);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 129, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,blackWhite(129));
@@ -1818,8 +1859,9 @@ function rotateT2(x,y){
 function scaleT2(scalar){
 	transform2.scale*=scalar;
 }
-var tempid;
-function drawLabSpace(){
+var tempid=[null,null];
+function drawLabSpace(cid){
+	if(!cid) cid=LabSpaceColor;
 	gl2.clearColor(.5, .5, .5, 1);
 	gl2.clear(gl2.COLOR_BUFFER_BIT | gl2.DEPTH_BUFFER_BIT);
 	if(lastShader2!=="simple"){
@@ -1851,12 +1893,12 @@ function drawLabSpace(){
 	gl2.drawElements(gl2.LINES, 6, gl2.UNSIGNED_SHORT, 0);
 	
 	//draw colors
-	var len=scales[LabSpaceColor].length;
+	var len=scales[cid].length;
 
 	
-	if(tempid!=LabSpaceColor){
-		tempid=LabSpaceColor;
-		var scale=scales[LabSpaceColor];
+	if(tempid[0]!=cid){
+		tempid[0]=cid;
+		var scale=scales[cid];
 		var list_rgba=[];
 		var list_pos=[];
 		for(var i=0;i<len;i++){
@@ -1870,18 +1912,36 @@ function drawLabSpace(){
 			list_pos.push(lab.L-50);
 			list_pos.push(lab.b);
 		}
-		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2_1);
 		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
-		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2_1);
 		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
 	}
 
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2_1);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2_1);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	
 	gl2.drawArrays(gl2.POINTS, 0, len);
+	
+}
+
+function draw2LabSpaces(){
+	var w=canvas2.width;
+	var h=canvas2.height/2;
+	//|
+	//(0,0)__
+	var x1=0;
+	var y1=h;
+	var x2=0;
+	var y2=0;
+	gl2.viewport(x1,y1,w,h);
+	LabSpaceColor=mapCIndices[0];
+	drawLabSpace(0);
+	gl2.viewport(x2,y2,w,h);
+	LabSpaceColor=mapCIndices[1];
+	drawLabSpace(1);
 	
 }
 
