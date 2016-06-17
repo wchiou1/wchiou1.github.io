@@ -780,6 +780,8 @@ var Tubes3D = function(text){
 };
 
 var Shape={};
+
+$(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
 	canvas = document.getElementById("glcanvas");
@@ -787,7 +789,6 @@ function start() {
 	canvas2.style.top="0px";
 	canvas2.style.left=canvas.width+10+"px";
 	initWebGL(canvas);
-	
 
 	  if (gl) {
 	  
@@ -817,7 +818,6 @@ function start() {
 		initShaders();
 		initViewport();
 		initShape();
-		FileListenerInit();
 		readFilesOnLoad();
 		//setInterval(drawScene, 15);
 		
