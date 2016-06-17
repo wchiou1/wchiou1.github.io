@@ -23,7 +23,7 @@ var verticesColorBuffer;
 var verticesBuffer2;
 var verticesColorBuffer2;
 var verticesIndexBuffer2;
-
+var defaultColor;
 
 //Color stuffs
 var colorMaps = [];//2d array of objects which stores the colors
@@ -254,7 +254,6 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	this.verticesTexCoordBuffer=gl.createBuffer();
 	this.texture=gl.createTexture();
 	this.colormap=null;
-	this.defaultColor=gl.createTexture();
 	var self=this;
 	this.scale=function(w,h){
 		self.w=w;
@@ -294,19 +293,6 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		return new Uint8Array(array);
 	}
 	
-	function blackWhite(len){
-		var array=[];
-		var step=255/(len-1);
-		for(var i=0;i<len;i++){
-			var v=step*i;
-			array.push(v);
-			array.push(v);
-			array.push(v);
-			array.push(255);
-		}
-		return new Uint8Array(array);
-	}
-	
 	this.create=
 		function(dID){
 				var imageWidth= img_data[self.id].w;
@@ -319,9 +305,6 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 				
 				gl.bindTexture(gl.TEXTURE_2D, self.texture);
 				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, EncodeImgTexture(image2DArray));
-				setTexParameter();
-				gl.bindTexture(gl.TEXTURE_2D, self.defaultColor);
-				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 129, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,blackWhite(129));
 				setTexParameter();
 		};
 	this.create(this.id);
@@ -347,7 +330,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			gl.bindTexture(gl.TEXTURE_2D, self.texture);
 			gl.activeTexture(gl.TEXTURE1);
 			if(!self.colormap)
-				gl.bindTexture(gl.TEXTURE_2D, self.defaultColor);
+				gl.bindTexture(gl.TEXTURE_2D, defaultColor);
 			else
 				gl.bindTexture(gl.TEXTURE_2D, self.colormap);
 			
@@ -387,7 +370,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
 		gl.activeTexture(gl.TEXTURE1);
 		if(!self.colormap)
-			gl.bindTexture(gl.TEXTURE_2D, self.defaultColor);
+			gl.bindTexture(gl.TEXTURE_2D, defaultColor);
 		else
 			gl.bindTexture(gl.TEXTURE_2D, self.colormap);
 		
@@ -734,6 +717,33 @@ var Tubes3D = function(text){
 	this.changeColor=function(cID){
 		self.color=cID;
 	};
+	//for thumbnail use
+	this.draw=function(x,y,w,h){
+		gl.viewport(x, canvas.height-y-h, w, h);
+		if(lastShader!=="tubeShader"){
+			lastShader="tubeShader";
+			gl.useProgram(shaderProgram.tubeShader);
+			gl.enableVertexAttribArray(attributes.tubeShader.vertexPositionAttribute);
+			gl.enableVertexAttribArray(attributes.tubeShader.vertexNormalAttribute);
+			gl.enableVertexAttribArray(attributes.tubeShader.vertexWeightAttribute);
+		}
+		var viewMatrix3D = Matrix.I(4);
+		
+		gl.uniform1i(uniforms.tubeShader.uColormapLoc, 0); 
+		gl.activeTexture(gl.TEXTURE0);
+
+		gl.bindTexture(gl.TEXTURE_2D, defaultColor);
+		
+		perspectiveMatrix = makeOrtho(self.center[0]-self.halfDimension,self.center[0]+self.halfDimension,self.center[1]-self.halfDimension,self.center[1]+self.halfDimension,-10000,10000);
+		
+		gl.uniformMatrix4fv(uniforms.tubeShader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
+		gl.uniformMatrix4fv(uniforms.tubeShader.mvUniform, false, new Float32Array(viewMatrix3D.flatten()));
+		var tlen=self.tubes.length;
+		for(var i=0;i<tlen;i++){
+			self.tubes[i].draw();
+		}
+		gl.viewport(0, 0, canvas.width, canvas.height);
+	};
 	this.drawInViewport=function(vID){
 		var viewp=viewports[vID];
 		viewp.clear();
@@ -833,7 +843,22 @@ function initBuffers(){
 	verticesIndexBuffer2=gl2.createBuffer();
 	pointBuffer2=gl2.createBuffer();
 	pointColorBuffer2=gl2.createBuffer();
-	
+	defaultColor=gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_2D, defaultColor);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 129, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,blackWhite(129));
+	setTexParameter();
+}
+function blackWhite(len){
+	var array=[];
+	var step=255/(len-1);
+	for(var i=0;i<len;i++){
+		var v=step*i;
+		array.push(v);
+		array.push(v);
+		array.push(v);
+		array.push(255);
+	}
+	return new Uint8Array(array);
 }
 
 function initMarkers(){
@@ -875,6 +900,7 @@ function initWebGL() {
   }
 }
 
+/////////////Not Done////////
 function initTextureFramebuffer(){
 	framebuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
@@ -1521,6 +1547,9 @@ function drawImgIcons(){
 			img_panels[i].scale(iconWidth, iconHeight);
 			img_panels[i].move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
 			img_panels[i].draw();
+		}
+	for(var i=0;i<Tubes3DList.length;i++){
+			Tubes3DList[i].draw(imgIconX+10,(i+img_panels.length)*(iconHeight+10)+imgIconY+10,iconWidth, iconHeight);
 		}
 }
 
