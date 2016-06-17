@@ -1512,8 +1512,8 @@ function scrollImageIconView(delta){
 	if(imgIconViewOffset<0){
 		imgIconViewOffset=0;
 	}
-	if(0<scales.length*60-iconViewHeight+10&&imgIconViewOffset>scales.length*60-iconViewHeight+10){
-		imgIconViewOffset=scales.length*60-iconViewHeight+10;
+	if(0<imgIconsTex.length*60-iconViewHeight+10&&imgIconViewOffset>imgIconsTex.length*60-iconViewHeight+10){
+		imgIconViewOffset=imgIconsTex.length*60-iconViewHeight+10;
 	}
 }
 
@@ -1626,10 +1626,6 @@ function drawImgIcons(){
 	
 	//Draw the border for the img icons
 	var rectangle=Shape.rectangle;
-	rectangle.scale(iconViewWidth+6,iconViewHeight+6);
-	rectangle.move(imgIconX-3,imgIconY-3,0.5);
-	rectangle.changeColor(0.0,0.0,0.0);
-	rectangle.draw();
 	
 	clearRectangle(imgIconX,imgIconY+iconViewHeight,iconViewWidth,iconViewHeight);
 	for(var i=0;i<imgIconsTex.length;i++){
@@ -1641,6 +1637,7 @@ function drawImgIcons(){
 		rectangle.drawWithTexture(imgIconsTex[i]);
 			
 	}
+	drawBorder(imgIconX,imgIconY,iconViewWidth,iconViewHeight,{r:.0,g:.0,b:.0});
 	
 	//Clear the edges
 	clearRectangle(imgIconX,imgIconY-3,iconViewWidth,iconHeight+3);
@@ -1836,18 +1833,18 @@ function drawReceiveThumbnails(){
 	}
 }
 
-function drawColorView(){
+function drawBorder(x,y,w,h,color){
 	var rectangle=Shape.rectangle;
-	rectangle.scale(iconViewWidth+6,3);
-	rectangle.move(iconX-3,iconY-3,-.5);
-	rectangle.changeColor(1.0,0.0,0.0);
+	rectangle.scale(w+6,3);
+	rectangle.move(x-3,y-3,-.5);
+	rectangle.changeColor(color.r,color.g,color.b);
 	rectangle.draw();
-	rectangle.move(iconX-3,iconY+iconViewHeight,-.5);
+	rectangle.move(x-3,y+h,-.5);
 	rectangle.draw();
-	rectangle.scale(3,iconViewHeight+6);
-	rectangle.move(iconX-3,iconY-3,-.5);
+	rectangle.scale(3,h+6);
+	rectangle.move(x-3,y-3,-.5);
 	rectangle.draw();
-	rectangle.move(iconX+iconViewWidth,iconY-3,-.5);
+	rectangle.move(x+w,y-3,-.5);
 	rectangle.draw();
 }
 
@@ -1865,7 +1862,7 @@ function drawColorThumbnails(){
 	}
 	
 	//Draw the borders
-	drawColorView();
+	drawBorder(iconX,iconY,iconViewWidth,iconViewHeight,{r:1.0,g:.0,b:.0});
 	
 	//Clear the edges
 	clearRectangle(iconX,iconY-3,iconViewWidth,iconHeight+3);
