@@ -2176,6 +2176,8 @@ function readTextToTubes(text,filename){
 function addNewImgIconData(){
 	var w=iconWidth;
 	var h=iconHeight;
+	var x=imgIconX+10;
+	var y=imgIconY-30-iconHeight;
 	var pixelData = new Uint8Array(w*h*4);//unit8array
 	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
 	imgIconsData.push(pixelData);
