@@ -2138,9 +2138,9 @@ function addNewIconData(cindex){
 	var tempColor;
 	for(var i=0;i<iconWidth;i++){
 		tempColor = getColorHeight(cindex,i*interval);
-		pixelData[i*4]=tempColor.r;
-		pixelData[i*4+1]=tempColor.g;
-		pixelData[i*4+2]=tempColor.b;
+		pixelData[i*4]=Math.round(tempColor.r*255);
+		pixelData[i*4+1]=Math.round(tempColor.g*255);
+		pixelData[i*4+2]=Math.round(tempColor.b*255);
 		pixelData[i*4+3]=255;
 		console.log(pixelData[i*4]+","+pixelData[i*4+1]+","+pixelData[i*4+2]+","+pixelData[i*4+3]+"|");
 	}
