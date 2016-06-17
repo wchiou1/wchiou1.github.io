@@ -827,8 +827,6 @@ function start() {
 		drawHelpText();
 		
 	  }
-	  
-		canvas=document.getElementById("imageCanvas");
 		mainctx=canvas.getContext("2d");
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
