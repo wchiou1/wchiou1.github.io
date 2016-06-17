@@ -1,5 +1,5 @@
 
-var version="click6"
+var version="imagescrolling"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
