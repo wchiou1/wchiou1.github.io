@@ -873,14 +873,14 @@ function initButtons(){
 	var colorbutton = document.getElementById("button2");
 	var tubebutton = document.getElementById("button3");
 	
-	imgbutton.style.left = imgIconX+"px";
+	imgbutton.style.left = imgIconX-30+"px";
 	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
-	imgbutton.style.width = iconViewWidth+"px";
+	imgbutton.style.width = iconViewWidth+60+"px";
 	imgbutton.style.height = 20+"px";
 	
-	colorbutton.style.left = iconX+"px";
+	colorbutton.style.left = iconX-30+"px";
 	colorbutton.style.top = iconY+iconViewHeight+40+"px";
-	colorbutton.style.width = iconViewWidth+"px";
+	colorbutton.style.width = iconViewWidth+60+"px";
 	colorbutton.style.height = 20+"px";
 }
 function initViewport(){
