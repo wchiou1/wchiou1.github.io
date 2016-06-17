@@ -250,7 +250,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	this.h=h;
 	this.id=dataID;
 	this.cindex=cID;
-	this.verticesBuffer=gl.createBuffer();
+	this.verticesBuffer=Shape.rectangle.verticesBuffer;
 	this.verticesTexCoordBuffer=gl.createBuffer();
 	this.texture=gl.createTexture();
 	this.colormap=null;
@@ -298,8 +298,8 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 				var imageWidth= img_data[self.id].w;
 				var imageHeight=img_data[self.id].h;
 				var image2DArray=img_data[self.id].data;
-				gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
-				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0, 1,0,0, 1,-1,0]), gl.STATIC_DRAW);
+				//gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+				//gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0, 1,0,0, 1,-1,0]), gl.STATIC_DRAW);
 				gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0, 0,1, 1,0, 1,1]), gl.STATIC_DRAW);
 				
@@ -396,7 +396,7 @@ var ColorPanel= function(x,y,w,h,cID){
 	this.w=w;
 	this.h=h;
 	this.cindex=cID;
-	this.verticesBuffer=gl.createBuffer();
+	this.verticesBuffer=Shape.rectangle.verticesBuffer;
 	this.verticesTexCoordBuffer=gl.createBuffer();
 	this.texture=gl.createTexture();
 	var self=this;
@@ -423,8 +423,8 @@ var ColorPanel= function(x,y,w,h,cID){
 	
 	this.create= 
 	function(id){
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0, 1,0,0, 1,-1,0]), gl.STATIC_DRAW);
+		//gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+		//gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0, 1,0,0, 1,-1,0]), gl.STATIC_DRAW);
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
@@ -786,8 +786,8 @@ function start() {
 	canvas2 = document.getElementById("glcanvas2");
 	canvas2.style.top="0px";
 	canvas2.style.left=canvas.width+10+"px";
-		initWebGL(canvas);      // Initialize the GL context
-	  // Only continue if WebGL is available and working
+	initWebGL(canvas);
+	
 
 	  if (gl) {
 	  
@@ -817,7 +817,8 @@ function start() {
 		initShaders();
 		initViewport();
 		initShape();
-
+		FileListenerInit();
+		readFilesOnLoad();
 		//setInterval(drawScene, 15);
 		
 		drawHelpText();
@@ -1945,7 +1946,6 @@ function addEventHandler(obj, evt, handler) {
     }
 }
 
-$(document).on('load',FileListenerInit());
 function FileListenerInit(){
 	if(window.FileReader) {
 		addEventHandler(window, 'load', function() {
@@ -2014,8 +2014,6 @@ function readFiles(files,type){
 		reader.readAsText(file); // start reading the file data.
 	}
 }
-
-$(document).on("load",readFilesOnLoad());
 
 function readFilesOnLoad(){
 	readFilesFromServer("./data/colorscale/","scale");
