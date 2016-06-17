@@ -1,5 +1,5 @@
 
-var version="click4"
+var version="click3"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -23,10 +23,8 @@ var verticesColorBuffer;
 var verticesBuffer2;
 var verticesColorBuffer2;
 var verticesIndexBuffer2;
-var pointBuffer2_1;
-var pointColorBuffer2_1;
-var pointBuffer2_2;
-var pointColorBuffer2_2;
+var pointBuffer2=[];
+var pointColorBuffer2=[];
 var defaultColor;
 
 //Color stuffs
@@ -901,10 +899,10 @@ function initBuffers(){
 	verticesBuffer2=gl2.createBuffer();
 	verticesColorBuffer2=gl2.createBuffer();
 	verticesIndexBuffer2=gl2.createBuffer();
-	pointBuffer2_1=gl2.createBuffer();
-	pointColorBuffer2_1=gl2.createBuffer();
-	pointBuffer2_2=gl2.createBuffer();
-	pointColorBuffer2_2=gl2.createBuffer();
+	pointBuffer2[0]=gl2.createBuffer();
+	pointColorBuffer2[0]=gl2.createBuffer();
+	pointBuffer2[1]=gl2.createBuffer();
+	pointColorBuffer2[1]=gl2.createBuffer();
 	defaultColor=gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, defaultColor);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 129, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,blackWhite(129));
@@ -1159,10 +1157,6 @@ function testResetButtonHit(mouseX,mouseY){
 	return false;
 }
 
-function generateThumbnail(){
-	
-}
-
 function testImageIconHit(mouseX,mouseY){
 	//First test x value
 	if(mouseX<iconX+10||mouseX>iconX+10+iconWidth){
@@ -1370,7 +1364,7 @@ function handleMouseDown(event){
 		if(dragIcon<10000){
 			tempxy=getIconxy(dragIcon);
 			LabSpaceColor=dragIcon;
-			drawLabSpace();
+			//drawLabSpace();
 			changeImage(dragIcon);
 			targ.style.left=mouse.x-iconWidth/2+'px';
 			targ.style.top=mouse.y-iconHeight/2+'px';
@@ -1431,7 +1425,7 @@ function handleMouseMove(event){
 	updateFilenameIndicator(mouse.x,mouse.y);
 	if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
-		drawLabSpace();
+		draw2LabSpaces();
 	}
 	else if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
@@ -1473,7 +1467,7 @@ function MouseWheelHandler(e) {
 			scaleT2(1.1);
 		else if(delta<0)
 			scaleT2(0.9);
-		drawLabSpace();
+		draw2LabSpaces();
 		event.preventDefault();
 		event.returnValue=false;
 	}
@@ -1891,8 +1885,9 @@ function scaleT2(scalar){
 	transform2.scale*=scalar;
 }
 var tempid=[null,null];
-function drawLabSpace(cid){
+function drawLabSpace(cid,bufid){
 	if(!cid) cid=LabSpaceColor;
+	if(!bufid) bufid=0;
 	gl2.clearColor(.5, .5, .5, 1);
 	gl2.clear(gl2.COLOR_BUFFER_BIT | gl2.DEPTH_BUFFER_BIT);
 	if(lastShader2!=="simple"){
@@ -1927,8 +1922,8 @@ function drawLabSpace(cid){
 	var len=scales[cid].length;
 
 	
-	if(tempid[0]!=cid){
-		tempid[0]=cid;
+	if(tempid[bufid]!=cid){
+		tempid[bufid]=cid;
 		var scale=scales[cid];
 		var list_rgba=[];
 		var list_pos=[];
@@ -1943,15 +1938,16 @@ function drawLabSpace(cid){
 			list_pos.push(lab.L-50);
 			list_pos.push(lab.b);
 		}
-		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2_1);
+
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[bufid]);
 		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
-		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2_1);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[bufid]);
 		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
 	}
 
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2_1);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[bufid]);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2_1);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[bufid]);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	
 	gl2.drawArrays(gl2.POINTS, 0, len);
@@ -1968,11 +1964,9 @@ function draw2LabSpaces(){
 	var x2=0;
 	var y2=0;
 	gl2.viewport(x1,y1,w,h);
-	LabSpaceColor=mapCIndices[0];
-	drawLabSpace(0);
+	drawLabSpace(mapCIndices[0],0);
 	gl2.viewport(x2,y2,w,h);
-	LabSpaceColor=mapCIndices[1];
-	drawLabSpace(1);
+	drawLabSpace(mapCIndices[1],1);
 	
 }
 
