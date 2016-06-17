@@ -1276,9 +1276,9 @@ function testViewportHit(mouse){
 }
 
 function testCanvas2Hit(mouse){
-	var c2left=canvas2.style.left.slice(0,-2);
-	var c2top=canvas2.style.top.slice(0,-2);
-	if(mouse.x>c2left&&mouse.x<c2left+canvas2.width&&mouse.y>c2top&&mouse.y<c2top+canvas2.height){
+	var c2left=Number(canvas2.style.left.slice(0,-2));
+	var c2top=Number(canvas2.style.top.slice(0,-2));
+	if(mouse.x>c2left&&mouse.x<(Number(c2left)+Number(canvas2.width))&&mouse.y>c2top&&mouse.y<(c2top+canvas2.height)){
 		return true;
 	}
 	return false;
