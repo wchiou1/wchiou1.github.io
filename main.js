@@ -1,5 +1,5 @@
 
-var version="click5"
+var version="click6"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -1162,7 +1162,6 @@ function testImageIconHit(mouseX,mouseY){
 	if(mouseX<imgIconX+10||mouseX>imgIconX+10+iconWidth){
 		return -1;
 	}
-	return -1;
 	//Test y values
 	for(var i=0;i<img_data.length+Tubes3DList.length;i++){
 		if(mouseY>imgIconY+10+i*(iconHeight+10)-imgIconViewOffset&&mouseY<imgIconY+10+iconHeight+i*(iconHeight+10)-imgIconViewOffset){
@@ -1397,6 +1396,7 @@ function handleMouseDown(event){
 	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
+	console.log("Drag: "+dragIcon);
 }
 
 
