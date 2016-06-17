@@ -58,6 +58,7 @@ var TubesIndex=0;
 var img_data=[];
 var scales=[];
 var img_panels=[];
+var colorIconsData=[];
 var color_panels=[];
 var Tubes3DList=[];
 var colormapFileNames=[];
@@ -1300,11 +1301,13 @@ function handleMouseDown(event){
 			tempxy=getIconxy(dragIcon);
 			LabSpaceColor=dragIcon;
 			drawLabSpace();
+			changeImage(dragIcon);
 		}
 		else{
 			tempxy=getImageIconxy(dragIcon);
 		}
-		createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
+		
+		//createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
 		targ.style.left=mouse.x-iconWidth/2+'px';
 		targ.style.top=mouse.y-iconHeight/2+'px';
 		targ.style.display="inline";
@@ -2123,9 +2126,29 @@ function readTextToScale(text,filename){
 	
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
 	colormapFileNames.push(filename);
+	addNewIconData(scales.length-1);
 	drawScene();
 	//console.log(colormapFileNames);
 	//computeDeltaE(scales.length-1);
+}
+
+function addNewIconData(cindex){
+	var pixelData = new Uint8Array(iconWidth*iconHeight*4);//unit8array
+	var interval = 1/iconWidth;
+	var tempColor;
+	for(var i=0;i<iconWidth;i++){
+		tempColor = getColorHeight(cindex,i*interval);
+		pixelData[i*4]=tempColor.r;
+		pixelData[i*4+1]=tempColor.g;
+		pixelData[i*4+2]=tempColor.b;
+		pixelData[i*4+3]=255;
+	}
+	for(var i=1;i<iconHeight;i++){
+		for(var j=0;j<iconWidth*4;j++){
+			pixelData[i*iconHeight*4+j]=pixelData[j];
+		}
+	}
+	colorIconsData.push(pixelData);
 }
 function readTextToTubes(text,filename){
 	Tubes3DList.push(new Tubes3D(text));
@@ -2201,6 +2224,12 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 		}
 	}
 	return data;
+}
+
+function changeImage(cindex){
+	var myImageData=ctx.createImageData(w,h); //uint8clampedarray
+	myImageData.data.set(colorIconsData[cindex]);
+	ctx.putImageData(myImageData,0,0);
 }
 
 function createImage(x,y,w,h){
