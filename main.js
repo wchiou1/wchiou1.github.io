@@ -1546,15 +1546,12 @@ function drawImgIcons(){
 	
 	clearRectangle(imgIconX,imgIconY+iconViewHeight,iconViewWidth,iconViewHeight);
 	for(var i=0;i<img_panels.length;i++){
-			/*
+			
 			img_panels[i].changeColor(null);
 			img_panels[i].scale(iconWidth, iconHeight);
 			img_panels[i].move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
 			img_panels[i].draw();
-			*/
-			var myImageData=mainctx.createImageData(iconWidth,iconHeight); //uint8clampedarray
-			myImageData.data.set(imgIconsData[i]);
-			mainctx.putImageData(myImageData,imgIconX+10,i*(iconHeight+10)+imgIconY+10);
+			
 		}
 	for(var i=0;i<Tubes3DList.length;i++){
 			Tubes3DList[i].draw(imgIconX+10,(i+img_panels.length)*(iconHeight+10)+imgIconY+10,iconWidth, iconHeight);
