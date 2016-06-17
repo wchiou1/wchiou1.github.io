@@ -1,5 +1,5 @@
 
-var version="cleanup5 + readfile on load 2"
+var version="pixels"
 var canvas;
 var gl;
 var imageCanvas;
