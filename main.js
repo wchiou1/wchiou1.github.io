@@ -1918,8 +1918,8 @@ function drawLabSpace(cid,bufid){
 	gl2.drawElements(gl2.LINES, 6, gl2.UNSIGNED_SHORT, 0);
 	
 	//draw colors
+	if(scales[cid]==undefined)return;
 	var len=scales[cid].length;
-
 	
 	if(tempid[bufid]!=cid){
 		tempid[bufid]=cid;
