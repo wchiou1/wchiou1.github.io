@@ -1556,7 +1556,7 @@ function drawImgIcons(){
 			img_panels[i].move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
 			img_panels[i].draw();
 			*/
-			var myImageData=ctx.createImageData(iconWidth,iconHeight); //uint8clampedarray
+			var myImageData=mainctx.createImageData(iconWidth,iconHeight); //uint8clampedarray
 			myImageData.data.set(imgIconsData[i]);
 			mainctx.putImageData(myImageData,imgIconX+10,i*(iconHeight+10)+imgIconY+10);
 		}
