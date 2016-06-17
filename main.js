@@ -1,5 +1,5 @@
 
-var version="click3"
+var version="click4"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -882,6 +882,11 @@ function initButtons(){
 	colorbutton.style.top = iconY+iconViewHeight+40+"px";
 	colorbutton.style.width = iconViewWidth+60+"px";
 	colorbutton.style.height = 30+"px";
+	
+	tubebutton.style.left = iconX-30+"px";
+	tubebutton.style.top = iconY+iconViewHeight+75+"px";
+	tubebutton.style.width = iconViewWidth+60+"px";
+	tubebutton.style.height = 30+"px";
 }
 function initViewport(){
 	var temp = canvas.height/2-20;
