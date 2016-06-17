@@ -1954,6 +1954,9 @@ function FileListenerInit(){
 			var select1 = document.getElementById('selector1');
 			var select2 = document.getElementById('selector2');
 			var select3 = document.getElementById('selector3');
+			var button1 = document.getElementById('button1');
+			var button2 = document.getElementById('button2');
+			var button3 = document.getElementById('button3');
 			
 			drop1.style.left= imgIconX-1+'px';
 			drop1.style.top= imgIconY-1+"px";
@@ -1989,6 +1992,9 @@ function FileListenerInit(){
 			addEventHandler(select1,'change', handleImageFileSelect);
 			addEventHandler(select2,'change', handleColorFileSelect);
 			addEventHandler(select3,'change', handleTubesFileSelect);
+			addEventHandler(button1,'click', function(){select1.click();});
+			addEventHandler(button2,'click', function(){select2.click();});
+			addEventHandler(button3,'click', function(){select3.click();});
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');

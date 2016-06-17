@@ -40,18 +40,39 @@
 }
 
 #selector1{
+	display: none;
+}
+#selector2{
+	display: none;
+}
+#selector3{
+	display: none;
+}
+.button{
+	font: 12px, sans-serif;
+	font-weight: bold;
+	text-align: center;
+	color: white;
 	position: absolute;
+	width:100px;
+	height: 50px;
+	
+}
+.button:hover{
+	outline: 2px solid white;
+}
+#button1{
+	background-color: #3399ff;
 	top:700px;
 	left:0px;
 }
-
-#selector2{
-	position: absolute;
+#button2{
+	background-color: #3399ff;
 	top:700px;
 	left:600px;
 }
-#selector3{
-	position: absolute;
+#button3{
+	background-color: #3399ff;
 	top:700px;
 	left:900px;
 }
