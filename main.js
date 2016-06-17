@@ -1409,7 +1409,6 @@ function handleMouseUp(event){
 		if(receiveIndex!=-1){
 			mapCIndices[receiveIndex]=dragIcon;
 			drawScene();
-			draw2LabSpaces();
 		}
 	}
 	dragIcon=-1;
@@ -1578,7 +1577,7 @@ function drawScene() {
 	drawInfoBoxes();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
 	drawResetIcon();
-	
+	draw2LabSpaces();
 }
 
 function drawHelpText(){
