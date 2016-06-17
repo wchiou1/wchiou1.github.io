@@ -1158,10 +1158,6 @@ function testResetButtonHit(mouseX,mouseY){
 	return false;
 }
 
-function generateThumbnail(){
-	
-}
-
 function testImageIconHit(mouseX,mouseY){
 	//First test x value
 	if(mouseX<imgIconX+10||mouseX>imgIconX+10+iconWidth){
