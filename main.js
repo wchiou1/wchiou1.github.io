@@ -1886,10 +1886,10 @@ function scaleT2(scalar){
 }
 var tempid=[null,null];
 function drawLabSpace(cid,bufid){
+	
 	if(!cid) cid=LabSpaceColor;
 	if(!bufid) bufid=0;
-	gl2.clearColor(.5, .5, .5, 1);
-	gl2.clear(gl2.COLOR_BUFFER_BIT | gl2.DEPTH_BUFFER_BIT);
+	
 	if(lastShader2!=="simple"){
 			lastShader2="simple";
 			gl2.useProgram(shaderProgram.simpleShader2);
@@ -1963,11 +1963,14 @@ function draw2LabSpaces(){
 	var y1=h;
 	var x2=0;
 	var y2=0;
+
+	gl2.clearColor(0.5,0.5,0.5,1.0);
+	gl2.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
 	gl2.viewport(x1,y1,w,h);
 	drawLabSpace(mapCIndices[0],0);
 	gl2.viewport(x2,y2,w,h);
 	drawLabSpace(mapCIndices[1],1);
-	
 }
 
 function setView(l,r,b,t){
