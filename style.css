@@ -68,14 +68,17 @@
 	background-color: #3399ff;
 	top:700px;
 	left:0px;
+	z-index: 1;
 }
 #button2{
 	background-color: #3399ff;
 	top:700px;
 	left:600px;
+	z-index: 1;
 }
 #button3{
 	background-color: #3399ff;
 	top:700px;
 	left:900px;
+	z-index: 1;
 }
