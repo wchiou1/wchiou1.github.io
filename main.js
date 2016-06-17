@@ -1,5 +1,5 @@
 
-var version="click4"
+var version="click5"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -1397,7 +1397,6 @@ function handleMouseDown(event){
 	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
-	console.log("Drag:"+dragIcon);
 }
 
 
