@@ -1587,11 +1587,13 @@ function drawImgIcons(){
 	
 	clearRectangle(imgIconX,imgIconY+iconViewHeight,iconViewWidth,iconViewHeight);
 	for(var i=0;i<img_panels.length;i++){
-			
+			/*
 			img_panels[i].changeColor(null);
 			img_panels[i].scale(iconWidth, iconHeight);
 			img_panels[i].move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
 			img_panels[i].draw();
+			*/
+			drawWithTexture
 			
 		}
 	for(var i=0;i<Tubes3DList.length;i++){
@@ -2234,7 +2236,7 @@ function addNewImgIconData(){
 	var pixelData = new Uint8Array(w*h*4);//unit8array
 	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
 	var texture=gl.createTexture();
-	gl.bindTexture(gl.TEXTURE_2D, self.texture);
+	gl.bindTexture(gl.TEXTURE_2D, texture);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, iconWidth, iconHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,pixelData);
 	setTexParameter();
 	imgIconsTex.push(texture);
