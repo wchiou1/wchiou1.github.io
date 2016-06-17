@@ -35,7 +35,7 @@ var iconHeight = 50;
 var iconWidth = 50;
 var iconX = 50;
 var iconY = 150;
-var imgIconX=1100;
+var imgIconX=1080;
 var imgIconY=150;
 var receiveX = 200;
 var receiveY = 150;
@@ -45,6 +45,7 @@ var imgIndex = 0;
 var mapCIndices = [0,1];
 var setColorHeight = [0,0];
 var iconViewOffset = 0;
+var imgIconViewOffset = 0;
 var iconViewWidth = 70;
 var iconViewHeight = 400;
 var resetIconX = 630;
@@ -883,8 +884,8 @@ function initButtons(){
 	colorbutton.style.width = iconViewWidth+60+"px";
 	colorbutton.style.height = 30+"px";
 	
-	tubebutton.style.left = iconX-30+"px";
-	tubebutton.style.top = iconY+iconViewHeight+75+"px";
+	tubebutton.style.left = imgIconX-30+"px";
+	tubebutton.style.top = imgIconY+iconViewHeight+75+"px";
 	tubebutton.style.width = iconViewWidth+60+"px";
 	tubebutton.style.height = 30+"px";
 }
@@ -1164,12 +1165,13 @@ function generateThumbnail(){
 
 function testImageIconHit(mouseX,mouseY){
 	//First test x value
-	if(mouseX<imgIconX+10||mouseX>imgIconX+10+iconWidth){
+	if(mouseX<iconX+10||mouseX>iconX+10+iconWidth){
 		return -1;
 	}
+	return -1;
 	//Test y values
 	for(var i=0;i<img_data.length+Tubes3DList.length;i++){
-		if(mouseY>imgIconY+10+i*(iconHeight+10)&&mouseY<imgIconY+10+iconHeight+i*(iconHeight+10)){
+		if(mouseY>imgIconY+10+i*(iconHeight+10)-imgIconViewOffset&&mouseY<imgIconY+10+iconHeight+i*(iconHeight+10)-imgIconViewOffset){
 			return i+10000;
 		}
 	}
@@ -1197,7 +1199,7 @@ function testMarkerHit(mouseX,mouseY){
 	return -1;
 }
 
-//Checks if the set color should be changed based on the click, returns if the scene should be update
+//Checks if the set color should be changed based on the click, returns if the scene should be updated
 function checkSetColor(mouseX,mouseY){
 	for(var i=0;i<mapCIndices.length;i++){
 		var tempHeight = testColorMapHit(mouseX,mouseY,i);
@@ -1224,6 +1226,15 @@ function testColorMapHit(mouseX,mouseY,rindex){
 function testIconViewHit(mouseX,mouseY){
 	if(mouseX>iconX&&mouseX<iconX+iconViewWidth){
 		if(mouseY>iconY&&mouseY<iconY+iconViewHeight){
+			return true;
+		}
+	}
+	return false;
+}
+
+function testImageIconViewHit(mouseX,mouseY){
+	if(mouseX>imgIconX&&mouseX<imgIconX+iconViewWidth){
+		if(mouseY>imgIconY&&mouseY<imgIconY+iconViewHeight){
 			return true;
 		}
 	}
@@ -1503,6 +1514,8 @@ function updateFilenameIndicator(mouseX,mouseY){
 	//Clear the text area where the fileName will go
 	ctx2.clearRect(iconX-10,iconY-40,600, 40);
 	
+	if(!testIconViewHit(mouseX,mouseY))
+		return;
 	//Check what fileIcon the mouse is over
 	var hit=testIconHit(mouseX,mouseY);
 	
@@ -1593,6 +1606,7 @@ function drawResetIcon(){
 }
 
 function drawImgIcons(){
+	
 	//Draw the border for the img icons
 	var rectangle=Shape.rectangle;
 	rectangle.scale(iconViewWidth+6,iconViewHeight+6);
@@ -1602,20 +1616,18 @@ function drawImgIcons(){
 	
 	clearRectangle(imgIconX,imgIconY+iconViewHeight,iconViewWidth,iconViewHeight);
 	for(var i=0;i<imgIconsTex.length;i++){
-			/*
-			img_panels[i].changeColor(null);
-			img_panels[i].scale(iconWidth, iconHeight);
-			img_panels[i].move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
-			img_panels[i].draw();
-			*/
-			rectangle.scale(iconWidth,iconHeight);
-			rectangle.move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
-			rectangle.drawWithTexture(imgIconsTex[i]);
+		if((iconHeight+10)*i+10-imgIconViewOffset+iconHeight<0||(iconHeight+10)*i+10-imgIconViewOffset>iconViewHeight){
+			continue;
+		}
+		rectangle.scale(iconWidth,iconHeight);
+		rectangle.move(imgIconX+10,i*(iconHeight+10)+imgIconY+10,0);
+		rectangle.drawWithTexture(imgIconsTex[i]);
 			
-		}/*
-	for(var i=0;i<Tubes3DList.length;i++){
-			Tubes3DList[i].draw(imgIconX+10,(i+img_panels.length)*(iconHeight+10)+imgIconY+10,iconWidth, iconHeight);
-		}*/
+	}
+	
+	//Clear the edges
+	clearRectangle(imgIconX,imgIconY-3,iconViewWidth,iconHeight+3);
+	clearRectangle(imgIconX,imgIconY+iconViewHeight+iconHeight+6,iconViewWidth,iconHeight+3);
 }
 
 function drawLine(x,y,x2,y2,color){
