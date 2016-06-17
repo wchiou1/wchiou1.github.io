@@ -1,5 +1,5 @@
 
-var version="click"
+var version="click2"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
