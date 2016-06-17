@@ -2142,6 +2142,7 @@ function addNewIconData(cindex){
 		pixelData[i*4+1]=tempColor.g;
 		pixelData[i*4+2]=tempColor.b;
 		pixelData[i*4+3]=255;
+		console.log(pixelData[i*4]+","+pixelData[i*4+1]+","+pixelData[i*4+2]+","+pixelData[i*4+3]+"|");
 	}
 	for(var i=1;i<iconHeight;i++){
 		for(var j=0;j<iconWidth*4;j++){
