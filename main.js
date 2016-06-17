@@ -63,7 +63,7 @@ var img_data=[];
 var scales=[];
 var img_panels=[];
 var colorIconsData=[];
-var imgIconsData=[];
+var imgIconsTex=[];
 var color_panels=[];
 var Tubes3DList=[];
 var colormapFileNames=[];
@@ -2233,7 +2233,11 @@ function addNewImgIconData(){
 	var y=imgIconY-30-iconHeight;
 	var pixelData = new Uint8Array(w*h*4);//unit8array
 	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
-	imgIconsData.push(pixelData);
+	var texture=gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_2D, self.texture);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, iconWidth, iconHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,pixelData);
+	setTexParameter();
+	imgIconsTex.push(texture);
 }
 
 function handleImageFileSelect(evt) {
