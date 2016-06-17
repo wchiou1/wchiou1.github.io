@@ -1348,7 +1348,7 @@ function handleMouseDown(event){
 		if(dragIcon<10000){
 			tempxy=getIconxy(dragIcon);
 			LabSpaceColor=dragIcon;
-			drawLabSpace();
+			//drawLabSpace();
 			changeImage(dragIcon);
 			targ.style.left=mouse.x-iconWidth/2+'px';
 			targ.style.top=mouse.y-iconHeight/2+'px';
@@ -1409,7 +1409,7 @@ function handleMouseMove(event){
 	updateFilenameIndicator(mouse.x,mouse.y);
 	if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
-		drawLabSpace();
+		draw2LabSpaces();
 	}
 	else if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
@@ -1451,7 +1451,7 @@ function MouseWheelHandler(e) {
 			scaleT2(1.1);
 		else if(delta<0)
 			scaleT2(0.9);
-		drawLabSpace();
+		draw2LabSpaces();
 		event.preventDefault();
 		event.returnValue=false;
 	}
