@@ -1159,7 +1159,7 @@ function testResetButtonHit(mouseX,mouseY){
 
 function testImageIconHit(mouseX,mouseY){
 	//First test x value
-	if(mouseX<iconX+10||mouseX>iconX+10+iconWidth){
+	if(mouseX<imgIconX+10||mouseX>imgIconX+10+iconWidth){
 		return -1;
 	}
 	return -1;
