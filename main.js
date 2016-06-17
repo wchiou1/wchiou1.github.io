@@ -1342,15 +1342,26 @@ function handleMouseDown(event){
 			LabSpaceColor=dragIcon;
 			drawLabSpace();
 			changeImage(dragIcon);
+			targ.style.left=mouse.x-iconWidth/2+'px';
+			targ.style.top=mouse.y-iconHeight/2+'px';
+			targ.style.display="inline";
 		}
 		else{
-			tempxy=getImageIconxy(dragIcon);
+			var temp = dragIcon-10000;
+			if(temp<img_panels.length){
+				TubesIndex=-1;
+				imgIndex=temp;
+				view3D = false;
+			}
+			else{
+				TubesIndex=temp-img_panels.length;
+				imgIndex=-1;
+				view3D = true;
+			}
+			initView();
+			drawView();
 		}
 		
-		//createImage(tempxy[0],tempxy[1],iconWidth,iconHeight);
-		targ.style.left=mouse.x-iconWidth/2+'px';
-		targ.style.top=mouse.y-iconHeight/2+'px';
-		targ.style.display="inline";
 	}
 	
 	if(testCanvas2Hit(mouse)){
@@ -1376,21 +1387,6 @@ function handleMouseUp(event){
 			mapCIndices[receiveIndex]=dragIcon;
 			drawScene();
 		}
-	}
-	if(dragIcon>=10000){
-		var temp = dragIcon-10000;
-		if(temp<img_panels.length){
-			TubesIndex=-1;
-			imgIndex=temp;
-			view3D = false;
-		}
-		else{
-			TubesIndex=temp-img_panels.length;
-			imgIndex=-1;
-			view3D = true;
-		}
-		initView();
-		drawView();
 	}
 	dragIcon=-1;
 	dragMarker=-1;
