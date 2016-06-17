@@ -1493,8 +1493,28 @@ function MouseWheelHandler(e) {
 		}
 		event.preventDefault();
 		event.returnValue=false;
+	}else if(testImageIconViewHit(mouse.x,mouse.y)){
+		if(iconViewHeight<imgIconsTex.length*60+10){
+			if(delta>0)
+				scrollImageIconView(-15);
+			else if(delta<0)
+				scrollImageIconView(15);
+			drawImgIcons();
+		}
+		event.preventDefault();
+		event.returnValue=false;
 	}
 	return false;
+}
+
+function scrollImageIconView(delta){
+	imgIconViewOffset = imgIconViewOffset+delta;
+	if(imgIconViewOffset<0){
+		imgIconViewOffset=0;
+	}
+	if(0<scales.length*60-iconViewHeight+10&&imgIconViewOffset>scales.length*60-iconViewHeight+10){
+		imgIconViewOffset=scales.length*60-iconViewHeight+10;
+	}
 }
 
 function scrollIconView(delta){
