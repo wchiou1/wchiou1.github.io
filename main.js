@@ -1858,7 +1858,7 @@ function drawThumbnail(x,y,cindex){
 	color_panels[cindex].draw();
 }
 
-var pMatrix2=makeOrtho(-300,300,-300,300,-1000,1000);
+var pMatrix2=makeOrtho(-300,300,-300,300,-10000,10000);
 var lastShader2;
 var transform2={
 	degx: 0,
