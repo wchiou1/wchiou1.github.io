@@ -68,17 +68,23 @@
 	background-color: #3399ff;
 	top:700px;
 	left:0px;
+	text-align: center;
+	line-height: 30px;
 	z-index: 1;
 }
 #button2{
 	background-color: #3399ff;
 	top:700px;
 	left:600px;
+	text-align: center;
+	line-height: 30px;
 	z-index: 1;
 }
 #button3{
 	background-color: #3399ff;
 	top:700px;
 	left:900px;
+	text-align: center;
+	line-height: 30px;
 	z-index: 1;
 }

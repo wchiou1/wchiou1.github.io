@@ -876,12 +876,12 @@ function initButtons(){
 	imgbutton.style.left = imgIconX-30+"px";
 	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
 	imgbutton.style.width = iconViewWidth+60+"px";
-	imgbutton.style.height = 20+"px";
+	imgbutton.style.height = 30+"px";
 	
 	colorbutton.style.left = iconX-30+"px";
 	colorbutton.style.top = iconY+iconViewHeight+40+"px";
 	colorbutton.style.width = iconViewWidth+60+"px";
-	colorbutton.style.height = 20+"px";
+	colorbutton.style.height = 30+"px";
 }
 function initViewport(){
 	var temp = canvas.height/2-20;
