@@ -70,6 +70,7 @@
 }
 .button:hover{
 	outline: 2px solid white;
+	cursor: default;
 }
 .button:active { 
 	outline: 2px solid gray;
