@@ -2099,7 +2099,7 @@ function FileListenerInit(){
 			
 			addEventHandler(drop1, 'dragover', cancel);
 			addEventHandler(drop1, 'dragenter', cancel);
-			addEventHandler(drop1,'drop', function(e){readDroppedFiles(e,'img');});
+			addEventHandler(drop1,'drop', function(e){readDroppedFiles(e,'data');});
 			addEventHandler(drop2, 'dragover', cancel);
 			addEventHandler(drop2, 'dragenter', cancel);
 			addEventHandler(drop2,'drop', function(e){readDroppedFiles(e,'color');});
@@ -2129,6 +2129,12 @@ function readFiles(files,type){
 			}
 			else if(type=='tubes'){
 				readTextToTubes(e2.target.result,this.file.name);
+			}
+			else if(type=='data'){
+				if(this.file.name.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
+					readTextToTubes(e2.target.result,this.file.name);
+				else
+					readTextToImage(e2.target.result,this.file.name);
 			}
 		}
 		reader.readAsText(file); // start reading the file data.
