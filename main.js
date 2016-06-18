@@ -2131,10 +2131,11 @@ function readFiles(files,type){
 				readTextToTubes(e2.target.result,this.file.name);
 			}
 			else if(type=='data'){
-				if(this.file.name.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
-					readTextToTubes(e2.target.result,this.file.name);
+				var fname=this.file.name;
+				if(fname.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
+					readTextToTubes(e2.target.result,fname);
 				else
-					readTextToImage(e2.target.result,this.file.name);
+					readTextToImage(e2.target.result,fname);
 			}
 		}
 		reader.readAsText(file); // start reading the file data.
