@@ -2219,6 +2219,7 @@ function readTextToImage(text,filename){
 		h: imageHeight,
 		data: fillBackground(image2DArray,imageWidth,imageHeight)
 	};
+	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
 	img_data.push(imgData);
 	img_panels.push(new ImagePanel(0,0,1,1,img_data.length-1,null));
 	imgFileNames.push(filename);
@@ -2246,8 +2247,8 @@ function readTextToScale(text,filename){
 		};
 		scale.push(rgb);
 	}
+	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
 	scales.push(scale);
-	
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
 	colormapFileNames.push(filename);
 	addNewColorIconData(scales.length-1);
@@ -2276,10 +2277,12 @@ function addNewColorIconData(cindex){
 }
 
 function readTextToTubes(text,filename){
+	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
 	Tubes3DList.push(new Tubes3D(text));
-	Tubes3DList[Tubes3DList.length-1].draw(imgIconX+10,imgIconY-30-iconHeight,iconWidth, iconHeight);
 	tubesFileNames.push(filename);
+	Tubes3DList[Tubes3DList.length-1].draw(imgIconX+10,imgIconY-30-iconHeight,iconWidth, iconHeight);
 	addNewImgIconData(3);
+	
 	drawScene();
 }
 
@@ -2425,9 +2428,19 @@ function computeDeltaE(cID){
 		var lab2=rgb_to_lab({'R':rgb2.r, 'G':rgb2.g, 'B':rgb2.b});
 		if(lab1&&lab2)
 			var deltaE=ciede2000(lab1,lab2);
-		outputText=outputText+rgb2.r+" "+rgb2.g+" "+rgb2.b+" "+"deltaE = "+deltaE+"\n";
+		outputText=outputText+rgb2.r+" "+rgb2.g+" "+rgb2.b+" "+"deltaE = "+deltaE+"\r\n";
 	}
 	download(outputText, colormapFileNames[cID]+"-deltaE.txt", 'text/plain');
+}
+
+function downloadColormap(cID){
+	var outputText="";
+	var scale=scales[cID];
+	for(var i=0;i<scale.length;i++){
+		var rgb=scale[i];
+		outputText=outputText+rgb.r+" "+rgb.g+" "+rgb.b+"\r\n";
+	}
+	download(outputText, colormapFileNames[cID], 'text/plain');
 }
 
 function download(text, name, type) {
