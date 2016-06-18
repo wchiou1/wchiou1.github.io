@@ -1,5 +1,5 @@
 
-var version="imagescrolling5"
+var version="imagescrolling5.0"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
