@@ -2,7 +2,6 @@ smooth-cool-warm-0008
 smooth-cool-warm-1024
 fMRI-hue-continuous.txt
 fMRI-lightness-continuous.txt
-smooth-cool-warm.txt
 bent-cool-warm.txt
 black-body.txt
 extended-black-body.txt
