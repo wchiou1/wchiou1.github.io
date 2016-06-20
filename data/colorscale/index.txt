@@ -1,5 +1,5 @@
-dMRI-diverging-discrete.txt
-dMRI-saturation-discrete.txt
+smooth-cool-warm-0008
+smooth-cool-warm-1024
 fMRI-hue-continuous.txt
 fMRI-lightness-continuous.txt
 smooth-cool-warm.txt
