@@ -2114,11 +2114,10 @@ function FileListenerInit(){
 			addEventHandler(select1,'change', handleImageFileSelect);
 			addEventHandler(select2,'change', handleColorFileSelect);
 			addEventHandler(select3,'change', handleTubesFileSelect);
-			addEventHandler(select4,'change', handleResetButton);
 			addEventHandler(button1,'click', function(){select1.click();});
 			addEventHandler(button2,'click', function(){select2.click();});
 			addEventHandler(button3,'click', function(){select3.click();});
-			addEventHandler(button4,'click', function(){select4.click();});
+			addEventHandler(button4,'click', handleResetButton);
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
