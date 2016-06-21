@@ -20,6 +20,7 @@ var lastMouseY;
 
 var verticesBuffer;
 var verticesColorBuffer;
+var verticesIndexBuffer;
 var verticesBuffer2;
 var verticesColorBuffer2;
 var verticesIndexBuffer2;
@@ -910,6 +911,7 @@ function initViewport(){
 function initBuffers(){
 	verticesBuffer = gl.createBuffer();
 	verticesColorBuffer = gl.createBuffer();
+	verticesIndexBuffer=gl.createBuffer();
 	verticesBuffer2=gl2.createBuffer();
 	verticesColorBuffer2=gl2.createBuffer();
 	verticesIndexBuffer2=gl2.createBuffer();
