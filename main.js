@@ -2337,6 +2337,7 @@ function handleResetButton(evt){
 	imageSet=false;
 	initView();
 	drawView();
+	initT2();
 }
 
 //change background 0 to -1
