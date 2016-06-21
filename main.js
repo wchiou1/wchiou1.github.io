@@ -806,7 +806,7 @@ var Tubes3D = function(text){
 		var rady = transform3D.degy * Math.PI / 180.0;
 		var s=transform3D.scale;
 		var viewMatrix3D = //Matrix.Translation($V(this.center)).ensure4x4()
-						Matrix.Translation($V([0,0,-self.halfDimension*(1+Math.sqrt(3))])).ensure4x4()
+						Matrix.Translation($V([0,0,-self.halfDimension*2])).ensure4x4()
 						.x(Matrix.RotationX(radx).ensure4x4())
 						.x(Matrix.RotationY(rady).ensure4x4())
 						.x(Matrix.Diagonal([s,s,s,1]).ensure4x4())
@@ -817,7 +817,7 @@ var Tubes3D = function(text){
 
 		gl.bindTexture(gl.TEXTURE_2D, color_panels[self.color].texture);
 		
-		perspectiveMatrix = makePerspective(60, viewp.w/viewp.h, 0.1, 99999.9);
+		perspectiveMatrix = makePerspective(45, viewp.w/viewp.h, 0.1, 99999.9);
 		//makeOrtho(self.center[0]-self.halfDimension,self.center[0]+self.halfDimension,self.center[1]-self.halfDimension,self.center[1]+self.halfDimension,-10000,10000);
 		
 		gl.uniformMatrix4fv(uniforms.tubeShader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
