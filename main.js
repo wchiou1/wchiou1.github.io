@@ -1891,8 +1891,8 @@ var transform2={
 };
 
 function initT2(){
-	transform2.degx=0;
-	transform2.degy=0;
+	transform2.degx=45;
+	transform2.degy=45;
 	transform2.scale=1;
 }
 
