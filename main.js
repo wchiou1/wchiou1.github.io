@@ -873,6 +873,7 @@ function initButtons(){
 	var colorbutton = document.getElementById("button2");
 	var tubebutton = document.getElementById("button3");
 	var resetbutton = document.getElementById("button4");
+	var labbutton = document.getElementById("button5");
 	
 	imgbutton.style.left = imgIconX-30+"px";
 	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
@@ -888,6 +889,11 @@ function initButtons(){
 	tubebutton.style.top = imgIconY+iconViewHeight+75+"px";
 	tubebutton.style.width = iconViewWidth+60+"px";
 	tubebutton.style.height = 30+"px";
+	
+	resetbutton.style.left = imgIconX-30+"px";
+	resetbutton.style.top = imgIconY+iconViewHeight+110+"px";
+	resetbutton.style.width = iconViewWidth+60+"px";
+	resetbutton.style.height = 30+"px";
 	
 	resetbutton.style.left = imgIconX-30+"px";
 	resetbutton.style.top = imgIconY+iconViewHeight+110+"px";
@@ -2286,7 +2292,7 @@ function readTextToTubes(text,filename){
 	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
 	Tubes3DList.push(new Tubes3D(text));
 	tubesFileNames.push(filename);
-	Tubes3DList[Tubes3DList.length-1].draw(imgIconX+10,imgIconY-30-iconHeight,iconWidth, iconHeight);
+	Tubes3DList[Tubes3DList.length-1].draw(0,0,iconWidth, iconHeight);
 	addNewImgIconData(3);
 	
 	drawScene();
@@ -2296,8 +2302,8 @@ function readTextToTubes(text,filename){
 function addNewImgIconData(dimension){
 	var w=iconWidth;
 	var h=iconHeight;
-	var x=imgIconX+10;
-	var y=imgIconY-30-iconHeight;
+	var x=0;
+	var y=0;
 	var pixelData = new Uint8Array(w*h*4);//unit8array
 	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
 	var texture=gl.createTexture();
