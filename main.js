@@ -1,5 +1,5 @@
 
-var version="lineupdate2"
+var version="lineupdate3"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
