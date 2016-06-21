@@ -1692,7 +1692,7 @@ function drawLine(x,y,x2,y2,color){
 	
 
 	setMatrixUniforms();
-	gl.drawElements(gl.LINES, 6, gl.UNSIGNED_SHORT, 0);
+	gl.drawElements(gl.LINES, 2, gl.UNSIGNED_SHORT, 0);
 	mvPopMatrix();
 }
 
