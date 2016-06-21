@@ -2351,13 +2351,12 @@ function handleResetButton(evt){
 
 function handleLabButton(evt){
 	var button = document.getElementById('button5');
-	var labcanvas = document.getElementById('glcanvas2');
-	if(labcanvas.style.display="none"){
-		labcanvas.style.display="inline";
+	if(canvas2.style.display="none"){
+		canvas2.style.display="inline";
 		button.innerHTML = "Hide LabGraph";
 	}
 	else{
-		labcanvas.style.display="none";
+		canvas2.style.display="none";
 		button.innerHTML = "Show LabGraph";
 	}
 }
