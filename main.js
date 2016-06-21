@@ -1690,7 +1690,7 @@ function drawLine(x,y,x2,y2,color){
 		gl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
 		gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
 	}
-	gl.lineWidth(5);
+	//gl.lineWidth(5);
 	
 	perspectiveMatrix = orthoMatrix;
 	
@@ -1715,7 +1715,12 @@ function drawLine(x,y,x2,y2,color){
 	//gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer);
 	//gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1]), gl.STATIC_DRAW);
 	
-
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
+	gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
+	gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+	
 	setMatrixUniforms();
 	gl.drawArrays(gl.TRIANGLE_FAN, 0,4);
 	mvPopMatrix();
