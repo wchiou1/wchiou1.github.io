@@ -1,5 +1,5 @@
 
-var version="imagescrolling5.1"
+var version="drag update"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
