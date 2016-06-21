@@ -2351,7 +2351,7 @@ function handleResetButton(evt){
 
 function handleLabButton(evt){
 	var button = document.getElementById('button5');
-	if(canvas2.style.display="none"){
+	if(canvas2.style.display=="none"){
 		canvas2.style.display="inline";
 		button.innerHTML = "Hide LabGraph";
 	}
