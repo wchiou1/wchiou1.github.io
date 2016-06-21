@@ -872,6 +872,7 @@ function initButtons(){
 	var imgbutton = document.getElementById("button1");
 	var colorbutton = document.getElementById("button2");
 	var tubebutton = document.getElementById("button3");
+	var resetbutton = document.getElementById("button3");
 	
 	imgbutton.style.left = imgIconX-30+"px";
 	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
@@ -887,6 +888,11 @@ function initButtons(){
 	tubebutton.style.top = imgIconY+iconViewHeight+75+"px";
 	tubebutton.style.width = iconViewWidth+60+"px";
 	tubebutton.style.height = 30+"px";
+	
+	resetbutton.style.left = imgIconX-30+"px";
+	resetbutton.style.top = imgIconY+iconViewHeight+110+"px";
+	resetbutton.style.width = iconViewWidth+60+"px";
+	resetbutton.style.height = 30+"px";
 }
 function initViewport(){
 	var temp = canvas.height/2-20;
@@ -2107,9 +2113,11 @@ function FileListenerInit(){
 			addEventHandler(select1,'change', handleImageFileSelect);
 			addEventHandler(select2,'change', handleColorFileSelect);
 			addEventHandler(select3,'change', handleTubesFileSelect);
+			addEventHandler(select4,'change', handleResetButton);
 			addEventHandler(button1,'click', function(){select1.click();});
 			addEventHandler(button2,'click', function(){select2.click();});
 			addEventHandler(button3,'click', function(){select3.click();});
+			addEventHandler(button4,'click', function(){select4.click();});
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
@@ -2323,6 +2331,12 @@ function handleColorFileSelect(evt) {
 function handleTubesFileSelect(evt){
 	var files = evt.target.files;
     readFiles(files,"tubes");
+}
+
+function handleResetButton(evt){
+	imageSet=false;
+	initView();
+	drawView();
 }
 
 //change background 0 to -1
