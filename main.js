@@ -1,5 +1,5 @@
 
-var version="imagescrolling5.1"
+var version="drag update"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -20,6 +20,7 @@ var lastMouseY;
 
 var verticesBuffer;
 var verticesColorBuffer;
+var verticesIndexBuffer;
 var verticesBuffer2;
 var verticesColorBuffer2;
 var verticesIndexBuffer2;
@@ -58,6 +59,8 @@ var rotCanvas2=false;
 var view3D=false;
 var TubesIndex=0;
 var loading=0;
+var colorMapDrag=-1;
+
 
 var img_data=[];
 var scales=[];
@@ -910,6 +913,7 @@ function initViewport(){
 function initBuffers(){
 	verticesBuffer = gl.createBuffer();
 	verticesColorBuffer = gl.createBuffer();
+	verticesIndexBuffer=gl.createBuffer();
 	verticesBuffer2=gl2.createBuffer();
 	verticesColorBuffer2=gl2.createBuffer();
 	verticesIndexBuffer2=gl2.createBuffer();
@@ -1206,16 +1210,16 @@ function testMarkerHit(mouseX,mouseY){
 	return -1;
 }
 
-//Checks if the set color should be changed based on the click, returns if the scene should be updated
+//Checks if the set color should be changed based on the click, returns -1 if click missed
 function checkSetColor(mouseX,mouseY){
 	for(var i=0;i<mapCIndices.length;i++){
 		var tempHeight = testColorMapHit(mouseX,mouseY,i);
 		if(tempHeight!=-1){
 			setColorHeight[i]=tempHeight;
-			return true;
+			return i;
 		}
 	}
-	return false;
+	return -1;
 }
 
 //Returns the color height that was clicked, otherwise returns -1
@@ -1370,11 +1374,13 @@ function handleMouseDown(event){
 	dragMarker=testMarkerHit(mouse.x,mouse.y);
 	
 	//Only check setting the color if the markers did not get hit
-	if(dragMarker==-1&&checkSetColor(mouse.x,mouse.y)){
-		drawGraphs();
-		drawPanels();
-		drawMarkers();
-		drawInfoBoxes();
+	if(dragMarker==-1){
+		colorMapDrag=checkSetColor(mouse.x,mouse.y);
+		if(colorMapDrag!=-1)
+			drawGraphs();
+		//drawPanels();
+		//drawMarkers();
+		//drawInfoBoxes();
 	}
 	
 	if(dragIcon>=0){
@@ -1429,6 +1435,7 @@ function handleMouseUp(event){
 			drawScene();
 		}
 	}
+	colorMapDrag=-1;
 	dragIcon=-1;
 	dragMarker=-1;
 	clearDrag();
@@ -1440,6 +1447,10 @@ function handleMouseUp(event){
 function handleMouseMove(event){
 	var mouse = getMousePos(canvas, event);
 	updateFilenameIndicator(mouse.x,mouse.y);
+	if(colorMapDrag!=-1){
+		checkSetColor(mouse.x,mouse.y);
+		drawGraphs();
+	}
 	if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		draw2LabSpaces();
@@ -1679,27 +1690,24 @@ function drawLine(x,y,x2,y2,color){
 		gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
 	}
 	
-	var thickness=1;
-	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-thickness,-y,-1,	x+thickness,-y,-1,	x2+thickness,-y2,-1, x2-thickness,-y2,-1]), gl.STATIC_DRAW);
-		
-	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r,color.g,color.b,1,	color.r,color.g,color.b,1, color.r,color.g,color.b,1,	color.r,color.g,color.b,1]), gl.STATIC_DRAW);
-
 	perspectiveMatrix = orthoMatrix;
 	
 	
 	loadIdentity();
 	mvPushMatrix();
-	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
-	gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 	
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x,-y,0,	x2,-y2,0]), gl.STATIC_DRAW);
+	gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r,color.g,color.b,1, color.r,color.g,color.b,1]), gl2.STATIC_DRAW);
 	gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1]), gl.STATIC_DRAW);
+	
 
 	setMatrixUniforms();
-	
-	gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+	gl.drawElements(gl.LINES, 2, gl.UNSIGNED_SHORT, 0);
 	mvPopMatrix();
 }
 
