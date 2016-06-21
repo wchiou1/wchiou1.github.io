@@ -57,7 +57,7 @@ var imageSet = false;
 var rotCanvas2=false;
 var view3D=false;
 var TubesIndex=0;
-var colorMapDrag=0;
+var colorMapDrag=-1;
 
 var img_data=[];
 var scales=[];
@@ -1443,8 +1443,10 @@ function handleMouseUp(event){
 function handleMouseMove(event){
 	var mouse = getMousePos(canvas, event);
 	updateFilenameIndicator(mouse.x,mouse.y);
-	if(colorMapDrag!=-1)
+	if(colorMapDrag!=-1){
 		checkSetColor(mouse.x,mouse.y);
+		drawGraphs();
+	}
 	if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		draw2LabSpaces();
