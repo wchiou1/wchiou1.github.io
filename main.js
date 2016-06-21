@@ -756,6 +756,7 @@ var Tubes3D = function(text){
 		}
 		this.tubes.push(new Tube(points));
 	}
+	
 	this.center=[(this.boundingBox.l+this.boundingBox.r)/2,(this.boundingBox.t+this.boundingBox.b)/2,-(this.boundingBox.n+this.boundingBox.f)/2];
 	this.halfDimension=Math.max(this.boundingBox.r-this.boundingBox.l,this.boundingBox.t-this.boundingBox.b,this.boundingBox.f-this.boundingBox.n)/2;
 	this.changeColor=function(cID){
@@ -2339,13 +2340,20 @@ function addNewColorIconData(cindex){
 }
 
 function readTextToTubes(text,filename){
-	loading--;
 	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
-	Tubes3DList.push(new Tubes3D(text));
-	tubesFileNames.push(filename);
-	Tubes3DList[Tubes3DList.length-1].draw(0,0,iconWidth, iconHeight);
-	addNewImgIconData(3);
-	drawScene();
+	try{
+		Tubes3DList.push(new Tubes3D(text));
+		tubesFileNames.push(filename);
+		Tubes3DList[Tubes3DList.length-1].draw(0,0,iconWidth, iconHeight);
+		addNewImgIconData(3);
+	}
+	catch(e){
+		alert(e);
+	}
+	finally{
+		loading --;
+		drawScene();
+	}
 }
 
 //Reads the pixel data that's in the temporary zone and adds it to the pixeldata array
