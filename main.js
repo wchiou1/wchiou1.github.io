@@ -895,10 +895,10 @@ function initButtons(){
 	resetbutton.style.width = iconViewWidth+60+"px";
 	resetbutton.style.height = 30+"px";
 	
-	resetbutton.style.left = imgIconX-30+"px";
-	resetbutton.style.top = imgIconY+iconViewHeight+110+"px";
-	resetbutton.style.width = iconViewWidth+60+"px";
-	resetbutton.style.height = 30+"px";
+	labbutton.style.left = imgIconX-30+"px";
+	labbutton.style.top = imgIconY-50+"px";
+	labbutton.style.width = iconViewWidth+60+"px";
+	labbutton.style.height = 30+"px";
 }
 function initViewport(){
 	var temp = canvas.height/2-20;
@@ -2085,6 +2085,7 @@ function FileListenerInit(){
 			var button2 = document.getElementById('button2');
 			var button3 = document.getElementById('button3');
 			var button4 = document.getElementById('button4');
+			var button5 = document.getElementById('button5');
 			
 			drop1.style.left= imgIconX-1+'px';
 			drop1.style.top= imgIconY-1+"px";
@@ -2124,6 +2125,7 @@ function FileListenerInit(){
 			addEventHandler(button2,'click', function(){select2.click();});
 			addEventHandler(button3,'click', function(){select3.click();});
 			addEventHandler(button4,'click', handleResetButton);
+			addEventHandler(button5,'click', handleLabButton);
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
@@ -2345,6 +2347,19 @@ function handleResetButton(evt){
 	drawView();
 	initT2();
 	draw2LabSpaces();
+}
+
+function handleLabButton(evt){
+	var button = document.getElementById('button5');
+	var labcanvas = document.getElementById('glcanvas2');
+	if(labcanvas.style.display="none";){
+		labcanvas.style.display="inline";
+		button.innerHTML = "Hide LabGraph";
+	}
+	else{
+		labcanvas.style.display="none";
+		button.innerHTML = "Show LabGraph";
+	}
 }
 
 //change background 0 to -1
