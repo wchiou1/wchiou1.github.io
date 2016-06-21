@@ -1650,7 +1650,7 @@ function drawImgIcons(){
 		rectangle.drawWithTexture(imgIconsTex[i]);
 			
 	}
-	drawBorder(imgIconX,imgIconY,iconViewWidth,iconViewHeight,{r:.0,g:.0,b:.0});
+	drawBorder(imgIconX,imgIconY,iconViewWidth,iconViewHeight,{r:.3,g:.3,b:.3});
 	
 	//Clear the edges
 	clearRectangle(imgIconX,imgIconY-3,iconViewWidth,iconHeight+3);
@@ -1875,7 +1875,7 @@ function drawColorThumbnails(){
 	}
 	
 	//Draw the borders
-	drawBorder(iconX,iconY,iconViewWidth,iconViewHeight,{r:1.0,g:.0,b:.0});
+	drawBorder(iconX,iconY,iconViewWidth,iconViewHeight,{r:.3,g:.3,b:.3});
 	
 	//Clear the edges
 	clearRectangle(iconX,iconY-3,iconViewWidth,iconHeight+3);

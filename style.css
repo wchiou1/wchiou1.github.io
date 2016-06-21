@@ -40,13 +40,13 @@ body
 }
 
 #drop1 {
-  border: 1px solid blue;
+  border: 1px solid gray;
   z-index: 2;
 }
 
 #drop2 {
 
-  border: 1px solid orange;
+  border: 1px solid gray;
   z-index: 2;
 }
 
