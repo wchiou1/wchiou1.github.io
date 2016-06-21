@@ -1673,8 +1673,6 @@ function drawImgIcons(){
 function updateLoader(){
 	var loader=document.getElementById("load");
 	if(loading>0){
-		if(iconViewHeight<(imgIconsTex.length+1)*(iconHeight+10)+10)
-			imgIconViewOffset=(imgIconsTex.length+1)*(iconHeight+10)+10-iconViewHeight;
 		var y = imgIconsTex.length*(iconHeight+10)+imgIconY+10-imgIconViewOffset;
 		var x = imgIconX+10;
 		loader.style.top=y+"px";
@@ -2172,6 +2170,10 @@ function FileListenerInit(){
 }
 
 function readFiles(files,type){
+	if(iconViewHeight<(imgIconsTex.length+1)*(iconHeight+10)+10){
+		imgIconViewOffset=(imgIconsTex.length+1)*(iconHeight+10)+10-iconViewHeight;
+		drawImgIcons();
+	}
 	if(type!="color"){
 		loading+=files.length;
 		updateLoader();
@@ -2215,6 +2217,10 @@ function readFilesFromServer(directory,type){//type=scale, image
     success: function(text) {		
             var lines=text.split('\n');
 			if(lines[lines.length-1]=="")lines.pop();
+			if(iconViewHeight<(imgIconsTex.length+1)*(iconHeight+10)+10){
+				imgIconViewOffset=(imgIconsTex.length+1)*(iconHeight+10)+10-iconViewHeight;
+				drawImgIcons();
+			}
 			if(type!="scale"){
 				loading+=lines.length;
 				updateLoader();
