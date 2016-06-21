@@ -807,7 +807,8 @@ var Tubes3D = function(text){
 
 		gl.bindTexture(gl.TEXTURE_2D, color_panels[self.color].texture);
 		
-		perspectiveMatrix = makeOrtho(self.center[0]-self.halfDimension,self.center[0]+self.halfDimension,self.center[1]-self.halfDimension,self.center[1]+self.halfDimension,-10000,10000);
+		perspectiveMatrix = //makePerspective(45, viewp.w/viewp.h, -10000, 10000.0);
+		makeOrtho(self.center[0]-self.halfDimension,self.center[0]+self.halfDimension,self.center[1]-self.halfDimension,self.center[1]+self.halfDimension,-10000,10000);
 		
 		gl.uniformMatrix4fv(uniforms.tubeShader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
 		gl.uniformMatrix4fv(uniforms.tubeShader.mvUniform, false, new Float32Array(viewMatrix3D.flatten()));
@@ -2229,9 +2230,8 @@ function readTextToImage(text,filename){
 	img_panels[tempIndex].move(imgIconX+10,imgIconY-30-iconHeight,0);
 	img_panels[tempIndex].draw();
 	addNewImgIconData(2);
-	//setView();
+
 	drawScene();
-	//console.log(imgFileNames);
 }
 
 function readTextToScale(text,filename){
@@ -2253,8 +2253,6 @@ function readTextToScale(text,filename){
 	colormapFileNames.push(filename);
 	addNewColorIconData(scales.length-1);
 	drawScene();
-	//console.log(colormapFileNames);
-	//computeDeltaE(scales.length-1);
 }
 
 function addNewColorIconData(cindex){
@@ -2392,7 +2390,7 @@ function changeImage(cindex){
 
 function createImage(x,y,w,h){
 	var myImageData=ctx.createImageData(w,h); //uint8clampedarray
-	var pixelData = new Uint8Array(w*h*4);//unit8array
+	var pixelData = new Uint8Array(w*h*4);//uint8array
 	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
 	myImageData.data.set(pixelData);
 	ctx.putImageData(myImageData,0,0);
