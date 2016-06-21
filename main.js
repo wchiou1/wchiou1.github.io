@@ -1,5 +1,5 @@
 
-var version="drag update"
+var version="lineupdate"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
