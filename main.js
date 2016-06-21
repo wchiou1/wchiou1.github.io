@@ -2266,7 +2266,8 @@ function readTextToImage(text,filename){
 	var image2DArray=[];
 	var imageHeight= undefined;
 	var imageWidth= undefined;
-
+	
+	try{
 	//parse the data into the array
 	var lines=text.split('\n');
 	if(lines[lines.length-1]==""||lines[lines.length-1]=="\r")lines.pop();
@@ -2277,9 +2278,7 @@ function readTextToImage(text,filename){
 		if(!imageWidth){
 			imageWidth = values.length;
 		}else if(imageWidth!=values.length){
-			alert('error reading the file. line:'+i+ ", num:"+values.length+", value=("+values[0]+")");
-			loading--;
-			return;
+			throw('error reading the file. line:'+i+ ", num:"+values.length+", value=("+values[0]+")");
 		}
 		for(var j=0; j<values.length; j++){
 			if(values[j]) image2DArray.push(Number(values[j]));
@@ -2300,8 +2299,15 @@ function readTextToImage(text,filename){
 	img_panels[tempIndex].move(0,0,0);
 	img_panels[tempIndex].draw();
 	addNewImgIconData(2);
-	loading--;
-	drawScene();
+	}
+	catch(e){
+		alert(e);
+	}
+	finally{
+		loading--;
+		drawScene();
+	}
+	
 }
 
 function readTextToScale(text,filename){
