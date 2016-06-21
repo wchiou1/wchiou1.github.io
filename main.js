@@ -1703,12 +1703,12 @@ function drawLine(x,y,x2,y2,color){
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r,color.g,color.b,1, color.r,color.g,color.b,1]), gl.STATIC_DRAW);
 	gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer);
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1]), gl.STATIC_DRAW);
+	//gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer);
+	//gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1]), gl.STATIC_DRAW);
 	
 
 	setMatrixUniforms();
-	gl.drawElements(gl.LINES, 2, gl.UNSIGNED_SHORT, 0);
+	gl.drawArrays(gl.LINES, 0,2);
 	mvPopMatrix();
 }
 
