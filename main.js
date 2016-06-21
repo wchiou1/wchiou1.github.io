@@ -2243,7 +2243,7 @@ function readTextToImage(text,filename){
 	var tempIndex = img_panels.length-1;
 	img_panels[tempIndex].changeColor(null);
 	img_panels[tempIndex].scale(iconWidth, iconHeight);
-	img_panels[tempIndex].move(imgIconX+10,imgIconY-30-iconHeight,0);
+	img_panels[tempIndex].move(0,0,0);
 	img_panels[tempIndex].draw();
 	addNewImgIconData(2);
 
@@ -2354,8 +2354,7 @@ function handleLabButton(evt){
 	if(canvas2.style.display=="none"){
 		canvas2.style.display="inline";
 		button.innerHTML = "Hide LabGraph";
-	}
-	else{
+	}else{
 		canvas2.style.display="none";
 		button.innerHTML = "Show LabGraph";
 	}
