@@ -2265,6 +2265,7 @@ function readTextToImage(text,filename){
 			imageWidth = values.length;
 		}else if(imageWidth!=values.length){
 			alert('error reading the file. line:'+i+ ", num:"+values.length+", value=("+values[0]+")");
+			loading--;
 			return;
 		}
 		for(var j=0; j<values.length; j++){
@@ -2331,12 +2332,12 @@ function addNewColorIconData(cindex){
 }
 
 function readTextToTubes(text,filename){
+	loading--;
 	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
 	Tubes3DList.push(new Tubes3D(text));
 	tubesFileNames.push(filename);
 	Tubes3DList[Tubes3DList.length-1].draw(0,0,iconWidth, iconHeight);
 	addNewImgIconData(3);
-	loading--;
 	drawScene();
 }
 
