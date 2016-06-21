@@ -57,6 +57,7 @@ var imageSet = false;
 var rotCanvas2=false;
 var view3D=false;
 var TubesIndex=0;
+var loading=0;
 
 var img_data=[];
 var scales=[];
@@ -1596,6 +1597,7 @@ function updateIconViewOffset(mouseX,mouseY){
 // Draw the scene.
 //
 function drawScene() {
+	updateLoader();
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -1648,7 +1650,7 @@ function drawImgIcons(){
 		rectangle.scale(iconWidth,iconHeight);
 		rectangle.move(imgIconX+10,i*(iconHeight+10)+imgIconY+10-imgIconViewOffset,0);
 		rectangle.drawWithTexture(imgIconsTex[i]);
-			
+		
 	}
 	drawBorder(imgIconX,imgIconY,iconViewWidth,iconViewHeight,{r:.3,g:.3,b:.3});
 	
@@ -1656,7 +1658,19 @@ function drawImgIcons(){
 	clearRectangle(imgIconX,imgIconY-3,iconViewWidth,iconHeight+3);
 	clearRectangle(imgIconX,imgIconY+iconViewHeight+iconHeight+6,iconViewWidth,iconHeight+3);
 }
-
+function updateLoader(){
+	var loader=document.getElementById("load");
+	if(loading>0){
+		var y = imgIconsTex.length*(iconHeight+10)+imgIconY+10-imgIconViewOffset;
+		var x = imgIconX+10;
+		loader.style.top=y+"px";
+		loader.style.left= x+"px";
+		loader.style.display="inline";
+	}
+	else{
+		loader.style.display="none";
+	}
+}
 function drawLine(x,y,x2,y2,color){
 	if(lastShader!=="simple"){
 		lastShader="simple";
@@ -2133,7 +2147,12 @@ function FileListenerInit(){
 }
 
 function readFiles(files,type){
-	for (var i=0, file; file=files[i]; i++) {
+	if(type!="color"){
+		loading+=files.length;
+		updateLoader();
+	}
+	for (var i=0; i<files.length;  i++) {
+		var file=files[i];
 		//if (!file.type.match('plain')) continue;
 		var reader = new FileReader();
 		reader.file=file;
@@ -2171,7 +2190,12 @@ function readFilesFromServer(directory,type){//type=scale, image
     success: function(text) {		
             var lines=text.split('\n');
 			if(lines[lines.length-1]=="")lines.pop();
+			if(type!="scale"){
+				loading+=lines.length;
+				updateLoader();
+			}
 				for(var i=0;i<lines.length;i++) {
+					
 					readOneFileFromServer(directory,lines[i],type);
 				}
     },
@@ -2252,7 +2276,7 @@ function readTextToImage(text,filename){
 	img_panels[tempIndex].move(0,0,0);
 	img_panels[tempIndex].draw();
 	addNewImgIconData(2);
-
+	loading--;
 	drawScene();
 }
 
@@ -2302,7 +2326,7 @@ function readTextToTubes(text,filename){
 	tubesFileNames.push(filename);
 	Tubes3DList[Tubes3DList.length-1].draw(0,0,iconWidth, iconHeight);
 	addNewImgIconData(3);
-	
+	loading--;
 	drawScene();
 }
 
