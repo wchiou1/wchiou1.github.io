@@ -2161,7 +2161,7 @@ function readFiles(files,type){
 
 function readFilesOnLoad(){
 	readFilesFromServer("./data/colorscale/","scale");
-	readFilesFromServer("./data/image/","image");
+	readFilesFromServer("./data/image/","data");
 }
 
 function readFilesFromServer(directory,type){//type=scale, image
@@ -2197,6 +2197,12 @@ function readOneFileFromServer(directory,filename,type){
 		else if(type=="tubes"){
 			readTextToTubes(text,filename);
 		}
+		else if(type=='data'){
+				if(filename.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
+					readTextToTubes(text,filename);
+				else
+					readTextToImage(text,filename);
+			}
 		else{
 			console.log("file does not match:");
 			console.log(text);
