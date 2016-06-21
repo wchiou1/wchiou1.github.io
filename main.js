@@ -2338,6 +2338,7 @@ function handleResetButton(evt){
 	initView();
 	drawView();
 	initT2();
+	draw2LabSpaces();
 }
 
 //change background 0 to -1
