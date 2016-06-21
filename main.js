@@ -57,6 +57,7 @@ var imageSet = false;
 var rotCanvas2=false;
 var view3D=false;
 var TubesIndex=0;
+var colorMapDrag=0;
 
 var img_data=[];
 var scales=[];
@@ -1205,16 +1206,16 @@ function testMarkerHit(mouseX,mouseY){
 	return -1;
 }
 
-//Checks if the set color should be changed based on the click, returns if the scene should be updated
+//Checks if the set color should be changed based on the click, returns -1 if click missed
 function checkSetColor(mouseX,mouseY){
 	for(var i=0;i<mapCIndices.length;i++){
 		var tempHeight = testColorMapHit(mouseX,mouseY,i);
 		if(tempHeight!=-1){
 			setColorHeight[i]=tempHeight;
-			return true;
+			return i;
 		}
 	}
-	return false;
+	return -1;
 }
 
 //Returns the color height that was clicked, otherwise returns -1
@@ -1369,11 +1370,13 @@ function handleMouseDown(event){
 	dragMarker=testMarkerHit(mouse.x,mouse.y);
 	
 	//Only check setting the color if the markers did not get hit
-	if(dragMarker==-1&&checkSetColor(mouse.x,mouse.y)){
-		drawGraphs();
-		drawPanels();
-		drawMarkers();
-		drawInfoBoxes();
+	if(dragMarker==-1){
+		colorMapDrag=checkSetColor(mouse.x,mouse.y);
+		if(colorMapDrag!=-1)
+			drawGraphs();
+		//drawPanels();
+		//drawMarkers();
+		//drawInfoBoxes();
 	}
 	
 	if(dragIcon>=0){
@@ -1428,6 +1431,7 @@ function handleMouseUp(event){
 			drawScene();
 		}
 	}
+	colorMapDrag=-1;
 	dragIcon=-1;
 	dragMarker=-1;
 	clearDrag();
@@ -1439,6 +1443,8 @@ function handleMouseUp(event){
 function handleMouseMove(event){
 	var mouse = getMousePos(canvas, event);
 	updateFilenameIndicator(mouse.x,mouse.y);
+	if(colorMapDrag!=-1)
+		checkSetColor(mouse.x,mouse.y);
 	if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		draw2LabSpaces();
