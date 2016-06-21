@@ -872,7 +872,7 @@ function initButtons(){
 	var imgbutton = document.getElementById("button1");
 	var colorbutton = document.getElementById("button2");
 	var tubebutton = document.getElementById("button3");
-	var resetbutton = document.getElementById("button3");
+	var resetbutton = document.getElementById("button4");
 	
 	imgbutton.style.left = imgIconX-30+"px";
 	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
