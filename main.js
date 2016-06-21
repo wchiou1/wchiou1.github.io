@@ -1674,6 +1674,7 @@ function drawLine(x,y,x2,y2,color){
 		gl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
 		gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
 	}
+	gl2.lineWidth(2);
 	
 	perspectiveMatrix = orthoMatrix;
 	
@@ -1682,7 +1683,7 @@ function drawLine(x,y,x2,y2,color){
 	mvPushMatrix();
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x,-y,0,	x2,-y2,0]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x,y,0,	x2,y2,0]), gl.STATIC_DRAW);
 	gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r,color.g,color.b,1, color.r,color.g,color.b,1]), gl2.STATIC_DRAW);
