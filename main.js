@@ -1613,7 +1613,7 @@ function drawScene() {
 	drawMarkers();
 	drawInfoBoxes();
 	//drawLine(0,0,400,400,{r:100,g:100,b:100});
-	drawResetIcon();
+	//drawResetIcon();
 	draw2LabSpaces();
 }
 
