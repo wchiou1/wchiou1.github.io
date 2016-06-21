@@ -1689,7 +1689,7 @@ function drawLine(x,y,x2,y2,color){
 		gl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
 		gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
 	}
-	gl2.lineWidth(5);
+	gl.lineWidth(5);
 	
 	perspectiveMatrix = orthoMatrix;
 	
