@@ -2198,7 +2198,7 @@ function readOneFileFromServer(directory,filename,type){
 			readTextToTubes(text,filename);
 		}
 		else if(type=='data'){
-				if(filename.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
+				if(filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
 					readTextToTubes(text,filename);
 				else
 					readTextToImage(text,filename);
