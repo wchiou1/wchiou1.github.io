@@ -2352,7 +2352,7 @@ function handleResetButton(evt){
 function handleLabButton(evt){
 	var button = document.getElementById('button5');
 	var labcanvas = document.getElementById('glcanvas2');
-	if(labcanvas.style.display="none";){
+	if(labcanvas.style.display="none"){
 		labcanvas.style.display="inline";
 		button.innerHTML = "Hide LabGraph";
 	}
