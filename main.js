@@ -1700,10 +1700,10 @@ function drawLine(x,y,x2,y2,color){
 	
 	var thickness=1;
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x-thickness,-y,-1,	x+thickness,-y,-1,	x2+thickness,-y2,-1, x2-thickness,-y2,-1]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x,-y,-1,	x2,-y2,-1]), gl.STATIC_DRAW);
 		
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r,color.g,color.b,1,	color.r,color.g,color.b,1, color.r,color.g,color.b,1,	color.r,color.g,color.b,1]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([color.r,color.g,color.b,1,	color.r,color.g,color.b,1]), gl.STATIC_DRAW);
 	/*
 	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	1200,-600,0]), gl.STATIC_DRAW);
@@ -1722,7 +1722,7 @@ function drawLine(x,y,x2,y2,color){
 	gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
 	
 	setMatrixUniforms();
-	gl.drawArrays(gl.TRIANGLE_FAN, 0,4);
+	gl.drawArrays(gl.LINES, 0,2);
 	mvPopMatrix();
 }
 
