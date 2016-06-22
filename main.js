@@ -2242,7 +2242,7 @@ function readFilesFromServer(directory,type){//type=scale, image
     url:     directory+"index.txt",
     success: function(text) {		
             var lines=text.split('\n');
-			if(lines[lines.length-1]=="")lines.pop();
+			if(lines[lines.length-1]==""||lines[lines.length-1]=="/r")lines.pop();
 			if(iconViewHeight<(imgIconsTex.length+1)*(iconHeight+10)+10){
 				imgIconViewOffset=(imgIconsTex.length+1)*(iconHeight+10)+10-iconViewHeight;
 				drawImgIcons();
@@ -2252,8 +2252,10 @@ function readFilesFromServer(directory,type){//type=scale, image
 				updateLoader();
 			}
 				for(var i=0;i<lines.length;i++) {
-					
-					readOneFileFromServer(directory,lines[i],type);
+					if(lines[i][lines[i].length-1]==""||lines[i][lines[i].length-1]=="\r")
+						readOneFileFromServer(directory,lines[i].slice(0,-1),type);
+					else
+						readOneFileFromServer(directory,lines[i],type);
 				}
     },
     error:   function() {
@@ -2279,10 +2281,10 @@ function readOneFileFromServer(directory,filename,type){
 			readTextToTubes(text,filename);
 		}
 		else if(type=='data'){
-				if(filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
-					readTextToTubes(text,filename);
-				else
-					readTextToImage(text,filename);
+			if(filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
+				readTextToTubes(text,filename);
+			else
+				readTextToImage(text,filename);
 			}
 		else{
 			console.log("file does not match:");
