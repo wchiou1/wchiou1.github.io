@@ -95,11 +95,14 @@ body
 	height: 32px;
 	opacity: 0.2;
 	z-index:1;
-	transition: opacity 2s 1s;
+	transition: opacity 2s 0.5s;
 }
 .fadeButton:hover{
-	opacity: 1.0;
+	opacity: 0.6;
 	transition: opacity 0.5s;
+}
+.fadeButton:active{
+	opacity: 1.0;
 }
 #button1{
 	background-color: #3399ff;
