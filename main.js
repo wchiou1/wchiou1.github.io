@@ -895,6 +895,7 @@ function initButtons(){
 	var tubebutton = document.getElementById("button3");
 	var resetbutton = document.getElementById("button4");
 	var labbutton = document.getElementById("button5");
+	var modalbutton = document.getElementById("button6");
 	
 	imgbutton.style.left = imgIconX-30+"px";
 	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
@@ -920,6 +921,11 @@ function initButtons(){
 	labbutton.style.top = imgIconY-50+"px";
 	labbutton.style.width = iconViewWidth+60+"px";
 	labbutton.style.height = 30+"px";
+	
+	modalbutton.style.left = iconX-30+"px";
+	modalbutton.style.top = iconY-50+"px";
+	modalbutton.style.width = iconViewWidth+60+"px";
+	modalbutton.style.height = 30+"px";
 }
 function initViewport(){
 	var temp = canvas.height/2-20;
