@@ -159,6 +159,16 @@
 
   <body onload="start()">
 	
+	<?php
+		$dir    = '/data/colorscale';
+		$files1 = scandir($dir);
+		$files2 = scandir($dir, 1);
+
+		print_r($files1);
+		print_r($files2);
+	?>
+	
+	
 	<div class="image" id="img1">
 		<canvas id="glcanvas" width="1200" height="700" class="webgl">
 		  <!--Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element. -->
