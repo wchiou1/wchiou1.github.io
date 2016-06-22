@@ -2159,14 +2159,14 @@ function FileListenerInit(){
 			var button4 = document.getElementById('button4');
 			var button5 = document.getElementById('button5');
 			
-			drop1.style.left= imgIconX-1+'px';
-			drop1.style.top= imgIconY-1+"px";
+			drop1.style.left= imgIconX+'px';
+			drop1.style.top= imgIconY+"px";
 			drop1.style.width=iconViewWidth+"px";
 			drop1.style.height=iconViewHeight+"px";
 			drop1.style.position= 'absolute';
 			
-			drop2.style.left= iconX-1+'px';
-			drop2.style.top= iconY-1+"px";
+			drop2.style.left= iconX+'px';
+			drop2.style.top= iconY+"px";
 			drop2.style.width=iconViewWidth+"px";
 			drop2.style.height=iconViewHeight+"px";
 			drop2.style.position= 'absolute';
