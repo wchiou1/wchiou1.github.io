@@ -51,7 +51,8 @@ body
 }
 select{
     width: 150px;
-    overflow: hidden;
+    overflow-x: hidden;
+	overflow-y:scroll
     display: inline-block;
     white-space: nowrap;
 }
