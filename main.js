@@ -58,6 +58,7 @@ var dragView=false;
 var imageSet = false;
 var rotCanvas2=false;
 var view3D=false;
+var isPerspective=true;
 var TubesIndex=0;
 var loading=0;
 var colorMapDrag=-1;
@@ -806,15 +807,29 @@ var Tubes3D = function(text){
 		var radx = transform3D.degx * Math.PI / 180.0;
 		var rady = transform3D.degy * Math.PI / 180.0;
 		var s=transform3D.scale;
-		var viewMatrix3D = Matrix.Translation($V(this.center)).ensure4x4().x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4()).x(Matrix.Translation($V([-this.center[0],-this.center[1],-this.center[2]])).ensure4x4());
+		if(isPerspective){
+			var viewMatrix3D = Matrix.Translation($V([0,0,-self.halfDimension*2])).ensure4x4()
+						.x(Matrix.RotationX(radx).ensure4x4())
+						.x(Matrix.RotationY(rady).ensure4x4())
+						.x(Matrix.Diagonal([s,s,s,1]).ensure4x4())
+						.x(Matrix.Translation($V(this.center).x(-1)).ensure4x4());
+		
+			perspectiveMatrix = makePerspective(45, viewp.w/viewp.h, 0.1, 99999.9);
+			//makeOrtho(self.center[0]-self.halfDimension,self.center[0]+self.halfDimension,self.center[1]-self.halfDimension,self.center[1]+self.halfDimension,-10000,10000);
+		}
+		else{
+			var viewMatrix3D = //Matrix.Translation($V(this.center)).ensure4x4()
+						(Matrix.RotationX(radx).ensure4x4())
+						.x(Matrix.RotationY(rady).ensure4x4())
+						.x(Matrix.Diagonal([s,s,s,1]).ensure4x4())
+						.x(Matrix.Translation($V(this.center).x(-1)).ensure4x4());
+		
+			perspectiveMatrix = makeOrtho(-self.halfDimension,self.halfDimension,-self.halfDimension,self.halfDimension,-10000,10000);
+		}
 		
 		gl.uniform1i(uniforms.tubeShader.uColormapLoc, 0); 
 		gl.activeTexture(gl.TEXTURE0);
-
 		gl.bindTexture(gl.TEXTURE_2D, color_panels[self.color].texture);
-		
-		perspectiveMatrix = //makePerspective(45, viewp.w/viewp.h, -10000, 10000.0);
-		makeOrtho(self.center[0]-self.halfDimension,self.center[0]+self.halfDimension,self.center[1]-self.halfDimension,self.center[1]+self.halfDimension,-10000,10000);
 		
 		gl.uniformMatrix4fv(uniforms.tubeShader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
 		gl.uniformMatrix4fv(uniforms.tubeShader.mvUniform, false, new Float32Array(viewMatrix3D.flatten()));
@@ -908,8 +923,19 @@ function initButtons(){
 }
 function initViewport(){
 	var temp = canvas.height/2-20;
-	viewports.push(	new Viewport(receiveX+scaleWidth+100,10,temp,temp));
-	viewports.push(	new Viewport(receiveX+scaleWidth+100,temp+30,temp,temp));
+	var x=receiveX+scaleWidth+100;
+	var y1=10;
+	var y2=temp+30;
+	viewports.push(	new Viewport(x,y1,temp,temp));
+	viewports.push(	new Viewport(x,y2,temp,temp));
+	var screenshot1=document.getElementById("screenshot1");
+	var screenshot2=document.getElementById("screenshot2");
+	screenshot1.style.top=y1+"px";
+	screenshot1.style.left=(x-35)+"px";
+	screenshot2.style.top=y2+"px";
+	screenshot2.style.left=(x-35)+"px";
+	addEventHandler(screenshot1,'click', function(){downloadView(0);});
+	addEventHandler(screenshot2,'click', function(){downloadView(1);});
 }
 
 function initBuffers(){
@@ -2219,7 +2245,7 @@ function readFilesFromServer(directory,type){//type=scale, image
     url:     directory+"index.txt",
     success: function(text) {		
             var lines=text.split('\n');
-			if(lines[lines.length-1]=="")lines.pop();
+			if(lines[lines.length-1]==""||lines[lines.length-1]=="/r")lines.pop();
 			if(iconViewHeight<(imgIconsTex.length+1)*(iconHeight+10)+10){
 				imgIconViewOffset=(imgIconsTex.length+1)*(iconHeight+10)+10-iconViewHeight;
 				drawImgIcons();
@@ -2229,8 +2255,10 @@ function readFilesFromServer(directory,type){//type=scale, image
 				updateLoader();
 			}
 				for(var i=0;i<lines.length;i++) {
-					
-					readOneFileFromServer(directory,lines[i],type);
+					if(lines[i][lines[i].length-1]==""||lines[i][lines[i].length-1]=="\r")
+						readOneFileFromServer(directory,lines[i].slice(0,-1),type);
+					else
+						readOneFileFromServer(directory,lines[i],type);
 				}
     },
     error:   function() {
@@ -2256,10 +2284,10 @@ function readOneFileFromServer(directory,filename,type){
 			readTextToTubes(text,filename);
 		}
 		else if(type=='data'){
-				if(filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
-					readTextToTubes(text,filename);
-				else
-					readTextToImage(text,filename);
+			if(filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
+				readTextToTubes(text,filename);
+			else
+				readTextToImage(text,filename);
 			}
 		else{
 			console.log("file does not match:");
@@ -2553,6 +2581,31 @@ function downloadColormap(cID){
 		outputText=outputText+rgb.r+" "+rgb.g+" "+rgb.b+"\r\n";
 	}
 	download(outputText, colormapFileNames[cID], 'text/plain');
+}
+
+function downloadView(id){
+	var viewp=viewports[id];
+	var x=viewp.x;
+	var y=viewp.y;
+	var w=viewp.w;
+	var h=viewp.h;
+	var myImageData=ctx.createImageData(w,h); //uint8clampedarray
+	var pixelData = new Uint8Array(w*h*4);//uint8array
+	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
+	myImageData.data.set(pixelData);
+	targ.width=w;
+	targ.height=h;
+	ctx.putImageData(myImageData,0,0);
+	ctx.translate(0,h);
+	ctx.scale(1, -1);
+	ctx.drawImage(imageCanvas,0,0);
+	
+	var a = document.createElement("a");
+    a.href = targ.toDataURL();
+    a.download = name;
+    a.click();
+	targ.width=50;
+	targ.height=50;
 }
 
 function download(text, name, type) {
