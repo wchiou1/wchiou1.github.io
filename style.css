@@ -49,6 +49,12 @@ body
   border: 1px solid #000000;
   z-index: 2;
 }
+table td {
+    width: 30px;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+}
 
 #selector1{
 	display: none;
