@@ -922,8 +922,19 @@ function initButtons(){
 }
 function initViewport(){
 	var temp = canvas.height/2-20;
-	viewports.push(	new Viewport(receiveX+scaleWidth+100,10,temp,temp));
-	viewports.push(	new Viewport(receiveX+scaleWidth+100,temp+30,temp,temp));
+	var x=receiveX+scaleWidth+100;
+	var y1=10;
+	var y2=temp+30;
+	viewports.push(	new Viewport(x,y1,temp,temp));
+	viewports.push(	new Viewport(x,y2,temp,temp));
+	var screenshot1=document.getElementById("screenshot1");
+	var screenshot2=document.getElementById("screenshot2");
+	screenshot1.style.top=y1+"px";
+	screenshot1.style.left=(x-35)+"px";
+	screenshot2.style.top=y2+"px";
+	screenshot2.style.left=(x-35)+"px";
+	addEventHandler(screenshot1,'click', function(){downloadView(0);});
+	addEventHandler(screenshot2,'click', function(){downloadView(1);});
 }
 
 function initBuffers(){

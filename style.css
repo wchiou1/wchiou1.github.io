@@ -89,6 +89,18 @@ body
 .button:active { 
 	outline: 2px solid #666666;
 } 
+.fadeButton{
+	position: absolute;
+	width:32px;
+	height: 32px;
+	opacity: 0.2;
+	z-index:1;
+	transition: opacity 2s 1s;
+}
+.fadeButton:hover{
+	opacity: 1.0;
+	transition: opacity 0.5s;
+}
 #button1{
 	background-color: #3399ff;
 	top:700px;
