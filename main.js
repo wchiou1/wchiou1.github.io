@@ -1,5 +1,5 @@
 
-var version="offset"
+var version="modal"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
