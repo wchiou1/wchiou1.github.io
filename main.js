@@ -43,6 +43,7 @@ var dragIcon=-1;
 var imgIndex = 0;
 var mapCIndices = [0,1];
 var setColorHeight = [0,0];
+var inverseColorHeight = [false,false];
 var iconViewOffset = 0;
 var imgIconViewOffset = 0;
 var iconViewWidth = 70;
@@ -1304,7 +1305,9 @@ function testCanvas2Hit(mouse){
 }
 
 //Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
-function getColorHeight(cindex,height){
+function getColorHeight(cindex,height,inverse){
+	if(inverse)
+		height=1.0-height;
 	if(height>=1.0||height<0.0){
 		console.log("Warning: Attempted to get invalid color height("+height+").");
 		return {'R' : 0,'G' : 0,'B' : 0};
