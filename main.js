@@ -2567,6 +2567,31 @@ function downloadColormap(cID){
 	download(outputText, colormapFileNames[cID], 'text/plain');
 }
 
+function downloadView(id){
+	var viewp=viewports[id];
+	var x=viewp.x;
+	var y=viewp.y;
+	var w=viewp.w;
+	var h=viewp.h;
+	var myImageData=ctx.createImageData(w,h); //uint8clampedarray
+	var pixelData = new Uint8Array(w*h*4);//uint8array
+	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
+	myImageData.data.set(pixelData);
+	targ.width=w;
+	targ.height=h;
+	ctx.putImageData(myImageData,0,0);
+	ctx.translate(0,h);
+	ctx.scale(1, -1);
+	ctx.drawImage(imageCanvas,0,0);
+	
+	var a = document.createElement("a");
+    a.href = targ.toDataURL();
+    a.download = name;
+    a.click();
+	targ.width=50;
+	targ.height=50;
+}
+
 function download(text, name, type) {
     var a = document.createElement("a");
     var file = new Blob([text], {type: type});
