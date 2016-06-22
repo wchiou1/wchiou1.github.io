@@ -2477,10 +2477,10 @@ function handleLabButton(evt){
 function handleModalButton(evt){
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
-	for(var i=0;i<sel1.options.length;i++)
+	for(var i=sel1.options.length-1;i>=0;i--)
 		sel1.removeChild(sel1.options[i]); 
-	for(var i=0;i<sel2.options.length;i++)
-		sel1.removeChild(sel2.options[i]); 
+	for(var i=sel2.options.length-1;i>=0;i--)
+		sel2.removeChild(sel2.options[i]); 
 }
 
 //change background 0 to -1
