@@ -918,12 +918,12 @@ function initButtons(){
 	resetbutton.style.height = 30+"px";
 	
 	labbutton.style.left = imgIconX-30+"px";
-	labbutton.style.top = imgIconY-50+"px";
+	labbutton.style.top = imgIconY-55+"px";
 	labbutton.style.width = iconViewWidth+60+"px";
 	labbutton.style.height = 30+"px";
 	
 	modalbutton.style.left = iconX-30+"px";
-	modalbutton.style.top = iconY-50+"px";
+	modalbutton.style.top = iconY-55+"px";
 	modalbutton.style.width = iconViewWidth+60+"px";
 	modalbutton.style.height = 30+"px";
 }
