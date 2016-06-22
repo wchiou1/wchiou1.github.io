@@ -63,7 +63,6 @@ var TubesIndex=0;
 var loading=0;
 var colorMapDrag=-1;
 
-
 var img_data=[];
 var scales=[];
 var img_panels=[];
@@ -2158,6 +2157,7 @@ function FileListenerInit(){
 			var button3 = document.getElementById('button3');
 			var button4 = document.getElementById('button4');
 			var button5 = document.getElementById('button5');
+			var button6 = document.getElementById('button6');
 			
 			drop1.style.left= imgIconX+'px';
 			drop1.style.top= imgIconY+"px";
@@ -2198,6 +2198,7 @@ function FileListenerInit(){
 			addEventHandler(button3,'click', function(){select3.click();});
 			addEventHandler(button4,'click', handleResetButton);
 			addEventHandler(button5,'click', handleLabButton);
+			addEventHandler(button6,'click', handleModalButton);
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
@@ -2471,6 +2472,15 @@ function handleLabButton(evt){
 		canvas2.style.display="none";
 		button.innerHTML = "Show LabGraph";
 	}
+}
+
+function handleModalButton(evt){
+	var sel1 = document.getElementById('select1');
+	var sel2 = document.getElementById('select2');
+	for(var i=0;i<sel1.options.length;i++)
+		sel1.removeChild(sel1.options[i]); 
+	for(var i=0;i<sel2.options.length;i++)
+		sel1.removeChild(sel2.options[i]); 
 }
 
 //change background 0 to -1
