@@ -2590,11 +2590,13 @@ function handleModalButton(evt){
 		//Verify if the file exists on the server, if it doesn't remove it
 		var verify=false;
 		for(var j=0;j<colorscaleList.length;j++){
+			console.log(""+colormapFileNames[i]+"|"+colorscaleList[j]);
 			if(colormapFileNames[i]==colorscaleList[j]){
 				verify=true;
 				break;
 			}
 		}
+		console.log("Removing "+sel2.options[i].innerHTML);
 		if(!verify)
 			sel2.removeChild(sel2.options[i]);
 	}
