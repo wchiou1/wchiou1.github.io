@@ -2305,6 +2305,7 @@ function getFileList(directory,type){
         // An error occurred
 		alert("cannot read files from server");
     }
+});
 }
 
 function readFilesFromServer(directory,type){//type=scale, image
