@@ -2297,9 +2297,6 @@ function getFileList(directory,type){
     success: function(text) {		
             var lines=text.split('\n');
 			if(lines[lines.length-1]==""||lines[lines.length-1]=="/r")lines.pop();
-			for(var i=0;i<lines.length;i++) {
-				console.log(""+i+":"+lines[i]+"\n");
-			}
 			return lines;
     },
     error:   function() {
@@ -2541,6 +2538,9 @@ function handleLabButton(evt){
 
 function handleModalButton(evt){
 	var files=getFileList("./data/colorscale/","scale");
+	for(var i=0;i<files.length;i++) {
+		console.log(""+i+":"+files[i]+"\n");
+	}
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
 	for(var i=sel1.options.length-1;i>=0;i--)
