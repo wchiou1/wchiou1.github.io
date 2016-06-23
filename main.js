@@ -1819,8 +1819,8 @@ function drawInfoBoxes(){
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.108+receiveX,receiveY+scaleHeight+30,0,0,1);
 	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+30,0,2,3);
-	drawText("RGB:",receiveX+3,receiveY+scaleHeight+30+25);
-	drawText("LAB:",receiveX+3,receiveY+scaleHeight+30+45);
+	drawText("RGB:",receiveX+1,receiveY+scaleHeight+30+25);
+	drawText("LAB:",receiveX+1,receiveY+scaleHeight+30+45);
 	ctx2.clearRect(receiveX,receiveY,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+10,receiveY+scaleHeight/4);
 	rectangle.scale(scaleWidth*.095,75);
@@ -1832,8 +1832,8 @@ function drawInfoBoxes(){
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.108+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
 	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
-	drawText("RGB:",receiveX+3,receiveY+scaleHeight+receiveDelta+30+25);
-	drawText("LAB:",receiveX+3,receiveY+scaleHeight+receiveDelta+30+45);
+	drawText("RGB:",receiveX+1,receiveY+scaleHeight+receiveDelta+30+25);
+	drawText("LAB:",receiveX+1,receiveY+scaleHeight+receiveDelta+30+45);
 	ctx2.clearRect(receiveX,receiveY+receiveDelta,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleHeight/4);
 	rectangle.scale(scaleWidth*.095,75);
