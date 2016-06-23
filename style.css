@@ -130,32 +130,30 @@ select{
 }
 #button1{
 	background-color: #3399ff;
-	top:700px;
-	left:0px;
 	text-align: center;
 	line-height: 30px;
 	z-index: 1;
 }
 #button2{
 	background-color: #3399ff;
-	top:700px;
-	left:600px;
 	text-align: center;
 	line-height: 30px;
 	z-index: 1;
 }
 #button3{
 	background-color: #3399ff;
-	top:700px;
-	left:900px;
 	text-align: center;
 	line-height: 30px;
 	z-index: 1;
 }
 #button4{
 	background-color: #7F00FF;
-	top:700px;
-	left:900px;
+	text-align: center;
+	line-height: 30px;
+	z-index: 1;
+}
+#button5{
+	background-color: #7F00FF;
 	text-align: center;
 	line-height: 30px;
 	z-index: 1;
@@ -165,21 +163,25 @@ select{
 	height: 30px;
 	width:360px;
 	z-index: 5;
+	display: none;
+	background-color: #cccccc;
 }
-#button5{
-	background-color: #7F00FF;
-	position: absolute;
+#hideLab{
 	right: 0%;
-	text-align: center;
-	line-height: 30px;
-	z-index: 5;
 	float: right;
+	color: white;
+	background: #333333;
+	text-align: center;
+	width:36px;
+	height: 24px;
+	margin-right: 3px;
+	margin-top: 3px;
 }
 #glcanvas2{
 	position: absolute; 
 	right: 0px;
 	z-index: 5;
-	display: none;
+	display: block;
 	margin-top: 30px;
 	clear: both;
 	border: 2px solid #cccccc;

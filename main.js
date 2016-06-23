@@ -834,7 +834,15 @@ $(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
 	canvas2 = document.getElementById("glcanvas2");
-	canvas2.style.display="none";
+
+	labDiv.style.width=canvas2.width+"px";
+	labDiv.style.height="30px";
+	canvas2.style.width=canvas2.width+"px";
+	canvas2.style.height=canvas2.height+"px";
+	labDiv.style.left=imgIconX+30-canvas2.width+iconViewWidth+"px";
+	labDiv.style.top = imgIconY-55+"px";
+	labDiv.style.display="none";
+	
 	window.addEventListener("resize", on_resize(resize));
 	initWebGL(canvas);
 	  if (gl) {
@@ -886,19 +894,16 @@ function initFileList(){
 function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)};return c};//http://louisremi.mit-license.org/
 
 function resize(){
-
-	var max=Math.max;
-	var min=Math.min;
 	
-	var newwidth = max(min_width,canvas.clientWidth);
-	var newheight = max(min_height,canvas.clientHeight);
+	var newwidth = Math.max(min_width,canvas.clientWidth);
+	var newheight = Math.max(min_height,canvas.clientHeight);
 	if (canvas.width != newwidth || canvas.height != newheight) {
 	canvas.width = newwidth;
     canvas.height = newheight;
 	gl.viewport(0,0,canvas.width,canvas.height);
 	var scaleX=newwidth/min_width;
 	var scaleY=newheight/min_height;
-	var scaleSquare=min(scaleX,scaleY);
+	var scaleSquare=Math.min(scaleX,scaleY);
 	
 	var iconDim=50*scaleSquare;
     iconHeight = iconDim;
@@ -925,14 +930,6 @@ function resize(){
 	initButtons();
 	initViewport();
     drawScene();
-	
-	
-	labDiv.style.width=canvas2.width+"px";
-	labDiv.style.height="30px";
-	canvas2.style.width=canvas2.width+"px";
-	canvas2.style.height=canvas2.height+"px";
-	labDiv.style.left=imgIconX+30-canvas2.width+iconViewWidth+"px";
-	labDiv.style.top = imgIconY-55+"px";
 	
    }
 	
@@ -965,8 +962,8 @@ function initButtons(){
 	resetbutton.style.width = iconViewWidth+60+"px";
 	resetbutton.style.height = 30+"px";
 	
-	//labbutton.style.left = imgIconX-30+"px";-(width-iconViewWidth+60+"px")
-	//labbutton.style.top = imgIconY-55+"px";
+	labbutton.style.left = imgIconX-30+"px";
+	labbutton.style.top = imgIconY-55+"px";
 	labbutton.style.width = iconViewWidth+60+"px";
 	labbutton.style.height = 30+"px";
 	
@@ -1392,7 +1389,7 @@ function testViewportHit(mouse){
 	
 }
 function testDragLabHit(mousex,mousey){
-	if(canvas2.style.display=="none") return false;
+	if(labDiv.style.display=="none") return false;
 	var left=Number(labDiv.style.left.slice(0,-2));
 	var top=Number(labDiv.style.top.slice(0,-2));
 	if(mousex>left&&mousex<left+canvas2.width&&mousey>top&&mousey<(top+30)){
@@ -1402,7 +1399,7 @@ function testDragLabHit(mousex,mousey){
 }
 
 function testCanvas2Hit(mouse){
-	if(canvas2.style.display=="none") return false;
+	if(labDiv.style.display=="none") return false;
 	var c2left=Number(labDiv.style.left.slice(0,-2));
 	var c2top=Number(labDiv.style.top.slice(0,-2))+30;
 	if(mouse.x>c2left&&mouse.x<(c2left+canvas2.width)&&mouse.y>c2top&&mouse.y<(c2top+canvas2.height)){
@@ -1569,8 +1566,12 @@ function handleMouseMove(event){
 		draw2LabSpaces();
 	}
 	else if(dragLab){
-		labDiv.style.left=Number(labDiv.style.left.slice(0,-2))+(mouse.x-lastMouseX)+"px";
-		labDiv.style.top=Number(labDiv.style.top.slice(0,-2))+(mouse.y-lastMouseY)+"px";
+		var left=Number(labDiv.style.left.slice(0,-2))+(mouse.x-lastMouseX);
+		var top=Number(labDiv.style.top.slice(0,-2))+(mouse.y-lastMouseY);
+		if(left>-300&&left<canvas.width-30)
+			labDiv.style.left=left+"px";
+		if(top>0&&top<canvas.height-30)
+			labDiv.style.top=top+"px";
 	}
 	else if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
@@ -2257,7 +2258,7 @@ function FileListenerInit(){
 			var screenshot1=document.getElementById("screenshot1");
 			var screenshot2=document.getElementById("screenshot2");
 			var button6 = document.getElementById('button6');
-			
+			var hideLab= document.getElementById('hideLab');
 			function cancel(e) {
 			   e.preventDefault(); 
 			}
@@ -2288,7 +2289,7 @@ function FileListenerInit(){
 			addEventHandler(button6,'click', handleModalButton);
 			addEventHandler(screenshot1,'click', function(){downloadView(0);});
 			addEventHandler(screenshot2,'click', function(){downloadView(1);});
-
+			addEventHandler(hideLab,'click', handleLabButton);
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
@@ -2575,13 +2576,13 @@ function handleResetButton(evt){
 
 function handleLabButton(evt){
 	var button = document.getElementById('button5');
-	if(canvas2.style.display=="none"||canvas2.style.display==""){
-		canvas2.style.display="block";
-		labDiv.style.backgroundColor="#cccccc";
+	if(labDiv.style.display=="none"||labDiv.style.display==""){
+		//canvas2.style.display="block";
+		labDiv.style.display="block";
 		button.innerHTML = "Hide LabGraph";
 	}else{
-		canvas2.style.display="none";
-		labDiv.style.backgroundColor="transparent";
+		//canvas2.style.display="none";
+		labDiv.style.display="none";
 		button.innerHTML = "Show LabGraph";
 	}
 }
