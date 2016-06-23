@@ -879,8 +879,8 @@ function start() {
 }
 
 function initFileList(){
-	colorscaleList=readFileList("./data/colorscale/","scale");
-	dataList=readFileList("./data/image/","data");
+	colorscaleList=getFileList("./data/colorscale/","scale");
+	dataList=getFileList("./data/image/","data");
 }
 
 function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)};return c};//http://louisremi.mit-license.org/
