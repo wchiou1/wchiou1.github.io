@@ -2565,18 +2565,19 @@ function handleModalButton(evt){
 		//For each colormap in the index check to see if it's already loaded in
 		var loaded = false;
 		for(var j=0;j<colormapFileNames.length;j++){
-			//console.log(""+colorscaleList[i]+"|"+colormapFileNames[j]);
+			console.log(""+colorscaleList[i]+"|"+colormapFileNames[j]);
 			if(colorscaleList[i]==colormapFileNames[j]){
 				loaded=true;
 				break;
 			}
 		}
 		if(loaded){
-			//console.log("Deleting "+i+":"+sel1.options[i].innerHTML);
+			console.log("Deleting "+i+":"+sel1.options[i].innerHTML);
 			sel1.removeChild(sel1.options[i]);
 		}
 	}
 	
+	console.log("-----------------");
 	//Add all the files that are already loaded
 	for(var i=0;i<colormapFileNames.length;i++){
 		var opt = document.createElement('option');
