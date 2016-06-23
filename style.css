@@ -15,6 +15,7 @@ html, body
 }
 .container{
 	position: relative;
+	overflow: hidden;
 }
 #container1{
 	width: 100%;
@@ -33,14 +34,6 @@ html, body
 	min-height:700px;
 	z-index: 0;
 	display: block;
-}
-
-#glcanvas2{
-	position: absolute; 
-	top: 0px;
-	left: 80%;
-	z-index: 4;
-	display: none;
 }
 
 #imageCanvas{
@@ -167,13 +160,29 @@ select{
 	line-height: 30px;
 	z-index: 1;
 }
+#lab{
+	position: absolute;
+	height: 30px;
+	width:360px;
+	z-index: 5;
+}
 #button5{
 	background-color: #7F00FF;
-	top:700px;
-	left:900px;
+	position: absolute;
+	right: 0%;
 	text-align: center;
 	line-height: 30px;
-	z-index: 1;
+	z-index: 5;
+	float: right;
+}
+#glcanvas2{
+	position: absolute; 
+	right: 0px;
+	z-index: 5;
+	display: none;
+	margin-top: 30px;
+	clear: both;
+	border: 2px solid #cccccc;
 }
 #button6{
 	position: absolute; 
@@ -184,3 +193,4 @@ select{
 	line-height: 30px;
 	z-index: 1;
 }
+

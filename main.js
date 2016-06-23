@@ -64,6 +64,7 @@ var isPerspective=true;
 var TubesIndex=0;
 var loading=0;
 var colorMapDrag=-1;
+var dragLab=false;
 
 var img_data=[];
 var scales=[];
@@ -83,6 +84,7 @@ var ctx2 = textCanvas.getContext("2d");
 var targ = document.getElementById("imageCanvas");
 targ.width=50;
 targ.height=50;
+var labDiv=document.getElementById("lab");
 
 var min_width=1200;
 var min_height=700;
@@ -831,12 +833,10 @@ var Shape={};
 $(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
-	window.addEventListener("resize", on_resize(resize));
 	canvas2 = document.getElementById("glcanvas2");
-	canvas2.style.top="0px";
-	canvas2.style.left=canvas.width+10+"px";
+	canvas2.style.display="none";
+	window.addEventListener("resize", on_resize(resize));
 	initWebGL(canvas);
-
 	  if (gl) {
 		
 		document.onmousedown = handleMouseDown;
@@ -925,6 +925,15 @@ function resize(){
 	initButtons();
 	initViewport();
     drawScene();
+	
+	
+	labDiv.style.width=canvas2.width+"px";
+	labDiv.style.height="30px";
+	canvas2.style.width=canvas2.width+"px";
+	canvas2.style.height=canvas2.height+"px";
+	labDiv.style.left=imgIconX+30-canvas2.width+iconViewWidth+"px";
+	labDiv.style.top = imgIconY-55+"px";
+	
    }
 	
 }
@@ -956,8 +965,8 @@ function initButtons(){
 	resetbutton.style.width = iconViewWidth+60+"px";
 	resetbutton.style.height = 30+"px";
 	
-	labbutton.style.left = imgIconX-30+"px";
-	labbutton.style.top = imgIconY-55+"px";
+	//labbutton.style.left = imgIconX-30+"px";-(width-iconViewWidth+60+"px")
+	//labbutton.style.top = imgIconY-55+"px";
 	labbutton.style.width = iconViewWidth+60+"px";
 	labbutton.style.height = 30+"px";
 	
@@ -1382,11 +1391,21 @@ function testViewportHit(mouse){
 	return false;
 	
 }
+function testDragLabHit(mousex,mousey){
+	if(canvas2.style.display=="none") return false;
+	var left=Number(labDiv.style.left.slice(0,-2));
+	var top=Number(labDiv.style.top.slice(0,-2));
+	if(mousex>left&&mousex<left+canvas2.width&&mousey>top&&mousey<(top+30)){
+		return true;
+	}
+	return false;
+}
 
 function testCanvas2Hit(mouse){
-	var c2left=Number(canvas2.style.left.slice(0,-2));
-	var c2top=Number(canvas2.style.top.slice(0,-2));
-	if(mouse.x>c2left&&mouse.x<(Number(c2left)+Number(canvas2.width))&&mouse.y>c2top&&mouse.y<(c2top+canvas2.height)){
+	if(canvas2.style.display=="none") return false;
+	var c2left=Number(labDiv.style.left.slice(0,-2));
+	var c2top=Number(labDiv.style.top.slice(0,-2))+30;
+	if(mouse.x>c2left&&mouse.x<(c2left+canvas2.width)&&mouse.y>c2top&&mouse.y<(c2top+canvas2.height)){
 		return true;
 	}
 	return false;
@@ -1439,34 +1458,42 @@ function handleMouseDown(event){
 	mouseDown=true;
 	//Get the mouse x and y
 	var mouse = getMousePos(canvas, event);
+	dragMarker=testMarkerHit(mouse.x,mouse.y);
+	
+	if(testCanvas2Hit(mouse)){
+		rotCanvas2=true;
+	}
+	else if(testDragLabHit(mouse.x,mouse.y)){
+		dragLab=true;
+	}
+	else if(testViewportHit(mouse)){
+		dragView=true;
+	}
+	
 	//Test if resetbutton was pressed
-	if(testResetButtonHit(mouse.x,mouse.y)&&img_panels.length!=0){
+	else if(testResetButtonHit(mouse.x,mouse.y)&&img_panels.length!=0){
 		imageSet=false;
 		initView();
 		drawView();
 	}
 	//Test if the icon view box was hit
-	if(testIconViewHit(mouse.x,mouse.y)){
+	else if(testIconViewHit(mouse.x,mouse.y)){
 		
 		dragIcon=testIconHit(mouse.x,mouse.y);
-			if(dragIcon==-1){
-				dragIcon=-2;
-			}
+		if(dragIcon==-1){
+			dragIcon=-2;
+		}
 	}
-	
-	if(dragIcon==-1){
-		if(testImageIconViewHit(mouse.x,mouse.y)){
-			dragIcon = testImageIconHit(mouse.x,mouse.y);
-			if(dragIcon==-1){
-				dragIcon=-3;
-			}
+
+	else if(testImageIconViewHit(mouse.x,mouse.y)){
+		dragIcon = testImageIconHit(mouse.x,mouse.y);
+		if(dragIcon==-1){
+			dragIcon=-3;
 		}
 	}
 	
-	dragMarker=testMarkerHit(mouse.x,mouse.y);
-	
 	//Only check setting the color if the markers did not get hit
-	if(dragMarker==-1){
+	else if(dragMarker==-1){
 		colorMapDrag=checkSetColor(mouse.x,mouse.y);
 		if(colorMapDrag!=-1)
 			drawGraphs();
@@ -1504,13 +1531,6 @@ function handleMouseDown(event){
 		
 	}
 	
-	if(testCanvas2Hit(mouse)){
-		rotCanvas2=true;
-	}
-	else if(testViewportHit(mouse)){
-		dragView=true;
-	}
-	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
 }
@@ -1533,6 +1553,7 @@ function handleMouseUp(event){
 	clearDrag();
 	rotCanvas2=false;
 	dragView=false;
+	dragLab=false;
 }
 
 //Called when the mouse moves
@@ -1546,6 +1567,10 @@ function handleMouseMove(event){
 	if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		draw2LabSpaces();
+	}
+	else if(dragLab){
+		labDiv.style.left=Number(labDiv.style.left.slice(0,-2))+(mouse.x-lastMouseX)+"px";
+		labDiv.style.top=Number(labDiv.style.top.slice(0,-2))+(mouse.y-lastMouseY)+"px";
 	}
 	else if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
@@ -2134,8 +2159,21 @@ function draw2LabSpaces(){
 	if(mapCIndices[0]<scales.length)
 		drawLabSpace(mapCIndices[0],0);
 	gl2.viewport(x2,y2,w,h);
-	if(mapCIndices[1]<scales.length)
+	if(mapCIndices[1]<scales.length){
 		drawLabSpace(mapCIndices[1],1);
+		//draw the line in between
+		gl2.lineWidth(1);
+		gl2.viewport(0,0,w,h*2);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-1,0,0,1,0,0]), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0.8,0.8,0.8,1,0.8,0.8,0.8,1]), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+		gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(Matrix.I(4).flatten()));
+		gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(Matrix.I(4).flatten()));
+		gl2.drawArrays(gl2.LINES,0,2);
+	}
 }
 
 function setView(l,r,b,t){
@@ -2537,12 +2575,13 @@ function handleResetButton(evt){
 
 function handleLabButton(evt){
 	var button = document.getElementById('button5');
-	console.log(canvas2.style.display);
 	if(canvas2.style.display=="none"||canvas2.style.display==""){
-		canvas2.style.display="inline";
+		canvas2.style.display="block";
+		labDiv.style.backgroundColor="#cccccc";
 		button.innerHTML = "Hide LabGraph";
 	}else{
 		canvas2.style.display="none";
+		labDiv.style.backgroundColor="transparent";
 		button.innerHTML = "Show LabGraph";
 	}
 }
