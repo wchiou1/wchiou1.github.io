@@ -2565,14 +2565,14 @@ function handleModalButton(evt){
 		//For each colormap in the index check to see if it's already loaded in
 		var loaded = false;
 		for(var j=0;j<colormapFileNames.length;j++){
-			console.log(""+colorscaleList[i]+"|"+colormapFileNames[j]);
+			//console.log(""+colorscaleList[i]+"|"+colormapFileNames[j]);
 			if(colorscaleList[i]==colormapFileNames[j]){
 				loaded=true;
 				break;
 			}
 		}
 		if(loaded){
-			console.log("Deleting "+i+":"+sel1.options[i].innerHTML);
+			//console.log("Deleting "+i+":"+sel1.options[i].innerHTML);
 			sel1.removeChild(sel1.options[i]);
 		}
 	}
@@ -2591,13 +2591,13 @@ function handleModalButton(evt){
 		//Verify if the file exists on the server, if it doesn't remove it
 		var verify=false;
 		for(var j=0;j<colorscaleList.length;j++){
-			console.log("i"+colormapFileNames[i]+"|"+colorscaleList[j]);
+			//console.log("i"+colormapFileNames[i]+"|"+colorscaleList[j]);
 			if(colormapFileNames[i]==colorscaleList[j]){
 				verify=true;
 				break;
 			}
 		}
-		console.log("Removing "+i+sel2.options[i].innerHTML);
+		//console.log("Removing "+i+sel2.options[i].innerHTML);
 		if(!verify)
 			sel2.removeChild(sel2.options[i]);
 	}
