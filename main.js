@@ -866,6 +866,7 @@ function start() {
 		initShape();
 		initViewport();
 		initButtons();
+		initFileList();
 		resize();
 		readFilesOnLoad();
 		//setInterval(drawScene, 15);
