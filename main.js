@@ -879,8 +879,8 @@ function start() {
 }
 
 function initFileList(){
-	colorscaleList=getFileList("./data/colorscale/","scale");
-	dataList=getFileList("./data/image/","data");
+	getFileList("./data/colorscale/","scale");
+	getFileList("./data/image/","data");
 }
 
 function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)};return c};//http://louisremi.mit-license.org/
@@ -2305,7 +2305,10 @@ function getFileList(directory,type){
     success: function(text) {		
             var lines=text.split('\n');
 			if(lines[lines.length-1]==""||lines[lines.length-1]=="/r")lines.pop();
-			return lines;
+			if(type=="scale")
+				colorscaleList=lines;
+			if(type=="data")
+				dataList=lines;
     },
     error:   function() {
         // An error occurred
