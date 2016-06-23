@@ -2587,7 +2587,7 @@ function handleModalButton(evt){
 	}
 	
 	//Remove locally loaded files
-	for(var i=colormapFileNames.length;i>=0;i--){
+	for(var i=colormapFileNames.length-1;i>=0;i--){
 		//Verify if the file exists on the server, if it doesn't remove it
 		var verify=false;
 		for(var j=0;j<colorscaleList.length;j++){
