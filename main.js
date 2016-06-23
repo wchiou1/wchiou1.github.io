@@ -2563,6 +2563,24 @@ function handleModalButton(evt){
 		opt.value = colorscaleList[i]; 
 		sel1.appendChild(opt); 
 	}
+	//Remove files that are already added
+	for(var i=colorscaleList.length-1;i>=0;i--){
+		//For each colormap in the index check to see if it's already loaded in
+		var loaded = false;
+		for(var j=0;j<colormapFileNames.length;j++){
+			if(colorscaleList[i]==colormapFileNames[j])
+				loaded=true;
+		}
+		if(loaded)
+			sel1.removeChild(sel1.options[i]);
+	}
+	
+	for(var i=0;i<colormapFileNames.length;i++){
+		var opt = document.createElement('option');
+		opt.appendChild(document.createTextNode(colorscaleList[i]));
+		opt.value = colorscaleList[i]; 
+		sel2.appendChild(opt); 
+	}
 }
 
 //change background 0 to -1
