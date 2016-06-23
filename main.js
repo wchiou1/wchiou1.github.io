@@ -1,5 +1,5 @@
 
-var version="modal6"
+var version="php"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
