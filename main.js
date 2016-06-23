@@ -2297,6 +2297,9 @@ function getFileList(directory,type){
     success: function(text) {		
             var lines=text.split('\n');
 			if(lines[lines.length-1]==""||lines[lines.length-1]=="/r")lines.pop();
+			for(var i=0;i<lines.length;i++) {
+				console.log(""+i+":"+lines[i]+"\n");
+			}
 			return lines;
     },
     error:   function() {
