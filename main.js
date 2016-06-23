@@ -79,9 +79,11 @@ var textCanvas = document.getElementById("text");
 var ctx2 = textCanvas.getContext("2d");
 
 var targ = document.getElementById("imageCanvas");
-targ.width="50";
-targ.height="50";
+targ.width=50;
+targ.height=50;
 
+var min_width=1200;
+var min_height=700;
 var orthogonal={
 	l: 0,
 	r: 1200,
@@ -90,24 +92,6 @@ var orthogonal={
 };
 var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
 
-/*WIP///////////////////////////////////////
-var thumbnails={
-	framebuffer: null,
-	thumbnailTexture: null,
-	size: null,
-	maxSize: null,
-	createThumbnail: function(obj){
-		gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-		size++;
-		
-		obj.drawInRect(x,y,w,h);
-		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-		return id;
-	}
-	draw: function(id)
-	
-};
-*//////////////////////////////////////////////////////////////
 var viewports=[];
 
 function updateViewportText(){
@@ -845,14 +829,14 @@ var Shape={};
 $(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
-	
+	window.addEventListener("resize", on_resize(resize));
 	canvas2 = document.getElementById("glcanvas2");
 	canvas2.style.top="0px";
 	canvas2.style.left=canvas.width+10+"px";
 	initWebGL(canvas);
 
 	  if (gl) {
-	  
+		
 		document.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
 		document.onmousemove = 	handleMouseMove;
@@ -877,16 +861,64 @@ function start() {
 		initMarkers();
 		//initTextureFramebuffer();
 		initShaders();
-		initViewport();
 		initShape();
+		initViewport();
+		initButtons();
+		resize();
 		readFilesOnLoad();
 		//setInterval(drawScene, 15);
-		initButtons();
+		
 		drawHelpText();
 		
 	  }
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
+}
+
+function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)};return c};//http://louisremi.mit-license.org/
+
+function resize(){
+
+	var max=Math.max;
+	var min=Math.min;
+	
+	var newwidth = max(min_width,canvas.clientWidth);
+	var newheight = max(min_height,canvas.clientHeight);
+	if (canvas.width != newwidth || canvas.height != newheight) {
+	canvas.width = newwidth;
+    canvas.height = newheight;
+	gl.viewport(0,0,canvas.width,canvas.height);
+	var scaleX=newwidth/min_width;
+	var scaleY=newheight/min_height;
+	var scaleSquare=min(scaleX,scaleY);
+	
+	var iconDim=50*scaleSquare;
+    iconHeight = iconDim;
+    iconWidth = iconDim;
+	targ.width=iconDim;
+	targ.height=iconDim;
+	textCanvas.width=canvas.width;
+	textCanvas.height=canvas.height;
+    iconX = 50*scaleSquare;
+    iconY = 150*scaleY;
+    imgIconX=1080*scaleX;
+    imgIconY=150*scaleY;
+    receiveX = 200*scaleX;
+    receiveY = 150*scaleY;
+    receiveDelta = 325*scaleY;
+    iconViewWidth = 70*scaleSquare;
+    iconViewHeight = 400*scaleY;
+    resetIconX = 630*scaleX;
+    resetIconY = 10*scaleY;
+    scaleWidth = 400*scaleSquare;
+    scaleHeight = 100*scaleSquare;
+	setView(0,canvas.width,-canvas.height,0);
+	orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
+	initButtons();
+	initViewport();
+    drawScene();
+   }
+	
 }
 function initButtons(){
 	var imgbutton = document.getElementById("button1");
@@ -919,12 +951,29 @@ function initButtons(){
 	labbutton.style.top = imgIconY-50+"px";
 	labbutton.style.width = iconViewWidth+60+"px";
 	labbutton.style.height = 30+"px";
+	
+	var drop1  = document.getElementById('drop1');
+	var drop2 = document.getElementById('drop2');
+	
+	drop1.style.left= imgIconX-1+'px';
+	drop1.style.top= imgIconY-1+"px";
+	drop1.style.width=iconViewWidth+"px";
+	drop1.style.height=iconViewHeight+"px";
+	drop1.style.position= 'absolute';
+	
+	drop2.style.left= iconX-1+'px';
+	drop2.style.top= iconY-1+"px";
+	drop2.style.width=iconViewWidth+"px";
+	drop2.style.height=iconViewHeight+"px";
+	drop2.style.position= 'absolute';
+
 }
-function initViewport(){
-	var temp = canvas.height/2-20;
-	var x=receiveX+scaleWidth+100;
-	var y1=10;
-	var y2=temp+30;
+function initViewport(){ 
+	var temp = Math.min(canvas.height,(canvas.width/min_width)*min_height)/2-20;
+	var x=receiveX+scaleWidth+100*(canvas.width/min_width);
+	var y1=(canvas.height/2-temp)/2;
+	var y2=canvas.height*0.75-temp/2;
+	viewports.length=0;
 	viewports.push(	new Viewport(x,y1,temp,temp));
 	viewports.push(	new Viewport(x,y2,temp,temp));
 	var screenshot1=document.getElementById("screenshot1");
@@ -933,8 +982,6 @@ function initViewport(){
 	screenshot1.style.left=(x-35)+"px";
 	screenshot2.style.top=y2+"px";
 	screenshot2.style.left=(x-35)+"px";
-	addEventHandler(screenshot1,'click', function(){downloadView(0);});
-	addEventHandler(screenshot2,'click', function(){downloadView(1);});
 }
 
 function initBuffers(){
@@ -1419,7 +1466,7 @@ function handleMouseDown(event){
 			changeImage(dragIcon);
 			targ.style.left=mouse.x-iconWidth/2+'px';
 			targ.style.top=mouse.y-iconHeight/2+'px';
-			targ.style.display="inline";
+			targ.style.display="block";
 		}
 		else{
 			var temp = dragIcon-10000;
@@ -1536,7 +1583,7 @@ function MouseWheelHandler(e) {
 		event.returnValue=false;
 	}
 	else if(testIconViewHit(mouse.x,mouse.y)){
-		if(iconViewHeight<scales.length*60+10){
+		if(iconViewHeight<scales.length*(iconHeight+10)+10){
 			if(delta>0)
 				scrollIconView(-15);
 			else if(delta<0)
@@ -1546,7 +1593,7 @@ function MouseWheelHandler(e) {
 		event.preventDefault();
 		event.returnValue=false;
 	}else if(testImageIconViewHit(mouse.x,mouse.y)){
-		if(iconViewHeight<imgIconsTex.length*60+10){
+		if(iconViewHeight<imgIconsTex.length*(iconHeight+10)+10){
 			if(delta>0)
 				scrollImageIconView(-15);
 			else if(delta<0)
@@ -1561,21 +1608,23 @@ function MouseWheelHandler(e) {
 
 function scrollImageIconView(delta){
 	imgIconViewOffset = imgIconViewOffset+delta;
+	var spacing=iconHeight+10;
 	if(imgIconViewOffset<0){
 		imgIconViewOffset=0;
 	}
-	if(0<imgIconsTex.length*60-iconViewHeight+10&&imgIconViewOffset>imgIconsTex.length*60-iconViewHeight+10){
-		imgIconViewOffset=imgIconsTex.length*60-iconViewHeight+10;
+	else if(0<imgIconsTex.length*spacing-iconViewHeight+10&&imgIconViewOffset>imgIconsTex.length*spacing-iconViewHeight+10){
+		imgIconViewOffset=imgIconsTex.length*spacing-iconViewHeight+10;
 	}
 }
 
 function scrollIconView(delta){
 	iconViewOffset = iconViewOffset+delta;
+	var spacing=iconHeight+10;
 	if(iconViewOffset<0){
 		iconViewOffset=0;
 	}
-	if(0<scales.length*60-iconViewHeight+10&&iconViewOffset>scales.length*60-iconViewHeight+10){
-		iconViewOffset=scales.length*60-iconViewHeight+10;
+	else if(0<scales.length*spacing-iconViewHeight+10&&iconViewOffset>scales.length*spacing-iconViewHeight+10){
+		iconViewOffset=scales.length*spacing-iconViewHeight+10;
 	}
 }
 
@@ -1703,7 +1752,7 @@ function updateLoader(){
 		var x = imgIconX+10;
 		loader.style.top=y+"px";
 		loader.style.left= x+"px";
-		loader.style.display="inline";
+		loader.style.display="block";
 	}
 	else{
 		loader.style.display="none";
@@ -1764,10 +1813,10 @@ function drawInfoBoxes(){
 	drawText("-LAB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+30+45);
 	ctx2.clearRect(receiveX,receiveY,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+10,receiveY+scaleHeight/4);
-	rectangle.scale(scaleWidth*.095,75);
+	/*rectangle.scale(scaleWidth*.095,75);
 	rectangle.move(receiveX+scaleWidth/2-19,receiveY+scaleHeight+30);
 	rectangle.changeColor(.9,.9,.9);
-	rectangle.draw();
+	rectangle.draw();*/
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
@@ -1777,10 +1826,10 @@ function drawInfoBoxes(){
 	drawText("-LAB-",receiveX+scaleWidth/2-20,receiveY+scaleHeight+receiveDelta+30+45);
 	ctx2.clearRect(receiveX,receiveY+receiveDelta,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleHeight/4);
-	rectangle.scale(scaleWidth*.095,75);
+	/*rectangle.scale(scaleWidth*.095,75);
 	rectangle.move(receiveX+scaleWidth/2-19,receiveY+scaleHeight+receiveDelta+30);
 	rectangle.changeColor(.9,.9,.9);
-	rectangle.draw();
+	rectangle.draw();*/
 	
 }
 
@@ -1865,7 +1914,7 @@ function drawText(string,x,y){
 function clearRectangle(x,y,w,h){
 	gl.enable(gl.SCISSOR_TEST);
 	
-	gl.scissor(x,700-y,w,h);
+	gl.scissor(x,canvas.height-y,w,h);
 	
 	gl.clearColor(0.5,0.5,0.5,1.0);
 	
@@ -2149,18 +2198,8 @@ function FileListenerInit(){
 			var button3 = document.getElementById('button3');
 			var button4 = document.getElementById('button4');
 			var button5 = document.getElementById('button5');
-			
-			drop1.style.left= imgIconX-1+'px';
-			drop1.style.top= imgIconY-1+"px";
-			drop1.style.width=iconViewWidth+"px";
-			drop1.style.height=iconViewHeight+"px";
-			drop1.style.position= 'absolute';
-			
-			drop2.style.left= iconX-1+'px';
-			drop2.style.top= iconY-1+"px";
-			drop2.style.width=iconViewWidth+"px";
-			drop2.style.height=iconViewHeight+"px";
-			drop2.style.position= 'absolute';
+			var screenshot1=document.getElementById("screenshot1");
+			var screenshot2=document.getElementById("screenshot2");
 			
 			function cancel(e) {
 			   e.preventDefault(); 
@@ -2189,6 +2228,8 @@ function FileListenerInit(){
 			addEventHandler(button3,'click', function(){select3.click();});
 			addEventHandler(button4,'click', handleResetButton);
 			addEventHandler(button5,'click', handleLabButton);
+			addEventHandler(screenshot1,'click', function(){downloadView(0);});
+			addEventHandler(screenshot2,'click', function(){downloadView(1);});
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
@@ -2368,22 +2409,24 @@ function readTextToScale(text,filename){
 }
 
 function addNewColorIconData(cindex){
-	var pixelData = new Uint8Array(iconWidth*iconHeight*4);//unit8array
-	var interval = 1/iconWidth;
+	var icondataside=64;
+	var pixelData = ctx.createImageData(icondataside,1);//new Uint8Array(iconWidth*iconHeight*4);
+	var interval = 1/icondataside;
 	var tempColor;
-	for(var i=0;i<iconWidth;i++){
+	for(var i=0;i<icondataside;i++){
 		tempColor = getColorHeight(cindex,i*interval);
-		pixelData[i*4]=Math.round(tempColor.r*255);
-		pixelData[i*4+1]=Math.round(tempColor.g*255);
-		pixelData[i*4+2]=Math.round(tempColor.b*255);
-		pixelData[i*4+3]=255;
+		pixelData.data[i*4]=Math.round(tempColor.r*255);
+		pixelData.data[i*4+1]=Math.round(tempColor.g*255);
+		pixelData.data[i*4+2]=Math.round(tempColor.b*255);
+		pixelData.data[i*4+3]=255;
 	}
-	for(var i=1;i<iconHeight;i++){
+	/*for(var i=1;i<iconHeight;i++){
 		for(var j=0;j<iconWidth*4;j++){
 			pixelData[i*iconHeight*4+j]=pixelData[j];
 		}
-	}
-	colorIconsData.push(pixelData);
+	}*/
+	Promise.resolve(createImageBitmap(pixelData).then(function(response) { colorIconsData.push(response);}));
+	
 }
 
 function readTextToTubes(text,filename){
@@ -2522,9 +2565,10 @@ function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 }
 
 function changeImage(cindex){
-	var myImageData=ctx.createImageData(iconWidth,iconHeight); //uint8clampedarray
-	myImageData.data.set(colorIconsData[cindex]);
-	ctx.putImageData(myImageData,0,0);
+	
+	//var myImageData=ctx.createImageData(w,h); //uint8clampedarray
+	//myImageData.data.set(colorIconsData[cindex]);
+	ctx.drawImage(colorIconsData[cindex],0,0,targ.width,targ.height);
 }
 
 function createImage(x,y,w,h){
@@ -2581,11 +2625,12 @@ function downloadColormap(cID){
 }
 
 function downloadView(id){
+
 	var viewp=viewports[id];
-	var x=viewp.x;
-	var y=viewp.y;
-	var w=viewp.w;
-	var h=viewp.h;
+	var x=Math.round(viewp.x);
+	var y=Math.round(viewp.y);
+	var w=Math.round(viewp.w);
+	var h=Math.round(viewp.h);
 	var myImageData=ctx.createImageData(w,h); //uint8clampedarray
 	var pixelData = new Uint8Array(w*h*4);//uint8array
 	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
@@ -2599,10 +2644,10 @@ function downloadView(id){
 	
 	var a = document.createElement("a");
     a.href = targ.toDataURL();
-    a.download = name;
+    a.download = "screenshot";
     a.click();
-	targ.width=50;
-	targ.height=50;
+	targ.width=iconWidth;
+	targ.height=iconHeight;
 }
 
 function download(text, name, type) {

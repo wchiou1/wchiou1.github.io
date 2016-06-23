@@ -156,35 +156,38 @@
 
   <body onload="start()">
 	
-	<div class="image" id="img1">
-		<canvas id="glcanvas" width="1200" height="700" class="webgl">
+	<div class="container" id="container1" >
+		<canvas id="glcanvas"  class="webgl" >
 		  <!--Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element. -->
 		</canvas>
+		<canvas id="text" >	</canvas>
+		<canvas id="imageCanvas"></canvas>
+		<DIV class=drop id="drop1">  </DIV>
+		<DIV class=drop id="drop2">	</DIV>
+		<input type="file" id="selector1" multiple="multiple" >
+		<input type="file" id="selector2" multiple="multiple" >
+		<input type="file" id="selector3" multiple="multiple" >
+		<div class=button id="button1">Load image</div>
+		<div class=button id="button2">Load colormap</div>
+		<div class=button id="button3">Load svl</div>
+		<div class=button id="button4">Reset</div>
+		<div class=button id="button5">Show LabGraph</div>
+		<img class="fadeButton" src="icon/cam.png" id="screenshot1">
+		<img class="fadeButton" src="icon/cam.png" id="screenshot2">
+		<div class="loader" id="load"></div>
 		
-		<canvas id="text" width="1200" height="700">	</canvas>
+	</div>	
+	
+	<canvas id="glcanvas2" width="320" height="640" class="webgl">	</canvas>
 		
-		<canvas id="glcanvas2" width="320" height="640" class="webgl">	</canvas>
-		
-	</div>
+	
 	
 	
 	<DIV id="status"></DIV>
 	
 	
-	<DIV class=drop id="drop1">  </DIV>
-	<DIV class=drop id="drop2">	</DIV>
-	<input type="file" id="selector1" multiple="multiple" >
-	<input type="file" id="selector2" multiple="multiple" >
-	<input type="file" id="selector3" multiple="multiple" >
-	<div class=button id="button1">Load image</div>
-	<div class=button id="button2">Load colormap</div>
-	<div class=button id="button3">Load svl</div>
-	<div class=button id="button4">Reset</div>
-	<div class=button id="button5">Show LabGraph</div>
-	<img class="fadeButton" src="icon/cam.png" id="screenshot1">
-	<img class="fadeButton" src="icon/cam.png" id="screenshot2">
-	<div class="loader" id="load"></div>
-	<canvas id="imageCanvas"></canvas>
+	
+	
   </body>
   
   <script src="main.js" type="text/javascript"></script>
