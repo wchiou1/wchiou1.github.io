@@ -2539,8 +2539,8 @@ function handleLabButton(evt){
 }
 
 function handleModalButton(evt){
-	readFileList("./data/colorscale/","scale");
-	readFileList("./data/image/","data");
+	getFileList("./data/colorscale/","scale");
+	getFileList("./data/image/","data");
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
 	for(var i=sel1.options.length-1;i>=0;i--)
