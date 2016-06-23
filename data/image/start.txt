@@ -1,4 +1,4 @@
 ctl_skel_Z91077_A1256_S1077.txt
+scz_skel_Z03060_A0180_S0278.txt
 lena512.txt
 region_s3.data
-scz_skel_Z03060_A0180_S0278

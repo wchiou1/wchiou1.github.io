@@ -2293,7 +2293,7 @@ function readFilesOnLoad(){
 function readFilesFromServer(directory,type){//type=scale, image
 	$.ajax({
     type:    "GET",
-    url:     directory+"index.txt",
+    url:     directory+"start.txt",
     success: function(text) {		
             var lines=text.split('\n');
 			if(lines[lines.length-1]==""||lines[lines.length-1]=="/r")lines.pop();
