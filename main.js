@@ -965,14 +965,14 @@ function initButtons(){
 	var drop1  = document.getElementById('drop1');
 	var drop2 = document.getElementById('drop2');
 	
-	drop1.style.left= imgIconX-1+'px';
-	drop1.style.top= imgIconY-1+"px";
+	drop1.style.left= imgIconX+'px';
+	drop1.style.top= imgIconY+"px";
 	drop1.style.width=iconViewWidth+"px";
 	drop1.style.height=iconViewHeight+"px";
 	drop1.style.position= 'absolute';
 	
-	drop2.style.left= iconX-1+'px';
-	drop2.style.top= iconY-1+"px";
+	drop2.style.left= iconX+'px';
+	drop2.style.top= iconY+"px";
 	drop2.style.width=iconViewWidth+"px";
 	drop2.style.height=iconViewHeight+"px";
 	drop2.style.position= 'absolute';
