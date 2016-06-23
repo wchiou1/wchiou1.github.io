@@ -2579,8 +2579,8 @@ function handleModalButton(evt){
 	
 	for(var i=0;i<colormapFileNames.length;i++){
 		var opt = document.createElement('option');
-		opt.appendChild(document.createTextNode(colorscaleList[i]));
-		opt.value = colorscaleList[i]; 
+		opt.appendChild(document.createTextNode(colormapFileNames[i]));
+		opt.value = colormapFileNames[i]; 
 		sel2.appendChild(opt); 
 	}
 }
