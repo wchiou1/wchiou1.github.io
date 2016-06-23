@@ -2565,7 +2565,7 @@ function handleModalButton(evt){
 		//For each colormap in the index check to see if it's already loaded in
 		var loaded = false;
 		for(var j=0;j<colormapFileNames.length;j++){
-			//console.log("Comparing "+colorscaleList[i]+"|"+colormapFileNames[j]);
+			console.log(""+colorscaleList[i]+"|"+colormapFileNames[j]);
 			if(colorscaleList[i]==colormapFileNames[j]){
 				loaded=true;
 				break;
