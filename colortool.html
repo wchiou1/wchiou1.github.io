@@ -258,6 +258,35 @@
 
 	
   </body>
+  <div id="fileNames"></div>
+  <script type="text/javascript">//<![CDATA[
+  $(window).load(function(){
+	var fileExt = ".txt";
+
+		$(document).ready(function(){
+
+			$.ajax({
+				//This will retrieve the contents of the folder if the folder is configured as 'browsable'
+				url: 'data/colorscale/',
+				success: function (data) {
+					console.log(data);
+				   $("#fileNames").html('<ul>');
+				   //List all xml file names in the page
+
+					//var filename = this.href.replace(window.location, "").replace("http:///", "");
+				   //$("#fileNames").append( '<li>'+filename+'</li>');
+
+					$(data).find("a:contains(" + fileExt + ")").each(function () {
+						$("#fileNames").append( '<li>'+$(this).text()+'</li>');
+					});
+					$("#fileNames").append('</ul>');
+				}
+			});
+
+		});
+	});
+	//]]>
+	</script>
   
   <script src="main.js" type="text/javascript"></script>
   <script src="colorform.js" type="text/javascript"></script>
