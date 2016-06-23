@@ -2290,6 +2290,23 @@ function readFilesOnLoad(){
 	readFilesFromServer("./data/image/","data");
 }
 
+function getFileList(directory,type){
+	$.ajax({
+    type:    "GET",
+    url:     directory+"index.txt",
+    success: function(text) {		
+            var lines=text.split('\n');
+			if(lines[lines.length-1]==""||lines[lines.length-1]=="/r")lines.pop();
+			for(var i=0;i<lines.length;i++) {
+				console.log(""+i+":"+lines[i]);
+			}
+    },
+    error:   function() {
+        // An error occurred
+		alert("cannot read files from server");
+    }
+}
+
 function readFilesFromServer(directory,type){//type=scale, image
 	$.ajax({
     type:    "GET",
@@ -2305,12 +2322,12 @@ function readFilesFromServer(directory,type){//type=scale, image
 				loading+=lines.length;
 				updateLoader();
 			}
-				for(var i=0;i<lines.length;i++) {
-					if(lines[i][lines[i].length-1]==""||lines[i][lines[i].length-1]=="\r")
-						readOneFileFromServer(directory,lines[i].slice(0,-1),type);
-					else
-						readOneFileFromServer(directory,lines[i],type);
-				}
+			for(var i=0;i<lines.length;i++) {
+				if(lines[i][lines[i].length-1]==""||lines[i][lines[i].length-1]=="\r")
+					readOneFileFromServer(directory,lines[i].slice(0,-1),type);
+				else
+					readOneFileFromServer(directory,lines[i],type);
+			}
     },
     error:   function() {
         // An error occurred
