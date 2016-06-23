@@ -1817,7 +1817,7 @@ function drawInfoBoxes(){
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.11+receiveX,receiveY+scaleHeight+30,0,0,1);
+	drawInfoBox(scaleWidth*.108+receiveX,receiveY+scaleHeight+30,0,0,1);
 	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+30,0,2,3);
 	drawText("RGB:",receiveX+3,receiveY+scaleHeight+30+25);
 	drawText("LAB:",receiveX+3,receiveY+scaleHeight+30+45);
@@ -1830,7 +1830,7 @@ function drawInfoBoxes(){
 	
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.11+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
+	drawInfoBox(scaleWidth*.108+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
 	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
 	drawText("RGB:",receiveX+3,receiveY+scaleHeight+receiveDelta+30+25);
 	drawText("LAB:",receiveX+3,receiveY+scaleHeight+receiveDelta+30+45);
