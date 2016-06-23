@@ -1,5 +1,5 @@
 
-var version="php"
+var version="php2"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
