@@ -2537,7 +2537,6 @@ function handleResetButton(evt){
 
 function handleLabButton(evt){
 	var button = document.getElementById('button5');
-	console.log(canvas2.style.display);
 	if(canvas2.style.display=="none"||canvas2.style.display==""){
 		canvas2.style.display="inline";
 		button.innerHTML = "Hide LabGraph";
@@ -2565,19 +2564,15 @@ function handleModalButton(evt){
 		//For each colormap in the index check to see if it's already loaded in
 		var loaded = false;
 		for(var j=0;j<colormapFileNames.length;j++){
-			//console.log(""+colorscaleList[i]+"|"+colormapFileNames[j]);
 			if(colorscaleList[i]==colormapFileNames[j]){
 				loaded=true;
 				break;
 			}
 		}
 		if(loaded){
-			//console.log("Deleting "+i+":"+sel1.options[i].innerHTML);
 			sel1.removeChild(sel1.options[i]);
 		}
 	}
-	
-	console.log("-----------------");
 	//Add all the files that are already loaded
 	for(var i=0;i<colormapFileNames.length;i++){
 		var opt = document.createElement('option');
@@ -2591,13 +2586,11 @@ function handleModalButton(evt){
 		//Verify if the file exists on the server, if it doesn't remove it
 		var verify=false;
 		for(var j=0;j<colorscaleList.length;j++){
-			//console.log("i"+colormapFileNames[i]+"|"+colorscaleList[j]);
 			if(colormapFileNames[i]==colorscaleList[j]){
 				verify=true;
 				break;
 			}
 		}
-		//console.log("Removing "+i+sel2.options[i].innerHTML);
 		if(!verify)
 			sel2.removeChild(sel2.options[i]);
 	}
