@@ -2561,7 +2561,7 @@ function handleModalButton(evt){
 		var opt = document.createElement('option');
 		opt.appendChild(document.createTextNode(colorscaleList[i]));
 		opt.value = colorscaleList[i]; 
-		sel.appendChild(opt); 
+		sel1.appendChild(opt); 
 	}
 }
 
