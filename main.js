@@ -1,5 +1,5 @@
 
-var version="php2"
+var version="modal"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
