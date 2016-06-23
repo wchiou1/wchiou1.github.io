@@ -1,5 +1,5 @@
 
-var version="modal"
+var version="modal2"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -2540,7 +2540,7 @@ function handleLabButton(evt){
 }
 
 function handleModalButton(evt){
-	files=getFileList("./data/colorscale/","scale");
+	var files=getFileList("./data/colorscale/","scale");
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
 	for(var i=sel1.options.length-1;i>=0;i--)
@@ -2549,7 +2549,7 @@ function handleModalButton(evt){
 		sel2.removeChild(sel2.options[i]); 
 	for(var i=0;i<files.length;i++){
 		var opt = document.createElement('option');
-		opt.appendChild( document.createTextNode(files[i]));
+		opt.appendChild(document.createTextNode(files[i]));
 		opt.value = files[i]; 
 		sel.appendChild(opt); 
 	}
