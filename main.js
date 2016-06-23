@@ -2300,6 +2300,7 @@ function getFileList(directory,type){
 			for(var i=0;i<lines.length;i++) {
 				console.log(""+i+":"+lines[i]+"\n");
 			}
+			return lines;
     },
     error:   function() {
         // An error occurred
@@ -2539,14 +2540,19 @@ function handleLabButton(evt){
 }
 
 function handleModalButton(evt){
-	getFileList("./data/colorscale/","scale");
-	getFileList("./data/image/","data");
+	files=getFileList("./data/colorscale/","scale");
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
 	for(var i=sel1.options.length-1;i>=0;i--)
 		sel1.removeChild(sel1.options[i]); 
 	for(var i=sel2.options.length-1;i>=0;i--)
 		sel2.removeChild(sel2.options[i]); 
+	for(var i=0;i<files.length;i++){
+		var opt = document.createElement('option');
+		opt.appendChild( document.createTextNode(files[i]));
+		opt.value = files[i]; 
+		sel.appendChild(opt); 
+	}
 }
 
 //change background 0 to -1
