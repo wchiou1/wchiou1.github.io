@@ -2604,7 +2604,12 @@ function handleModalButton(evt){
 }
 
 function addColors(){
-	array.splice(start,amount);
+	//Iterate through all html elements to get an array
+	var sel2 = document.getElementById('select2');
+	for(var i=0;i<sel2.options.length;i++){
+		console.log(sel2.options[i].innerHTML);
+	}
+	//array.splice(start,amount);
 }
 
 //change background 0 to -1
