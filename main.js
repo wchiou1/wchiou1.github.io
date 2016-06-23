@@ -2548,9 +2548,6 @@ function handleLabButton(evt){
 }
 
 function handleModalButton(evt){
-	for(var i=0;i<colorscaleList.length;i++) {
-		console.log(""+i+":"+colorscaleList[i]+"\n");
-	}
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
 	for(var i=sel1.options.length-1;i>=0;i--)
@@ -2568,11 +2565,16 @@ function handleModalButton(evt){
 		//For each colormap in the index check to see if it's already loaded in
 		var loaded = false;
 		for(var j=0;j<colormapFileNames.length;j++){
-			if(colorscaleList[i]==colormapFileNames[j])
+			console.log("Comparing "+colorscaleList[i]+"|"+colormapFileNames[j]);
+			if(colorscaleList[i]==colormapFileNames[j]){
 				loaded=true;
+				break;
+			}
 		}
-		if(loaded)
+		if(loaded){
+			console.log("Deleting "+sel1.options[i]);
 			sel1.removeChild(sel1.options[i]);
+		}
 	}
 	
 	for(var i=0;i<colormapFileNames.length;i++){
