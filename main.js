@@ -1818,7 +1818,7 @@ function drawInfoBoxes(){
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.097+receiveX,receiveY+scaleHeight+30,0,0,1);
-	drawInfoBox(scaleWidth*.55+receiveX,receiveY+scaleHeight+30,0,2,3);
+	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+30,0,2,3);
 	drawText("RGB=",receiveX,receiveY+scaleHeight+30+25);
 	drawText("LAB=",receiveX,receiveY+scaleHeight+30+45);
 	ctx2.clearRect(receiveX,receiveY,scaleWidth,scaleHeight);
@@ -1831,7 +1831,7 @@ function drawInfoBoxes(){
 	//Clear the area the lines go in
 	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
 	drawInfoBox(scaleWidth*.097+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
-	drawInfoBox(scaleWidth*.55+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
+	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
 	drawText("RGB=",receiveX,receiveY+scaleHeight+receiveDelta+30+25);
 	drawText("LAB=",receiveX,receiveY+scaleHeight+receiveDelta+30+45);
 	ctx2.clearRect(receiveX,receiveY+receiveDelta,scaleWidth,scaleHeight);
@@ -1849,7 +1849,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 		return;
 	}
 	var rectangle=Shape.rectangle;
-	var width = scaleWidth*.45;
+	var width = scaleWidth*.44;
 	var height = 75;
 	ctx2.clearRect(x,y,width,height);
 	rectangle.scale(width,height);
