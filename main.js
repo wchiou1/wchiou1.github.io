@@ -2577,12 +2577,31 @@ function handleModalButton(evt){
 		}
 	}
 	
+	//Add all the files that are already loaded
 	for(var i=0;i<colormapFileNames.length;i++){
 		var opt = document.createElement('option');
 		opt.appendChild(document.createTextNode(colormapFileNames[i]));
 		opt.value = colormapFileNames[i]; 
 		sel2.appendChild(opt); 
 	}
+	
+	//Remove locally loaded files
+	for(var i=colormapFileNames.length;i>=0;i--){
+		//Verify if the file exists on the server, if it doesn't remove it
+		var verify=false;
+		for(var j=0;j<colorscaleList.length;j++){
+			if(colormapFileNames[i]==colorscaleList[j]){
+				verify=true;
+				break;
+			}
+		}
+		if(!verify)
+			sel2.removeChild(sel2.options[i]);
+	}
+}
+
+function addColors(){
+	array.splice(start,amount);
 }
 
 //change background 0 to -1
