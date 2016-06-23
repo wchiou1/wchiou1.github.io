@@ -107,10 +107,10 @@ function updateViewportText(){
 	var temp = canvas.height/2-20;
 	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
 	//Draw text within the view
-	drawText(imageFileName,receiveX+scaleWidth+100,20);
-	drawText(colormapFileNames[mapCIndices[0]],receiveX+scaleWidth+100,32);
-	drawText(imageFileName,receiveX+scaleWidth+100,temp+40);
-	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+52);
+	drawText(imageFileName,viewports[0].x+5,viewports[0].y+12);
+	drawText(colormapFileNames[mapCIndices[0]],viewports[0].x+5,viewports[0].y+24);
+	drawText(imageFileName,viewports[1].x+5,viewports[1].y+12);
+	drawText(colormapFileNames[mapCIndices[1]],viewports[1].x+5,viewports[1].y+24);
 }
 
 function initView(){
@@ -878,9 +878,7 @@ function start() {
 		resize();
 		readFilesOnLoad();
 		//setInterval(drawScene, 15);
-		
 		drawHelpText();
-		
 	  }
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
@@ -930,7 +928,7 @@ function resize(){
 	initButtons();
 	initViewport();
     drawScene();
-	
+	drawHelpText();
    }
 	
 }
@@ -1787,13 +1785,13 @@ function drawImgIcons(){
 	
 	//Clear the edges
 	clearRectangle(imgIconX,imgIconY-3,iconViewWidth,iconHeight+3);
-	clearRectangle(imgIconX,imgIconY+iconViewHeight+iconHeight+6,iconViewWidth,iconHeight+3);
+	clearRectangle(imgIconX,imgIconY+iconViewHeight+iconHeight+5,iconViewWidth,iconHeight+3);
 }
 function updateLoader(){
 	var loader=document.getElementById("load");
 	if(loading>0){
 		var y = imgIconsTex.length*(iconHeight+10)+imgIconY+10-imgIconViewOffset;
-		var x = imgIconX+10;
+		var x = imgIconX+10*(canvas.width/min_width);
 		loader.style.top=y+"px";
 		loader.style.left= x+"px";
 		loader.style.display="block";
@@ -1969,12 +1967,13 @@ function clearRectangle(x,y,w,h){
 }
 
 function drawGraphs(){
+	var vscale=canvas.height/min_height;
 	for(var i=0;i<mapCIndices.length;i++){
 		var colorPanel=color_panels[mapCIndices[i]];
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth,120);
+		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth+1,120*vscale);
 		drawGraph(receiveX,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
@@ -2035,7 +2034,7 @@ function drawColorThumbnails(){
 	
 	//Clear the edges
 	clearRectangle(iconX,iconY-3,iconViewWidth,iconHeight+3);
-	clearRectangle(iconX,iconY+iconViewHeight+iconHeight+6,iconViewWidth,iconHeight+3);
+	clearRectangle(iconX,iconY+iconViewHeight+iconHeight+5,iconViewWidth,iconHeight+3);
 }
 
 function drawThumbnail(x,y,cindex){
@@ -2730,13 +2729,14 @@ function drawGraph(x,y,w,h,cID,relative){
 	var rect=Shape.rectangle;
 	var cref=getColorHeight(cID,relative);
 	var labref=rgb_to_lab({'R':cref.r*255, 'G':cref.g*255, 'B':cref.b*255});
+	var vscale=canvas.height/min_height;
 	
 	rect.changeColor(cref.r,cref.g,cref.b);
 	for(var i=0; i<len; i++){
 		var barWidth=w/len;
 		var color=getColorHeight(cID,i/len);
 		var lab=rgb_to_lab({'R':color.r*255, 'G':color.g*255, 'B':color.b*255});
-		var barHeight=ciede2000(labref,lab);
+		var barHeight=ciede2000(labref,lab)*vscale;
 		rect.scale(barWidth,barHeight);
 		rect.move(x+(barWidth*i),y+h-barHeight);
 		rect.draw();
