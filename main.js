@@ -1,5 +1,5 @@
 
-var version="offset"
+var version="php2"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -43,6 +43,7 @@ var dragIcon=-1;
 var imgIndex = 0;
 var mapCIndices = [0,1];
 var setColorHeight = [0,0];
+var inverseColorHeight = [false,false];
 var iconViewOffset = 0;
 var imgIconViewOffset = 0;
 var iconViewWidth = 70;
@@ -61,7 +62,6 @@ var isPerspective=true;
 var TubesIndex=0;
 var loading=0;
 var colorMapDrag=-1;
-
 
 var img_data=[];
 var scales=[];
@@ -926,6 +926,7 @@ function initButtons(){
 	var tubebutton = document.getElementById("button3");
 	var resetbutton = document.getElementById("button4");
 	var labbutton = document.getElementById("button5");
+	var modalbutton = document.getElementById("button6");
 	
 	imgbutton.style.left = imgIconX-30+"px";
 	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
@@ -948,10 +949,11 @@ function initButtons(){
 	resetbutton.style.height = 30+"px";
 	
 	labbutton.style.left = imgIconX-30+"px";
-	labbutton.style.top = imgIconY-50+"px";
+	labbutton.style.top = imgIconY-55+"px";
 	labbutton.style.width = iconViewWidth+60+"px";
 	labbutton.style.height = 30+"px";
 	
+
 	var drop1  = document.getElementById('drop1');
 	var drop2 = document.getElementById('drop2');
 	
@@ -966,6 +968,12 @@ function initButtons(){
 	drop2.style.width=iconViewWidth+"px";
 	drop2.style.height=iconViewHeight+"px";
 	drop2.style.position= 'absolute';
+
+
+	modalbutton.style.left = iconX-30+"px";
+	modalbutton.style.top = iconY-55+"px";
+	modalbutton.style.width = iconViewWidth+60+"px";
+	modalbutton.style.height = 30+"px";
 
 }
 function initViewport(){ 
@@ -1377,7 +1385,9 @@ function testCanvas2Hit(mouse){
 }
 
 //Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
-function getColorHeight(cindex,height){
+function getColorHeight(cindex,height,inverse){
+	if(inverse)
+		height=1.0-height;
 	if(height>=1.0||height<0.0){
 		console.log("Warning: Attempted to get invalid color height("+height+").");
 		return {'R' : 0,'G' : 0,'B' : 0};
@@ -2200,6 +2210,7 @@ function FileListenerInit(){
 			var button5 = document.getElementById('button5');
 			var screenshot1=document.getElementById("screenshot1");
 			var screenshot2=document.getElementById("screenshot2");
+			var button6 = document.getElementById('button6');
 			
 			function cancel(e) {
 			   e.preventDefault(); 
@@ -2228,8 +2239,10 @@ function FileListenerInit(){
 			addEventHandler(button3,'click', function(){select3.click();});
 			addEventHandler(button4,'click', handleResetButton);
 			addEventHandler(button5,'click', handleLabButton);
+			addEventHandler(button6,'click', handleModalButton);
 			addEventHandler(screenshot1,'click', function(){downloadView(0);});
 			addEventHandler(screenshot2,'click', function(){downloadView(1);});
+
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
@@ -2505,6 +2518,15 @@ function handleLabButton(evt){
 		canvas2.style.display="none";
 		button.innerHTML = "Show LabGraph";
 	}
+}
+
+function handleModalButton(evt){
+	var sel1 = document.getElementById('select1');
+	var sel2 = document.getElementById('select2');
+	for(var i=sel1.options.length-1;i>=0;i--)
+		sel1.removeChild(sel1.options[i]); 
+	for(var i=sel2.options.length-1;i>=0;i--)
+		sel2.removeChild(sel2.options[i]); 
 }
 
 //change background 0 to -1
