@@ -262,9 +262,10 @@
   <script type="text/javascript">//<![CDATA[
    $(document).ready(function () 
     {
-        $.get(".", function(data) 
+        $.get("/data/colorscale/", function(data) 
         {
             $("#fileNames").append(data);
+			console.log(data);
         });
     })
 	//]]>
