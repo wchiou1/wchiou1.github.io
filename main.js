@@ -27,6 +27,8 @@ var verticesIndexBuffer2;
 var pointBuffer2=[];
 var pointColorBuffer2=[];
 var defaultColor;
+var colorscaleList;
+var dataList;
 
 //Color stuffs
 var colorMaps = [];//2d array of objects which stores the colors
@@ -873,6 +875,11 @@ function start() {
 	  }
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
+}
+
+function initFileList(){
+	colorscaleList=readFileList("./data/colorscale/","scale");
+	dataList=readFileList("./data/image/","data");
 }
 
 function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)};return c};//http://louisremi.mit-license.org/
@@ -2297,9 +2304,6 @@ function getFileList(directory,type){
     success: function(text) {		
             var lines=text.split('\n');
 			if(lines[lines.length-1]==""||lines[lines.length-1]=="/r")lines.pop();
-			for(var i=0;i<lines.length;i++) {
-				console.log(""+i+":"+lines[i]+"\n");
-			}
 			return lines;
     },
     error:   function() {
@@ -2540,9 +2544,8 @@ function handleLabButton(evt){
 }
 
 function handleModalButton(evt){
-	var files=getFileList("./data/colorscale/","scale");
-	for(var i=0;i<files.length;i++) {
-		console.log(""+i+":"+files[i]+"\n");
+	for(var i=0;i<colorscaleList.length;i++) {
+		console.log(""+i+":"+colorscaleList[i]+"\n");
 	}
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
@@ -2550,10 +2553,10 @@ function handleModalButton(evt){
 		sel1.removeChild(sel1.options[i]); 
 	for(var i=sel2.options.length-1;i>=0;i--)
 		sel2.removeChild(sel2.options[i]); 
-	for(var i=0;i<files.length;i++){
+	for(var i=0;i<colorscaleList.length;i++){
 		var opt = document.createElement('option');
-		opt.appendChild(document.createTextNode(files[i]));
-		opt.value = files[i]; 
+		opt.appendChild(document.createTextNode(colorscaleList[i]));
+		opt.value = colorscaleList[i]; 
 		sel.appendChild(opt); 
 	}
 }
