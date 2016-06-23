@@ -255,20 +255,7 @@
 	  </div>
 	</div>
   </body>
-  <script type="text/javascript">
-  var folder = "./data/colorscale/";
-
-	$.ajax({
-		url : folder,
-		success: function (data) {
-			$(data).find("a").attr("href", function (i, val) {
-				if( val.match(/\.(jpe?g|png|gif)$/) ) { 
-					$("body").append( "<img src='"+ folder + val +"'>" );
-				} 
-			});
-		}
-	});
-  </script>
+  
   <script src="main.js" type="text/javascript"></script>
   <script src="colorform.js" type="text/javascript"></script>
 </html>

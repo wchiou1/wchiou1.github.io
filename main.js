@@ -2298,7 +2298,7 @@ function getFileList(directory,type){
             var lines=text.split('\n');
 			if(lines[lines.length-1]==""||lines[lines.length-1]=="/r")lines.pop();
 			for(var i=0;i<lines.length;i++) {
-				console.log(""+i+":"+lines[i]);
+				console.log(""+i+":"+lines[i]+"\n");
 			}
     },
     error:   function() {
@@ -2539,6 +2539,8 @@ function handleLabButton(evt){
 }
 
 function handleModalButton(evt){
+	readFileList("./data/colorscale/","scale");
+	readFileList("./data/image/","data");
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
 	for(var i=sel1.options.length-1;i>=0;i--)
