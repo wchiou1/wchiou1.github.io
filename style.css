@@ -17,7 +17,7 @@ html, body
 
 body .modal {
     /* new custom width */
-    width: 760px;
+    width: 1060px;
     /* must be half of the width, minus scrollbar on the left (30px) */
     /*margin-left: -280px;*/
 }
