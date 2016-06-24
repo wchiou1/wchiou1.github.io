@@ -202,3 +202,13 @@ select{
 	z-index: 1;
 }
 
+#button7{
+	position: absolute; 
+	background-color: #7F00FF;
+	top:650px;
+	left:900px;
+	text-align: center;
+	line-height: 30px;
+	z-index: 1;
+}
+

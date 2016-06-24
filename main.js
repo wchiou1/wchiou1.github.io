@@ -951,6 +951,7 @@ function initButtons(){
 	var resetbutton = document.getElementById("button4");
 	var labbutton = document.getElementById("button5");
 	var modalbutton = document.getElementById("button6");
+	var modalbutton2 = document.getElementById("button7");
 	var invertbutton1=document.getElementById("invert1");
 	var invertbutton2=document.getElementById("invert2");
 	
@@ -976,7 +977,7 @@ function initButtons(){
 	
 	labbutton.style.left = imgIconX-30+"px";
 	labbutton.style.top = imgIconY-55+"px";
-	labbutton.style.width = iconViewWidth+60+"px";
+	labbutton.style.width = iconViewWidth+100+"px";
 	labbutton.style.height = 30+"px";
 	
 	invertbutton1.style.top=receiveY+"px";
@@ -1004,6 +1005,11 @@ function initButtons(){
 	modalbutton.style.top = iconY-55+"px";
 	modalbutton.style.width = iconViewWidth+60+"px";
 	modalbutton.style.height = 30+"px";
+	
+	modalbutton2.style.left = imgIconX-30+"px";
+	modalbutton2.style.top = imgIconY-55+"px";
+	modalbutton2.style.width = iconViewWidth+60+"px";
+	modalbutton2.style.height = 30+"px";
 
 }
 function initViewport(){ 
@@ -2283,6 +2289,7 @@ function FileListenerInit(){
 			var screenshot1=document.getElementById("screenshot1");
 			var screenshot2=document.getElementById("screenshot2");
 			var button6 = document.getElementById('button6');
+			var button7 = document.getElementById('button7');
 			var hideLab= document.getElementById('hideLab');
 			var invert1 = document.getElementById("invert1");
 			var invert2 = document.getElementById("invert2");
@@ -2315,6 +2322,7 @@ function FileListenerInit(){
 			addEventHandler(button4,'click', handleResetButton);
 			addEventHandler(button5,'click', handleLabButton);
 			addEventHandler(button6,'click', handleColorModalButton);
+			addEventHandler(button7,'click', handleImgModalButton);
 			addEventHandler(screenshot1,'click', function(){downloadView(0);});
 			addEventHandler(screenshot2,'click', function(){downloadView(1);});
 			addEventHandler(hideLab,'click', handleLabButton);
@@ -2696,6 +2704,32 @@ function addColors(){
 	
 	
 	//array.splice(start,amount);
+}
+
+function handleColorModalButton(evt){
+	var sel4 = document.getElementById('select4');
+	var sel5 = document.getElementById('select5');
+	var sel6 = document.getElementById('select6');
+	for(var i=sel4.options.length-1;i>=0;i--)
+		sel4.removeChild(sel4.options[i]); 
+	for(var i=sel5.options.length-1;i>=0;i--)
+		sel5.removeChild(sel5.options[i]); 
+	for(var i=sel6.options.length-1;i>=0;i--)
+		sel6.removeChild(sel6.options[i]); 
+	for(var i=0;i<dataList.length;i++){
+		var opt = document.createElement('option');
+		opt.appendChild(document.createTextNode(dataList[i]));
+		opt.value = dataList[i]; 
+		sel4.appendChild(opt); 
+	}
+
+	//Add all the files that are already loaded
+	for(var i=0;i<imgFileNames.length;i++){
+		var opt = document.createElement('option');
+		opt.appendChild(document.createTextNode(colormapFileNames[i]));
+		opt.value = colormapFileNames[i]; 
+		sel6.appendChild(opt); 
+	}
 }
 
 //change background 0 to -1

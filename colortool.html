@@ -234,34 +234,17 @@
 			</tr>
 			<tr><td align="center">
 				<select id=select1 name=menu1 size=10 multiple>
-				   <option>Menu Item 1</option>
-				   <option>Massive Giant Chickens</option>
-				   <option>Menu Item 3</option>
-				   <option>Menu Item 4</option>
-				   <option>Menu Item 5</option>
-				   <option>Menu Item 1</option>
-				   <option>Massive Giant Chickens</option>
-				   <option>Menu Item 3</option>
-				   <option>Menu Item 4</option>
-				   <option>Menu Item 5</option>
-				   <option>Menu Item 1</option>
-				   <option>Massive Giant Chickens</option>
-				   <option>Menu Item 3</option>
-				   <option>Menu Item 4</option>
-				   <option>Menu Item 5</option>
 				</select><br />
-				<p align="center"><input type="button" onClick="one2two()" value=" >> "></p>
+				<p align="center"><input type="button" onClick="colorone2two()" value=" >> "></p>
 
 			</td><td align="center">
 
 				<select id=select2 name=menu2 size=10 multiple >
-				<option>Menu Item 6</option>
 				</select><br />
-				<p align="center"><input type="button" onClick="two2one()" value=" << " ></p>
+				<p align="center"><input type="button" onClick="colortwo2one()" value=" << " ></p>
 
 			</td><td align="center">
 				<select id=select3 name=menu3 size=10 multiple>
-				   <option>Chickens</option>
 				</select><br />
 				<p align="center"><input type="button" display=none value=" Clear " ></p>
 			</td></tr></table>
@@ -273,6 +256,53 @@
 		</div>
 	  </div>
 	</div>
+	
+	<!-- Trigger the modal with a button -->
+	<div id="button7" type="button" class=button data-toggle="modal" data-target="#imgModal">Open Modal</div>
+
+	<!-- Modal -->
+	<div id="imgModal" class="modal fade" role="dialog">
+	  <div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" >&times;</button>
+			<h4 class="modal-title">Adding images maps</h4>
+		  </div>
+		  <div class="modal-body">
+			<form  method="POST" name="theForm">
+			<table bgcolor="white" border="1" cellpadding="1" cellspacing="2" align="center">
+			<tr>
+				<th>Serverside files</th>
+				<th>To be loaded</th>
+				<th>Currently loaded</th>
+			</tr>
+			<tr><td align="center">
+				<select id=select4 name=menu4 size=10 multiple>
+				</select><br />
+				<p align="center"><input type="button" onClick="imgone2two()" value=" >> "></p>
+
+			</td><td align="center">
+
+				<select id=select5 name=menu5 size=10 multiple >
+				</select><br />
+				<p align="center"><input type="button" onClick="imgtwo2one()" value=" << " ></p>
+
+			</td><td align="center">
+				<select id=select6 name=menu6 size=10 multiple>
+				</select><br />
+				<p align="center"><input type="button" display=none value=" Clear " ></p>
+			</td></tr></table>
+			</form>
+		  </div>
+		  <div class="modal-footer">
+			<button id="coloradd" type="button" class="btn btn-default" data-dismiss="modal" onClick="addColors()">Add Colors</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	
   </body>
   
   <script src="main.js" type="text/javascript"></script>
