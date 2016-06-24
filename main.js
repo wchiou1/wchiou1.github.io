@@ -229,14 +229,21 @@ var Viewport=function(x,y,w,h){
 	this.w=w;
 	this.h=h;
 	var self=this;
-	this.clear=function(){
+	
+	this.drawBorder=function(){
 		var rectangle=Shape.rectangle;
 		rectangle.scale(self.w+6,self.h+6);
 		rectangle.move(self.x-3,self.y-3,0.5);
 		rectangle.changeColor(0.0,0.0,0.0);
 		rectangle.draw();
 		clearRectangle(self.x,self.y+self.h,self.w,self.h);
+	}
+	
+	this.clear=function(){
+		clearRectangle(self.x,self.y+self.h,self.w,self.h);
 	};
+	
+	this.drawBorder();
 };
 
 var ImagePanel=function(x,y,w,h,dataID,cID){
@@ -1747,6 +1754,8 @@ function drawScene() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	drawImgIcons();
+	viewports[0].drawBorder();
+	viewports[1].drawBorder();
 	if(img_panels.length!=0&&color_panels.length>1){
 		//initialize and draw img in viewports
 		initView();
