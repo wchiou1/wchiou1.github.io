@@ -2559,6 +2559,7 @@ function handleModalButton(evt){
 		opt.value = colorscaleList[i]; 
 		sel1.appendChild(opt); 
 	}
+	/*
 	//Remove files that are already added
 	for(var i=colorscaleList.length-1;i>=0;i--){
 		//For each colormap in the index check to see if it's already loaded in
@@ -2594,6 +2595,7 @@ function handleModalButton(evt){
 		if(!verify)
 			sel2.removeChild(sel2.options[i]);
 	}
+	*/
 }
 
 function addColors(){
@@ -2602,6 +2604,14 @@ function addColors(){
 	for(var i=0;i<sel2.options.length;i++){
 		console.log(sel2.options[i].innerHTML);
 	}
+	
+	//Find all colormaps which are not loaded in yet
+	var unloaded = [];
+	for(var i=0;i<sel2.options.length)
+	
+	//Find all colormaps
+	
+	
 	//array.splice(start,amount);
 }
 
