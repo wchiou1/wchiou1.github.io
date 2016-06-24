@@ -1534,7 +1534,7 @@ function handleMouseDown(event){
 			var temp = dragIcon-10000;
 			if(temp<img_panels.length){
 				TubesIndex=-1;
-				if(img_data[imgIndex].w!=img_data[temp].w||img_data[imgIndex].h!=img_data[temp].h)
+				if(imgIndex>=0&&(img_data[imgIndex].w!=img_data[temp].w||img_data[imgIndex].h!=img_data[temp].h))
 					imageSet=false;
 				imgIndex=temp;
 				view3D = false;
