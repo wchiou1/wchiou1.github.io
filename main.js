@@ -2314,7 +2314,7 @@ function FileListenerInit(){
 			addEventHandler(button3,'click', function(){select3.click();});
 			addEventHandler(button4,'click', handleResetButton);
 			addEventHandler(button5,'click', handleLabButton);
-			addEventHandler(button6,'click', handleModalButton);
+			addEventHandler(button6,'click', handleColorModalButton);
 			addEventHandler(screenshot1,'click', function(){downloadView(0);});
 			addEventHandler(screenshot2,'click', function(){downloadView(1);});
 			addEventHandler(hideLab,'click', handleLabButton);
@@ -2630,7 +2630,7 @@ function handleInvertButton(id){
 	drawScene();
 }
 
-function handleModalButton(evt){
+function handleColorModalButton(evt){
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
 	var sel3 = document.getElementById('select3');
@@ -2638,6 +2638,8 @@ function handleModalButton(evt){
 		sel1.removeChild(sel1.options[i]); 
 	for(var i=sel2.options.length-1;i>=0;i--)
 		sel2.removeChild(sel2.options[i]); 
+	for(var i=sel3.options.length-1;i>=0;i--)
+		sel3.removeChild(sel3.options[i]); 
 	for(var i=0;i<colorscaleList.length;i++){
 		var opt = document.createElement('option');
 		opt.appendChild(document.createTextNode(colorscaleList[i]));
