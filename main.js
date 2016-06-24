@@ -54,6 +54,7 @@ var resetIconX = 630;
 var resetIconY = 10;
 var scaleWidth = 400;
 var scaleHeight = 100;
+var screenscale=1;
 var markerLocs = [] //2d array which contains the marker locations in color height
 var dragMarker = -1;
 var dragView=false;
@@ -108,10 +109,10 @@ function updateViewportText(){
 	var temp = canvas.height/2-20;
 	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
 	//Draw text within the view
-	drawText(imageFileName,viewports[0].x+5,viewports[0].y+12);
-	drawText(colormapFileNames[mapCIndices[0]],viewports[0].x+5,viewports[0].y+24);
-	drawText(imageFileName,viewports[1].x+5,viewports[1].y+12);
-	drawText(colormapFileNames[mapCIndices[1]],viewports[1].x+5,viewports[1].y+24);
+	drawText(imageFileName,viewports[0].x+5*screenscale,viewports[0].y+12*screenscale);
+	drawText(colormapFileNames[mapCIndices[0]],viewports[0].x+5*screenscale,viewports[0].y+24*screenscale);
+	drawText(imageFileName,viewports[1].x+5*screenscale,viewports[1].y+12*screenscale);
+	drawText(colormapFileNames[mapCIndices[1]],viewports[1].x+5*screenscale,viewports[1].y+24*screenscale);
 }
 
 function initView(){
@@ -857,16 +858,16 @@ function start() {
 	labDiv.style.top = imgIconY-55+"px";
 	labDiv.style.display="none";
 	
-	window.addEventListener("resize", on_resize(resize));
+	addEventHandler(window,"resize",on_resize(resize));
 	initWebGL(canvas);
 	  if (gl) {
 		
 		document.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
 		document.onmousemove = 	handleMouseMove;
-		document.addEventListener("mousewheel", MouseWheelHandler, false);
+		addEventHandler(document,"mousewheel",MouseWheelHandler);
 		// Firefox
-		document.addEventListener("DOMMouseScroll", MouseWheelHandler, false);
+		addEventHandler(document,"DOMMouseScroll",MouseWheelHandler);
 		
 		gl.clearColor(0.5, 0.5, 0.5, 1.0);  
 		gl.clearDepth(1.0);
@@ -916,7 +917,7 @@ function resize(){
 	var scaleX=newwidth/min_width;
 	var scaleY=newheight/min_height;
 	var scaleSquare=Math.min(scaleX,scaleY);
-	
+	screenscale=scaleSquare;
 	var iconDim=50*scaleSquare;
     iconHeight = iconDim;
     iconWidth = iconDim;
@@ -957,35 +958,42 @@ function initButtons(){
 	var invertbutton1=document.getElementById("invert1");
 	var invertbutton2=document.getElementById("invert2");
 	
-	imgbutton.style.left = imgIconX-30+"px";
-	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
-	imgbutton.style.width = iconViewWidth+60+"px";
-	imgbutton.style.height = 30+"px";
+	var offset60=60*screenscale;
+	var offset30=30*screenscale;
+	$(".button").width(iconViewWidth+offset60+"px").height(offset30+"px")
+	.css("font-size",((12*screenscale)|0)+"px").css("line-height",offset30+"px");
+
+	$(".fadeButton").width(32*screenscale).height(32*screenscale);
+
+	imgbutton.style.left = imgIconX-offset30+"px";
+	imgbutton.style.top = imgIconY+iconViewHeight+40*screenscale+"px";
+	//imgbutton.style.width = iconViewWidth+offset60+"px";
+	//imgbutton.style.height = offset30+"px";
 	
-	colorbutton.style.left = iconX-30+"px";
-	colorbutton.style.top = iconY+iconViewHeight+40+"px";
-	colorbutton.style.width = iconViewWidth+60+"px";
-	colorbutton.style.height = 30+"px";
+	colorbutton.style.left = iconX-offset30+"px";
+	colorbutton.style.top = iconY+iconViewHeight+40*screenscale+"px";
+	//colorbutton.style.width = iconViewWidth+offset60+"px";
+	//colorbutton.style.height = offset30+"px";
 	
-	tubebutton.style.left = imgIconX-30+"px";
-	tubebutton.style.top = imgIconY+iconViewHeight+75+"px";
-	tubebutton.style.width = iconViewWidth+60+"px";
-	tubebutton.style.height = 30+"px";
+	tubebutton.style.left = imgIconX-offset30+"px";
+	tubebutton.style.top = imgIconY+iconViewHeight+75*screenscale+"px";
+	//tubebutton.style.width = iconViewWidth+offset60+"px";
+	//tubebutton.style.height = offset30+"px";
 	
-	resetbutton.style.left = imgIconX-30+"px";
-	resetbutton.style.top = imgIconY+iconViewHeight+110+"px";
-	resetbutton.style.width = iconViewWidth+60+"px";
-	resetbutton.style.height = 30+"px";
+	resetbutton.style.left = imgIconX-offset30+"px";
+	resetbutton.style.top = imgIconY+iconViewHeight+110*screenscale+"px";
+	//resetbutton.style.width = iconViewWidth+offset60+"px";
+	//resetbutton.style.height = offset30+"px";
 	
-	labbutton.style.left = imgIconX-30+"px";
-	labbutton.style.top = imgIconY-90+"px";
-	labbutton.style.width = iconViewWidth+60+"px";
-	labbutton.style.height = 30+"px";
+	labbutton.style.left = imgIconX-offset30+"px";
+	labbutton.style.top = imgIconY-90*screenscale+"px";
+	//labbutton.style.width = iconViewWidth+offset60+"px";
+	//labbutton.style.height = offset30+"px";
 	
 	invertbutton1.style.top=receiveY+"px";
-	invertbutton1.style.left=receiveX-33+"px";
+	invertbutton1.style.left=receiveX-33*screenscale+"px";
 	invertbutton2.style.top=receiveY+receiveDelta+"px";
-	invertbutton2.style.left=receiveX-33+"px";
+	invertbutton2.style.left=receiveX-33*screenscale+"px";
 	
 	var drop1  = document.getElementById('drop1');
 	var drop2 = document.getElementById('drop2');
@@ -1003,19 +1011,19 @@ function initButtons(){
 	drop2.style.position= 'absolute';
 
 
-	modalbutton.style.left = iconX-30+"px";
-	modalbutton.style.top = iconY-55+"px";
-	modalbutton.style.width = iconViewWidth+60+"px";
-	modalbutton.style.height = 30+"px";
+	modalbutton.style.left = iconX-offset30+"px";
+	modalbutton.style.top = iconY-55*screenscale+"px";
+	//modalbutton.style.width = iconViewWidth+offset60+"px";
+	//modalbutton.style.height = offset30+"px";
 	
-	modalbutton2.style.left = imgIconX-30+"px";
-	modalbutton2.style.top = imgIconY-55+"px";
-	modalbutton2.style.width = iconViewWidth+60+"px";
-	modalbutton2.style.height = 30+"px";
+	modalbutton2.style.left = imgIconX-offset30+"px";
+	modalbutton2.style.top = imgIconY-55*screenscale+"px";
+	//modalbutton2.style.width = iconViewWidth+offset60+"px";
+	//modalbutton2.style.height = offset30+"px";
 
 }
 function initViewport(){ 
-	var temp = Math.min(canvas.height,(canvas.width/min_width)*min_height)/2-20;
+	var temp = screenscale*min_height/2-20*screenscale;
 	var x=receiveX+scaleWidth+100*(canvas.width/min_width);
 	var y1=(canvas.height/2-temp)/2;
 	var y2=canvas.height*0.75-temp/2;
@@ -1025,9 +1033,9 @@ function initViewport(){
 	var screenshot1=document.getElementById("screenshot1");
 	var screenshot2=document.getElementById("screenshot2");
 	screenshot1.style.top=y1+"px";
-	screenshot1.style.left=(x-35)+"px";
+	screenshot1.style.left=(x-35*screenscale)+"px";
 	screenshot2.style.top=y2+"px";
-	screenshot2.style.left=(x-35)+"px";
+	screenshot2.style.left=(x-35*screenscale)+"px";
 }
 
 function initBuffers(){
@@ -1785,11 +1793,11 @@ function drawScene() {
 
 function drawHelpText(){
 	//Draw notifications for drag and drop
-	drawText("Drag new color maps",iconX-24,iconY+iconViewHeight+15);
-	drawText("into the box above",iconX-20,iconY+iconViewHeight+29);
+	drawText("Drag new color maps",iconX-24*screenscale,iconY+iconViewHeight+15*screenscale);
+	drawText("into the box above",iconX-20*screenscale,iconY+iconViewHeight+29*screenscale);
 	
-	drawText("Drag new image files",imgIconX-34,imgIconY+iconViewHeight+15);
-	drawText("into the box above",imgIconX-30,imgIconY+iconViewHeight+29);
+	drawText("Drag new image files",imgIconX-34*screenscale,imgIconY+iconViewHeight+15*screenscale);
+	drawText("into the box above",imgIconX-30*screenscale,imgIconY+iconViewHeight+29*screenscale);
 }
 
 function drawResetIcon(){
@@ -1881,30 +1889,31 @@ function drawLine(x,y,x2,y2,color){
 
 function drawInfoBoxes(){
 	var rectangle=Shape.rectangle;
-	
+	var xoffset=2*screenscale;
+	var yoffset=30*screenscale;
 	//Clear the area the lines go in
-	clearRectangle(receiveX-5,receiveY+scaleHeight+30,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.108+receiveX,receiveY+scaleHeight+30,0,0,1);
-	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+30,0,2,3);
-	drawText("RGB:",receiveX+2,receiveY+scaleHeight+30+25);
-	drawText("LAB:",receiveX+2,receiveY+scaleHeight+30+45);
+	clearRectangle(receiveX-5,receiveY+scaleHeight+yoffset,scaleWidth+10,yoffset);
+	drawInfoBox(scaleWidth*.108+receiveX,receiveY+scaleHeight+yoffset,0,0,1);
+	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+yoffset,0,2,3);
+	drawText("RGB:",receiveX+xoffset,receiveY+scaleHeight+(30+25)*screenscale);
+	drawText("LAB:",receiveX+xoffset,receiveY+scaleHeight+(30+45)*screenscale);
 	ctx2.clearRect(receiveX,receiveY,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[0]],receiveX+10,receiveY+scaleHeight/4);
-	rectangle.scale(scaleWidth*.095,75);
-	rectangle.move(receiveX,receiveY+scaleHeight+30);
+	rectangle.scale(scaleWidth*.095,75*screenscale);
+	rectangle.move(receiveX,receiveY+scaleHeight+yoffset);
 	rectangle.changeColor(.9,.9,.9);
 	rectangle.draw();
 	
 	//Clear the area the lines go in
-	clearRectangle(receiveX-5,receiveY+scaleHeight+30+receiveDelta,scaleWidth+10,30);
-	drawInfoBox(scaleWidth*.108+receiveX,receiveY+scaleHeight+30+receiveDelta,1,0,1);
-	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+30+receiveDelta,1,2,3);
-	drawText("RGB:",receiveX+2,receiveY+scaleHeight+receiveDelta+30+25);
-	drawText("LAB:",receiveX+2,receiveY+scaleHeight+receiveDelta+30+45);
+	clearRectangle(receiveX-5,receiveY+scaleHeight+yoffset+receiveDelta,scaleWidth+10,yoffset);
+	drawInfoBox(scaleWidth*.108+receiveX,receiveY+scaleHeight+yoffset+receiveDelta,1,0,1);
+	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+yoffset+receiveDelta,1,2,3);
+	drawText("RGB:",receiveX+xoffset,receiveY+scaleHeight+receiveDelta+(30+25)*screenscale);
+	drawText("LAB:",receiveX+xoffset,receiveY+scaleHeight+receiveDelta+(30+45)*screenscale);
 	ctx2.clearRect(receiveX,receiveY+receiveDelta,scaleWidth,scaleHeight);
 	drawText(colormapFileNames[mapCIndices[1]],receiveX+10,receiveY+receiveDelta+scaleHeight/4);
-	rectangle.scale(scaleWidth*.095,75);
-	rectangle.move(receiveX,receiveY+scaleHeight+receiveDelta+30);
+	rectangle.scale(scaleWidth*.095,75*screenscale);
+	rectangle.move(receiveX,receiveY+scaleHeight+receiveDelta+yoffset);
 	rectangle.changeColor(.9,.9,.9);
 	rectangle.draw();
 	
@@ -1917,7 +1926,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	}
 	var rectangle=Shape.rectangle;
 	var width = scaleWidth*.44;
-	var height = 75;
+	var height = 75*screenscale;
 	ctx2.clearRect(x,y,width,height);
 	rectangle.scale(width,height);
 	rectangle.move(x,y);
@@ -1934,26 +1943,27 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width,y,color2);
 	
 	//Draw color boxes
-	rectangle.scale(width/2-2,6);
+	rectangle.scale(width/2-2,6*screenscale);
 	rectangle.changeColor(color1.r,color1.g,color1.b);
 	rectangle.move(x+2,y+2);
 	rectangle.draw();
 	rectangle.changeColor(color2.r,color2.g,color2.b);
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
+	var xoffset=2*screenscale;
 	//write rgb values
-	drawText(Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+2,y+25);
-	drawText(Math.round(color2.r*255)+" "+Math.round(color2.g*255)+" "+Math.round(color2.b*255),x+width/2+2,y+25);
+	drawText(Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+xoffset,y+25*screenscale);
+	drawText(Math.round(color2.r*255)+" "+Math.round(color2.g*255)+" "+Math.round(color2.b*255),x+width/2+xoffset,y+25*screenscale);
 	
 	//write lab values
 	var lab1=rgb_to_lab({'R':color1.r*255, 'G':color1.g*255, 'B':color1.b*255});
 	var lab2=rgb_to_lab({'R':color2.r*255, 'G':color2.g*255, 'B':color2.b*255});
-	drawText(Math.round(lab1.L)+" "+Math.round(lab1.a)+" "+Math.round(lab1.b),x+2,y+45);
-	drawText(Math.round(lab2.L)+" "+Math.round(lab2.a)+" "+Math.round(lab2.b),x+width/2+2,y+45);
+	drawText(Math.round(lab1.L)+" "+Math.round(lab1.a)+" "+Math.round(lab1.b),x+xoffset,y+45*screenscale);
+	drawText(Math.round(lab2.L)+" "+Math.round(lab2.a)+" "+Math.round(lab2.b),x+width/2+xoffset,y+45*screenscale);
 	
 	//write ciede difference
 	var deltaE=ciede2000(lab1,lab2);
-	drawText("CIEDE2000: "+deltaE.toPrecision(9),x+2,y+65);
+	drawText("CIEDE2000: "+deltaE.toPrecision(9),x+xoffset,y+65*screenscale);
 
 }
 
@@ -1984,7 +1994,7 @@ function clearText(){
 }
 
 function drawText(string,x,y){
-	ctx2.font = "15px serif";
+	ctx2.font = ((15*screenscale)|0)+"px serif";
 	ctx2.fillText(string,x,y);
 }
 

@@ -13,6 +13,7 @@ html, body
     padding: 0px;
     margin: 0px;
 	overflow: visible;
+	background-color:gray;
 }
 
 .container{
