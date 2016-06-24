@@ -2742,12 +2742,13 @@ function handleImgModalButton(evt){
 }
 
 function addImgs(){
-	var colorDirectory = "./data/image/";
+	var dataDirectory = "./data/image/";
 	//Iterate through all html elements to get an array
 	var sel5 = document.getElementById('select5');
+	console.log("Reading Images");
 	for(var i=0;i<sel5.options.length;i++){
 		console.log(sel5.options[i].innerHTML);
-		readOneFileFromServer(colorDirectory,sel5.options[i].innerHTML,"data");
+		readOneFileFromServer(dataDirectory,sel5.options[i].innerHTML,"data");
 	}
 	
 	
