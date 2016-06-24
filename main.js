@@ -84,7 +84,7 @@ var targ = document.getElementById("imageCanvas");
 targ.width=50;
 targ.height=50;
 var labDiv=document.getElementById("lab");
-var modal=document.getElementById("myModal");
+var modal=document.getElementById("colorModal");
 
 var min_width=1200;
 var min_height=700;
