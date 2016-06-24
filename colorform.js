@@ -20,17 +20,17 @@ function colorone2two() {
 
 function colortwo2one() {
     m2len = m2.length ;
-        for ( i=0; i<m2len ; i++){
-            if (m2.options[i].selected == true ) {
-                m1len = m1.length;
-                m1.options[m1len]= new Option(m2.options[i].text);
-            }
-        }
-        for ( i=(m2len-1); i>=0; i--) {
-            if (m2.options[i].selected == true ) {
-                m2.options[i] = null;
-            }
-        }
+	for ( i=0; i<m2len ; i++){
+		if (m2.options[i].selected == true ) {
+			m1len = m1.length;
+			m1.options[m1len]= new Option(m2.options[i].text);
+		}
+	}
+	for ( i=(m2len-1); i>=0; i--) {
+		if (m2.options[i].selected == true ) {
+			m2.options[i] = null;
+		}
+	}
 }
 
 function imgone2two() {
@@ -38,7 +38,7 @@ function imgone2two() {
     for ( i=0; i<m4len ; i++){
         if (m4.options[i].selected == true ) {
             m5len = m5.length;
-            m4.options[m4len]= new Option(m4.options[i].text);
+            m5.options[m5len]= new Option(m4.options[i].text);
         }
     }
 
@@ -51,15 +51,15 @@ function imgone2two() {
 
 function imgtwo2one() {
     m5len = m5.length ;
-        for ( i=0; i<m5len ; i++){
-            if (m5.options[i].selected == true ) {
-                m4len = m4.length;
-                m5.options[m5len]= new Option(m5.options[i].text);
-            }
-        }
-        for ( i=(m5len-1); i>=0; i--) {
-            if (m5.options[i].selected == true ) {
-                m5.options[i] = null;
-            }
-        }
+	for ( i=0; i<m5len ; i++){
+		if (m5.options[i].selected == true ) {
+			m4len = m4.length;
+			m4.options[m4len]= new Option(m5.options[i].text);
+		}
+	}
+	for ( i=(m5len-1); i>=0; i--) {
+		if (m5.options[i].selected == true ) {
+			m5.options[i] = null;
+		}
+	}
 }

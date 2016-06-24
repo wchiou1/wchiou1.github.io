@@ -2741,6 +2741,19 @@ function handleImgModalButton(evt){
 	}
 }
 
+function addImgs(){
+	var colorDirectory = "./data/image/";
+	//Iterate through all html elements to get an array
+	var sel5 = document.getElementById('select5');
+	for(var i=0;i<sel5.options.length;i++){
+		console.log(sel5.options[i].innerHTML);
+		readOneFileFromServer(colorDirectory,sel5.options[i].innerHTML,"data");
+	}
+	
+	
+	//array.splice(start,amount);
+}
+
 //change background 0 to -1
 function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
 	console.log("width and height:"+w+","+h);
