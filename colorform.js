@@ -1,7 +1,7 @@
-var m1 = document.theForm.menu1;
-var m2 = document.theForm.menu2;
-var m4 = document.theForm.menu4;
-var m5 = document.theForm.menu5;
+var m1 = document.getElementById('select1');
+var m2 = document.getElementById('select2');
+var m4 = document.getElementById('select4');
+var m5 = document.getElementById('select5');
 function colorone2two() {
     m1len = m1.length ;
     for ( i=0; i<m1len ; i++){
