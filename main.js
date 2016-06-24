@@ -84,7 +84,8 @@ var targ = document.getElementById("imageCanvas");
 targ.width=50;
 targ.height=50;
 var labDiv=document.getElementById("lab");
-var modal=document.getElementById("colorModal");
+var modal1=document.getElementById("colorModal");
+var modal2=document.getElementById("imgModal");
 
 var min_width=1200;
 var min_height=700;
@@ -1474,7 +1475,7 @@ function handleMouseDown(event){
 	// assign default values for top and left properties
 	if(!targ.style.left) { targ.style.left='0px'};
 	if (!targ.style.top) { targ.style.top='0px'};
-	if(mouseDown||modal.style.display=="block"){
+	if(mouseDown||modal1.style.display=="block"||modal2.style.display=="block"){
 		return;
 	}
 	
@@ -1634,7 +1635,7 @@ function handleMouseMove(event){
 }
 
 function MouseWheelHandler(e) {
-	if(modal.style.display=="block") return false;
+	if(modal1.style.display=="block"||modal2.style.display=="block") return false;
 	var e = window.event || e; // old IE support
 	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 	var mouse = getMousePos(canvas,e);
@@ -2476,7 +2477,9 @@ function readTextToImage(text,filename){
 			throw('error reading the file. line:'+i+ ", num:"+values.length+", value=("+values[0]+")");
 		}
 		for(var j=0; j<values.length; j++){
-			if(values[j]) image2DArray.push(Number(values[j]));
+			var v=Number(values[j]);
+			if(isNaN(v)) throw("at ("+j+", "+i+") value="+v);
+			else image2DArray.push(v);
 		}
 	}
 	var imgData ={
