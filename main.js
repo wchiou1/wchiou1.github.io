@@ -722,6 +722,7 @@ var Tubes3D = function(text){
 	var lines=text.split("\n");
 	
 	var numTubes=Number(lines[0]);
+	if(!numTubes||numTubes<1) throw("this is not a tube");
 	var i=1;
 	for(var t=0;t<numTubes;t++){
 		var numPoints=Number(lines[i]);
