@@ -2509,6 +2509,7 @@ function readTextToScale(text,filename){
 	var scale=[];
 	var lines=text.split('\n');
 	if(lines[lines.length-1]=="")lines.pop();
+	try{
 	for(var i=0; i<lines.length;i++){
 		var color=lines[i].split(" ");
 		var rgb={
@@ -2516,6 +2517,8 @@ function readTextToScale(text,filename){
 			g: Number(color[1]),
 			b: Number(color[2])
 		};
+		if(!rgb.r||!rgb.g||!rgb.b)
+			throw("error reading at line "+(i+1));
 		scale.push(rgb);
 	}
 	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
@@ -2523,7 +2526,12 @@ function readTextToScale(text,filename){
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
 	colormapFileNames.push(filename);
 	addNewColorIconData(scales.length-1);
-	drawScene();
+	}catch(e){
+		alert(e);
+	}
+	finally{
+		drawScene();
+	}
 }
 
 function addNewColorIconData(cindex){
