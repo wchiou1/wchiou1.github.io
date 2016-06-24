@@ -60,7 +60,6 @@ var dragView=false;
 var imageSet = false;
 var rotCanvas2=false;
 var view3D=false;
-var isPerspective=true;
 var TubesIndex=0;
 var loading=0;
 var colorMapDrag=-1;
@@ -179,9 +178,9 @@ function draw2DView(){
 		return;
 	}
 	img_panels[imgIndex].changeColor(mapCIndices[0]);
-	img_panels[imgIndex].drawInViewport(0);
+	img_panels[imgIndex].drawInViewport(0,inverseColorHeight[0]);
 	img_panels[imgIndex].changeColor(mapCIndices[1]);
-	img_panels[imgIndex].drawInViewport(1);
+	img_panels[imgIndex].drawInViewport(1,inverseColorHeight[1]);
 }
 
 var transform3D={
@@ -219,9 +218,9 @@ function draw3DView(){
 		return;
 	}
 	Tubes3DList[TubesIndex].changeColor(mapCIndices[0]);
-	Tubes3DList[TubesIndex].drawInViewport(0);
+	Tubes3DList[TubesIndex].drawInViewport(0,inverseColorHeight[0]);
 	Tubes3DList[TubesIndex].changeColor(mapCIndices[1]);
-	Tubes3DList[TubesIndex].drawInViewport(1);
+	Tubes3DList[TubesIndex].drawInViewport(1,inverseColorHeight[1]);
 }
 
 var Viewport=function(x,y,w,h){
@@ -344,7 +343,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		};
 
 
-	this.drawInViewport=function(vID){
+	this.drawInViewport=function(vID,inverted){
 		
 		var viewp=viewports[vID];
 		viewp.clear();
@@ -364,6 +363,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			
 		gl.uniform1i(uniforms.imgShader.uTexValLoc, 0);  // texture unit 0
 		gl.uniform1i(uniforms.imgShader.uColormapLoc, 1);  // texture unit 1
+		gl.uniform1i(uniforms.imgShader.uInvertedLoc, inverted===true);
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
 		gl.activeTexture(gl.TEXTURE1);
@@ -430,7 +430,7 @@ var ColorPanel= function(x,y,w,h,cID){
 		setTexParameter();
 	};
 	this.create(cID);
-	this.draw=function(){
+	this.draw=function(inverted){
 		if(lastShader!=="colormapShader"){
 			lastShader="colormapShader";
 			gl.useProgram(shaderProgram.colormapShader);
@@ -440,8 +440,10 @@ var ColorPanel= function(x,y,w,h,cID){
 			
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		gl.vertexAttribPointer(attributes.colormapShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+		if(inverted)
+			gl.bindBuffer(gl.ARRAY_BUFFER, Shape.rectangle.invertedTexCoordBuffer);
+		else
+			gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 		gl.vertexAttribPointer(attributes.colormapShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 		
 		gl.uniform1i(uniforms.colormapShader.uColormapLoc, 0);  
@@ -473,6 +475,7 @@ var Rectangle= function(){
 	this.verticesBuffer = gl.createBuffer();
 	this.verticesColorBuffer = gl.createBuffer();
 	this.verticesTexCoordBuffer=gl.createBuffer();
+	this.invertedTexCoordBuffer=gl.createBuffer();
 	var self=this;
 	this.scale=function(w,h){
 		self.w=w;
@@ -492,6 +495,9 @@ var Rectangle= function(){
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.invertedTexCoordBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1,1, 1,0, 0,1, 0,0]), gl.STATIC_DRAW);
 
 	this.changeColor= function(r,b,g,a){
 		var a= a||1;
@@ -778,7 +784,7 @@ var Tubes3D = function(text){
 		}
 		gl.viewport(0, 0, canvas.width, canvas.height);
 	};
-	this.drawInViewport=function(vID){
+	this.drawInViewport=function(vID,inverted){
 		var viewp=viewports[vID];
 		viewp.clear();
 		gl.viewport(viewp.x, canvas.height-viewp.y-viewp.h, viewp.w, viewp.h);
@@ -794,7 +800,7 @@ var Tubes3D = function(text){
 		var radx = transform3D.degx * Math.PI / 180.0;
 		var rady = transform3D.degy * Math.PI / 180.0;
 		var s=transform3D.scale;
-		if(isPerspective){
+		//perspective
 			var viewMatrix3D = Matrix.Translation($V([0,0,-self.halfDimension*2])).ensure4x4()
 						.x(Matrix.RotationX(radx).ensure4x4())
 						.x(Matrix.RotationY(rady).ensure4x4())
@@ -802,9 +808,9 @@ var Tubes3D = function(text){
 						.x(Matrix.Translation($V(this.center).x(-1)).ensure4x4());
 		
 			perspectiveMatrix = makePerspective(45, viewp.w/viewp.h, 0.1, 99999.9);
-			//makeOrtho(self.center[0]-self.halfDimension,self.center[0]+self.halfDimension,self.center[1]-self.halfDimension,self.center[1]+self.halfDimension,-10000,10000);
-		}
-		else{
+		
+		//orthogonal
+		/*
 			var viewMatrix3D = //Matrix.Translation($V(this.center)).ensure4x4()
 						(Matrix.RotationX(radx).ensure4x4())
 						.x(Matrix.RotationY(rady).ensure4x4())
@@ -812,7 +818,7 @@ var Tubes3D = function(text){
 						.x(Matrix.Translation($V(this.center).x(-1)).ensure4x4());
 		
 			perspectiveMatrix = makeOrtho(-self.halfDimension,self.halfDimension,-self.halfDimension,self.halfDimension,-10000,10000);
-		}
+		}*/
 		
 		gl.uniform1i(uniforms.tubeShader.uColormapLoc, 0); 
 		gl.activeTexture(gl.TEXTURE0);
@@ -820,6 +826,7 @@ var Tubes3D = function(text){
 		
 		gl.uniformMatrix4fv(uniforms.tubeShader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
 		gl.uniformMatrix4fv(uniforms.tubeShader.mvUniform, false, new Float32Array(viewMatrix3D.flatten()));
+		gl.uniform1i(uniforms.tubeShader.uInvertedLoc, inverted===true);
 		var tlen=self.tubes.length;
 		for(var i=0;i<tlen;i++){
 			self.tubes[i].draw();
@@ -939,6 +946,8 @@ function initButtons(){
 	var resetbutton = document.getElementById("button4");
 	var labbutton = document.getElementById("button5");
 	var modalbutton = document.getElementById("button6");
+	var invertbutton1=document.getElementById("invert1");
+	var invertbutton2=document.getElementById("invert2");
 	
 	imgbutton.style.left = imgIconX-30+"px";
 	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
@@ -965,7 +974,11 @@ function initButtons(){
 	labbutton.style.width = iconViewWidth+60+"px";
 	labbutton.style.height = 30+"px";
 	
-
+	invertbutton1.style.top=receiveY+"px";
+	invertbutton1.style.left=receiveX-33+"px";
+	invertbutton2.style.top=receiveY+receiveDelta+"px";
+	invertbutton2.style.left=receiveX-33+"px";
+	
 	var drop1  = document.getElementById('drop1');
 	var drop2 = document.getElementById('drop2');
 	
@@ -1117,7 +1130,8 @@ function initShaders() {
 		pUniform : gl.getUniformLocation(shaderProgram.imgShader, "uPMatrix"),
 		mvUniform : gl.getUniformLocation(shaderProgram.imgShader, "uMVMatrix"),
 		uTexValLoc : gl.getUniformLocation(shaderProgram.imgShader, "uTexVal"),
-		uColormapLoc : gl.getUniformLocation(shaderProgram.imgShader, "uColormap")
+		uColormapLoc : gl.getUniformLocation(shaderProgram.imgShader, "uColormap"),
+		uInvertedLoc : gl.getUniformLocation(shaderProgram.imgShader, "uInverted")
 	};
 	
 	var colormap_vertexShader = getShader(gl, "colormap-shader-vs");
@@ -1174,7 +1188,8 @@ function initShaders() {
 	uniforms.tubeShader={
 		pUniform : gl.getUniformLocation(shaderProgram.tubeShader, "uPMatrix"),
 		mvUniform : gl.getUniformLocation(shaderProgram.tubeShader, "uMVMatrix"),
-		uColormapLoc : gl.getUniformLocation(shaderProgram.tubeShader, "uColormap")
+		uColormapLoc : gl.getUniformLocation(shaderProgram.tubeShader, "uColormap"),
+		uInvertedLoc : gl.getUniformLocation(shaderProgram.tubeShader, "uInverted")
 	};
 	//second gl 
 	var simple_vertexShader2 = getShader(gl2, "simple-shader-vs");
@@ -1408,8 +1423,8 @@ function testCanvas2Hit(mouse){
 
 //Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
 function getColorHeight(cindex,height,inverse){
-	if(inverse)
-		height=1.0-height;
+	//if(inverse)
+	//	height=1.0-height;
 	if(height>=1.0||height<0.0){
 		console.log("Warning: Attempted to get invalid color height("+height+").");
 		return {'R' : 0,'G' : 0,'B' : 0};
@@ -1418,6 +1433,8 @@ function getColorHeight(cindex,height,inverse){
 		console.log("Color Height debug:"+cindex+","+scales[cindex]);
 	}
 	var index=Math.floor(1.0*(scales[cindex].length)*height);
+	if(inverse)
+		index=scales[cindex].length-index-1;
 	return scales[cindex][index];
 }
 
@@ -1466,11 +1483,12 @@ function handleMouseDown(event){
 	}
 	
 	//Test if resetbutton was pressed
+	/*
 	else if(testResetButtonHit(mouse.x,mouse.y)&&img_panels.length!=0){
 		imageSet=false;
 		initView();
 		drawView();
-	}
+	}*/
 	//Test if the icon view box was hit
 	else if(testIconViewHit(mouse.x,mouse.y)){
 		
@@ -1892,8 +1910,8 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	//Draw lines to the markers
 	var marker1Loc = markerLocs[graphIndex][marker1];
 	var marker2Loc = markerLocs[graphIndex][marker2];
-	var color1 = getColorHeight(mapCIndices[graphIndex],marker1Loc);
-	var color2 = getColorHeight(mapCIndices[graphIndex],marker2Loc);
+	var color1 = getColorHeight(mapCIndices[graphIndex],marker1Loc,inverseColorHeight[graphIndex]);
+	var color2 = getColorHeight(mapCIndices[graphIndex],marker2Loc,inverseColorHeight[graphIndex]);
 	
 	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
 	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width,y,color2);
@@ -1974,7 +1992,7 @@ function drawGraphs(){
 			continue;
 		}
 		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth+1,120*vscale);
-		drawGraph(receiveX,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
+		drawGraph(receiveX,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i],inverseColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
 
@@ -1988,7 +2006,7 @@ function drawPanels(){
 		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX,receiveY+receiveDelta*i);
-		colorPanel.draw();
+		colorPanel.draw(inverseColorHeight[i]);
 	}
 }
 
@@ -2084,7 +2102,7 @@ function drawLabSpace(cid,bufid){
 			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
 			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
 		}
-	gl2.lineWidth(5);
+	gl2.lineWidth(3);
 	
 	var radx = transform2.degx * Math.PI / 180.0;
 	var rady = transform2.degy * Math.PI / 180.0;
@@ -2162,7 +2180,6 @@ function draw2LabSpaces(){
 	if(mapCIndices[1]<scales.length){
 		drawLabSpace(mapCIndices[1],1);
 		//draw the line in between
-		gl2.lineWidth(1);
 		gl2.viewport(0,0,w,h*2);
 		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
 		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-1,0,0,1,0,0]), gl2.STATIC_DRAW);
@@ -2258,6 +2275,9 @@ function FileListenerInit(){
 			var screenshot2=document.getElementById("screenshot2");
 			var button6 = document.getElementById('button6');
 			var hideLab= document.getElementById('hideLab');
+			var invert1 = document.getElementById("invert1");
+			var invert2 = document.getElementById("invert2");
+			
 			function cancel(e) {
 			   e.preventDefault(); 
 			}
@@ -2289,6 +2309,8 @@ function FileListenerInit(){
 			addEventHandler(screenshot1,'click', function(){downloadView(0);});
 			addEventHandler(screenshot2,'click', function(){downloadView(1);});
 			addEventHandler(hideLab,'click', handleLabButton);
+			addEventHandler(invert1,'click', function(){handleInvertButton(0);});
+			addEventHandler(invert2,'click', function(){handleInvertButton(1);});
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
@@ -2586,6 +2608,19 @@ function handleLabButton(evt){
 	}
 }
 
+function handleInvertButton(id){
+	var button = document.getElementById("invert"+(id+1));
+	if(inverseColorHeight[id]===false){
+		button.src="icon/invert2.png";
+		inverseColorHeight[id]=true;
+	}
+	else{
+		button.src="icon/invert1.png";
+		inverseColorHeight[id]=false;
+	}
+	drawScene();
+}
+
 function handleModalButton(evt){
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
@@ -2723,18 +2758,18 @@ function createImage(x,y,w,h){
 	ctx.putImageData(myImageData,0,0);
 }
 
-function drawGraph(x,y,w,h,cID,relative){
+function drawGraph(x,y,w,h,cID,relative,inverted){
 	var scale=scales[cID];
 	var len=scale.length;
 	var rect=Shape.rectangle;
-	var cref=getColorHeight(cID,relative);
+	var cref=getColorHeight(cID,relative,inverted);
 	var labref=rgb_to_lab({'R':cref.r*255, 'G':cref.g*255, 'B':cref.b*255});
 	var vscale=canvas.height/min_height;
 	
 	rect.changeColor(cref.r,cref.g,cref.b);
 	for(var i=0; i<len; i++){
 		var barWidth=w/len;
-		var color=getColorHeight(cID,i/len);
+		var color=getColorHeight(cID,i/len,inverted);
 		var lab=rgb_to_lab({'R':color.r*255, 'G':color.g*255, 'B':color.b*255});
 		var barHeight=ciede2000(labref,lab)*vscale;
 		rect.scale(barWidth,barHeight);
