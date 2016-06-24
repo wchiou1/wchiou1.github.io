@@ -1007,10 +1007,10 @@ function initButtons(){
 	modalbutton.style.width = iconViewWidth+60+"px";
 	modalbutton.style.height = 30+"px";
 	
-	modalbutton2.style.left = imgIconX-30+"px";
-	modalbutton2.style.top = imgIconY-55+"px";
-	modalbutton2.style.width = iconViewWidth+60+"px";
-	modalbutton2.style.height = 30+"px";
+	//modalbutton2.style.left = imgIconX-30+"px";
+	//modalbutton2.style.top = imgIconY-55+"px";
+	//modalbutton2.style.width = iconViewWidth+60+"px";
+	//modalbutton2.style.height = 30+"px";
 
 }
 function initViewport(){ 
