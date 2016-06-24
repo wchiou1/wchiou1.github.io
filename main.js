@@ -60,10 +60,10 @@ var dragView=false;
 var imageSet = false;
 var rotCanvas2=false;
 var view3D=false;
-var isPerspective=true;
 var TubesIndex=0;
 var loading=0;
 var colorMapDrag=-1;
+var dragLab=false;
 
 var img_data=[];
 var scales=[];
@@ -83,6 +83,7 @@ var ctx2 = textCanvas.getContext("2d");
 var targ = document.getElementById("imageCanvas");
 targ.width=50;
 targ.height=50;
+var labDiv=document.getElementById("lab");
 
 var min_width=1200;
 var min_height=700;
@@ -105,10 +106,10 @@ function updateViewportText(){
 	var temp = canvas.height/2-20;
 	ctx2.clearRect(receiveX+scaleWidth+100,0,temp,canvas.height);
 	//Draw text within the view
-	drawText(imageFileName,receiveX+scaleWidth+100,20);
-	drawText(colormapFileNames[mapCIndices[0]],receiveX+scaleWidth+100,32);
-	drawText(imageFileName,receiveX+scaleWidth+100,temp+40);
-	drawText(colormapFileNames[mapCIndices[1]],receiveX+scaleWidth+100,temp+52);
+	drawText(imageFileName,viewports[0].x+5,viewports[0].y+12);
+	drawText(colormapFileNames[mapCIndices[0]],viewports[0].x+5,viewports[0].y+24);
+	drawText(imageFileName,viewports[1].x+5,viewports[1].y+12);
+	drawText(colormapFileNames[mapCIndices[1]],viewports[1].x+5,viewports[1].y+24);
 }
 
 function initView(){
@@ -177,9 +178,9 @@ function draw2DView(){
 		return;
 	}
 	img_panels[imgIndex].changeColor(mapCIndices[0]);
-	img_panels[imgIndex].drawInViewport(0);
+	img_panels[imgIndex].drawInViewport(0,inverseColorHeight[0]);
 	img_panels[imgIndex].changeColor(mapCIndices[1]);
-	img_panels[imgIndex].drawInViewport(1);
+	img_panels[imgIndex].drawInViewport(1,inverseColorHeight[1]);
 }
 
 var transform3D={
@@ -217,9 +218,9 @@ function draw3DView(){
 		return;
 	}
 	Tubes3DList[TubesIndex].changeColor(mapCIndices[0]);
-	Tubes3DList[TubesIndex].drawInViewport(0);
+	Tubes3DList[TubesIndex].drawInViewport(0,inverseColorHeight[0]);
 	Tubes3DList[TubesIndex].changeColor(mapCIndices[1]);
-	Tubes3DList[TubesIndex].drawInViewport(1);
+	Tubes3DList[TubesIndex].drawInViewport(1,inverseColorHeight[1]);
 }
 
 var Viewport=function(x,y,w,h){
@@ -342,7 +343,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		};
 
 
-	this.drawInViewport=function(vID){
+	this.drawInViewport=function(vID,inverted){
 		
 		var viewp=viewports[vID];
 		viewp.clear();
@@ -362,6 +363,9 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			
 		gl.uniform1i(uniforms.imgShader.uTexValLoc, 0);  // texture unit 0
 		gl.uniform1i(uniforms.imgShader.uColormapLoc, 1);  // texture unit 1
+
+		gl.uniform1f(uniforms.imgShader.uInvertedLoc, inverted|0);
+
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
 		gl.activeTexture(gl.TEXTURE1);
@@ -419,16 +423,12 @@ var ColorPanel= function(x,y,w,h,cID){
 	
 	this.create= 
 	function(id){
-		//gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
-		//gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0, 1,0,0, 1,-1,0]), gl.STATIC_DRAW);
-		//gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
-		//gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, scales[id].length, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,flatten(scales[id]));
 		setTexParameter();
 	};
 	this.create(cID);
-	this.draw=function(){
+	this.draw=function(inverted){
 		if(lastShader!=="colormapShader"){
 			lastShader="colormapShader";
 			gl.useProgram(shaderProgram.colormapShader);
@@ -438,8 +438,10 @@ var ColorPanel= function(x,y,w,h,cID){
 			
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
 		gl.vertexAttribPointer(attributes.colormapShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+		if(inverted)
+			gl.bindBuffer(gl.ARRAY_BUFFER, Shape.rectangle.invertedTexCoordBuffer);
+		else
+			gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 		gl.vertexAttribPointer(attributes.colormapShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 		
 		gl.uniform1i(uniforms.colormapShader.uColormapLoc, 0);  
@@ -471,6 +473,7 @@ var Rectangle= function(){
 	this.verticesBuffer = gl.createBuffer();
 	this.verticesColorBuffer = gl.createBuffer();
 	this.verticesTexCoordBuffer=gl.createBuffer();
+	this.invertedTexCoordBuffer=gl.createBuffer();
 	var self=this;
 	this.scale=function(w,h){
 		self.w=w;
@@ -490,6 +493,9 @@ var Rectangle= function(){
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.invertedTexCoordBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1,1, 1,0, 0,1, 0,0]), gl.STATIC_DRAW);
 
 	this.changeColor= function(r,b,g,a){
 		var a= a||1;
@@ -630,8 +636,7 @@ var Tube=function(points){
 		normals.push(Number(normal.e(2)));
 		normals.push(Number(normal.e(3)));
 		weights.push(Number(points[c].magnitude));
-	}
-	
+	}	
 	
 	//createIndices(plen,numSlice)
 	var nx=0;
@@ -776,7 +781,7 @@ var Tubes3D = function(text){
 		}
 		gl.viewport(0, 0, canvas.width, canvas.height);
 	};
-	this.drawInViewport=function(vID){
+	this.drawInViewport=function(vID,inverted){
 		var viewp=viewports[vID];
 		viewp.clear();
 		gl.viewport(viewp.x, canvas.height-viewp.y-viewp.h, viewp.w, viewp.h);
@@ -792,7 +797,7 @@ var Tubes3D = function(text){
 		var radx = transform3D.degx * Math.PI / 180.0;
 		var rady = transform3D.degy * Math.PI / 180.0;
 		var s=transform3D.scale;
-		if(isPerspective){
+		//perspective
 			var viewMatrix3D = Matrix.Translation($V([0,0,-self.halfDimension*2])).ensure4x4()
 						.x(Matrix.RotationX(radx).ensure4x4())
 						.x(Matrix.RotationY(rady).ensure4x4())
@@ -800,9 +805,9 @@ var Tubes3D = function(text){
 						.x(Matrix.Translation($V(this.center).x(-1)).ensure4x4());
 		
 			perspectiveMatrix = makePerspective(45, viewp.w/viewp.h, 0.1, 99999.9);
-			//makeOrtho(self.center[0]-self.halfDimension,self.center[0]+self.halfDimension,self.center[1]-self.halfDimension,self.center[1]+self.halfDimension,-10000,10000);
-		}
-		else{
+		
+		//orthogonal
+		/*
 			var viewMatrix3D = //Matrix.Translation($V(this.center)).ensure4x4()
 						(Matrix.RotationX(radx).ensure4x4())
 						.x(Matrix.RotationY(rady).ensure4x4())
@@ -810,7 +815,7 @@ var Tubes3D = function(text){
 						.x(Matrix.Translation($V(this.center).x(-1)).ensure4x4());
 		
 			perspectiveMatrix = makeOrtho(-self.halfDimension,self.halfDimension,-self.halfDimension,self.halfDimension,-10000,10000);
-		}
+		}*/
 		
 		gl.uniform1i(uniforms.tubeShader.uColormapLoc, 0); 
 		gl.activeTexture(gl.TEXTURE0);
@@ -818,6 +823,7 @@ var Tubes3D = function(text){
 		
 		gl.uniformMatrix4fv(uniforms.tubeShader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
 		gl.uniformMatrix4fv(uniforms.tubeShader.mvUniform, false, new Float32Array(viewMatrix3D.flatten()));
+		gl.uniform1f(uniforms.tubeShader.uInvertedLoc, inverted|0);
 		var tlen=self.tubes.length;
 		for(var i=0;i<tlen;i++){
 			self.tubes[i].draw();
@@ -831,12 +837,18 @@ var Shape={};
 $(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
-	window.addEventListener("resize", on_resize(resize));
 	canvas2 = document.getElementById("glcanvas2");
-	canvas2.style.top="0px";
-	canvas2.style.left=canvas.width+10+"px";
-	initWebGL(canvas);
 
+	labDiv.style.width=canvas2.width+"px";
+	labDiv.style.height="30px";
+	canvas2.style.width=canvas2.width+"px";
+	canvas2.style.height=canvas2.height+"px";
+	labDiv.style.left=imgIconX+30-canvas2.width+iconViewWidth+"px";
+	labDiv.style.top = imgIconY-55+"px";
+	labDiv.style.display="none";
+	
+	window.addEventListener("resize", on_resize(resize));
+	initWebGL(canvas);
 	  if (gl) {
 		
 		document.onmousedown = handleMouseDown;
@@ -861,7 +873,7 @@ function start() {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		initBuffers();
 		initMarkers();
-		//initTextureFramebuffer();
+		//initTextureFramebuffer(); //#not ready
 		initShaders();
 		initShape();
 		initViewport();
@@ -870,9 +882,7 @@ function start() {
 		resize();
 		readFilesOnLoad();
 		//setInterval(drawScene, 15);
-		
 		drawHelpText();
-		
 	  }
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
@@ -886,19 +896,16 @@ function initFileList(){
 function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)};return c};//http://louisremi.mit-license.org/
 
 function resize(){
-
-	var max=Math.max;
-	var min=Math.min;
 	
-	var newwidth = max(min_width,canvas.clientWidth);
-	var newheight = max(min_height,canvas.clientHeight);
+	var newwidth = Math.max(min_width,canvas.clientWidth);
+	var newheight = Math.max(min_height,canvas.clientHeight);
 	if (canvas.width != newwidth || canvas.height != newheight) {
 	canvas.width = newwidth;
     canvas.height = newheight;
 	gl.viewport(0,0,canvas.width,canvas.height);
 	var scaleX=newwidth/min_width;
 	var scaleY=newheight/min_height;
-	var scaleSquare=min(scaleX,scaleY);
+	var scaleSquare=Math.min(scaleX,scaleY);
 	
 	var iconDim=50*scaleSquare;
     iconHeight = iconDim;
@@ -925,6 +932,7 @@ function resize(){
 	initButtons();
 	initViewport();
     drawScene();
+	drawHelpText();
    }
 	
 }
@@ -935,6 +943,8 @@ function initButtons(){
 	var resetbutton = document.getElementById("button4");
 	var labbutton = document.getElementById("button5");
 	var modalbutton = document.getElementById("button6");
+	var invertbutton1=document.getElementById("invert1");
+	var invertbutton2=document.getElementById("invert2");
 	
 	imgbutton.style.left = imgIconX-30+"px";
 	imgbutton.style.top = imgIconY+iconViewHeight+40+"px";
@@ -961,7 +971,11 @@ function initButtons(){
 	labbutton.style.width = iconViewWidth+60+"px";
 	labbutton.style.height = 30+"px";
 	
-
+	invertbutton1.style.top=receiveY+"px";
+	invertbutton1.style.left=receiveX-33+"px";
+	invertbutton2.style.top=receiveY+receiveDelta+"px";
+	invertbutton2.style.left=receiveX-33+"px";
+	
 	var drop1  = document.getElementById('drop1');
 	var drop2 = document.getElementById('drop2');
 	
@@ -1068,7 +1082,7 @@ function initWebGL() {
   }
 }
 
-/////////////Not Done////////
+/////////////Not Done////////Do not use
 function initTextureFramebuffer(){
 	framebuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
@@ -1092,8 +1106,7 @@ function initTextureFramebuffer(){
 }
 //
 // initShaders
-//
-// Initialize the shaders, so WebGL knows how to light our scene.
+// Initialize the shaders
 //
 function initShaders() {
 	var img_vertexShader = getShader(gl, "img-shader-vs");
@@ -1113,7 +1126,8 @@ function initShaders() {
 		pUniform : gl.getUniformLocation(shaderProgram.imgShader, "uPMatrix"),
 		mvUniform : gl.getUniformLocation(shaderProgram.imgShader, "uMVMatrix"),
 		uTexValLoc : gl.getUniformLocation(shaderProgram.imgShader, "uTexVal"),
-		uColormapLoc : gl.getUniformLocation(shaderProgram.imgShader, "uColormap")
+		uColormapLoc : gl.getUniformLocation(shaderProgram.imgShader, "uColormap"),
+		uInvertedLoc : gl.getUniformLocation(shaderProgram.imgShader, "uInverted")
 	};
 	
 	var colormap_vertexShader = getShader(gl, "colormap-shader-vs");
@@ -1170,7 +1184,8 @@ function initShaders() {
 	uniforms.tubeShader={
 		pUniform : gl.getUniformLocation(shaderProgram.tubeShader, "uPMatrix"),
 		mvUniform : gl.getUniformLocation(shaderProgram.tubeShader, "uMVMatrix"),
-		uColormapLoc : gl.getUniformLocation(shaderProgram.tubeShader, "uColormap")
+		uColormapLoc : gl.getUniformLocation(shaderProgram.tubeShader, "uColormap"),
+		uInvertedLoc : gl.getUniformLocation(shaderProgram.tubeShader, "uInverted")
 	};
 	//second gl 
 	var simple_vertexShader2 = getShader(gl2, "simple-shader-vs");
@@ -1382,11 +1397,21 @@ function testViewportHit(mouse){
 	return false;
 	
 }
+function testDragLabHit(mousex,mousey){
+	if(labDiv.style.display=="none") return false;
+	var left=Number(labDiv.style.left.slice(0,-2));
+	var top=Number(labDiv.style.top.slice(0,-2));
+	if(mousex>left&&mousex<left+canvas2.width&&mousey>top&&mousey<(top+30)){
+		return true;
+	}
+	return false;
+}
 
 function testCanvas2Hit(mouse){
-	var c2left=Number(canvas2.style.left.slice(0,-2));
-	var c2top=Number(canvas2.style.top.slice(0,-2));
-	if(mouse.x>c2left&&mouse.x<(Number(c2left)+Number(canvas2.width))&&mouse.y>c2top&&mouse.y<(c2top+canvas2.height)){
+	if(labDiv.style.display=="none") return false;
+	var c2left=Number(labDiv.style.left.slice(0,-2));
+	var c2top=Number(labDiv.style.top.slice(0,-2))+30;
+	if(mouse.x>c2left&&mouse.x<(c2left+canvas2.width)&&mouse.y>c2top&&mouse.y<(c2top+canvas2.height)){
 		return true;
 	}
 	return false;
@@ -1394,8 +1419,8 @@ function testCanvas2Hit(mouse){
 
 //Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
 function getColorHeight(cindex,height,inverse){
-	if(inverse)
-		height=1.0-height;
+	//if(inverse)
+	//	height=1.0-height;
 	if(height>=1.0||height<0.0){
 		console.log("Warning: Attempted to get invalid color height("+height+").");
 		return {'R' : 0,'G' : 0,'B' : 0};
@@ -1404,6 +1429,8 @@ function getColorHeight(cindex,height,inverse){
 		console.log("Color Height debug:"+cindex+","+scales[cindex]);
 	}
 	var index=Math.floor(1.0*(scales[cindex].length)*height);
+	if(inverse)
+		index=scales[cindex].length-index-1;
 	return scales[cindex][index];
 }
 
@@ -1439,34 +1466,43 @@ function handleMouseDown(event){
 	mouseDown=true;
 	//Get the mouse x and y
 	var mouse = getMousePos(canvas, event);
+	dragMarker=testMarkerHit(mouse.x,mouse.y);
+	
+	if(testCanvas2Hit(mouse)){
+		rotCanvas2=true;
+	}
+	else if(testDragLabHit(mouse.x,mouse.y)){
+		dragLab=true;
+	}
+	else if(testViewportHit(mouse)){
+		dragView=true;
+	}
+	
 	//Test if resetbutton was pressed
-	if(testResetButtonHit(mouse.x,mouse.y)&&img_panels.length!=0){
+	/*
+	else if(testResetButtonHit(mouse.x,mouse.y)&&img_panels.length!=0){
 		imageSet=false;
 		initView();
 		drawView();
-	}
+	}*/
 	//Test if the icon view box was hit
-	if(testIconViewHit(mouse.x,mouse.y)){
+	else if(testIconViewHit(mouse.x,mouse.y)){
 		
 		dragIcon=testIconHit(mouse.x,mouse.y);
-			if(dragIcon==-1){
-				dragIcon=-2;
-			}
+		if(dragIcon==-1){
+			dragIcon=-2;
+		}
 	}
-	
-	if(dragIcon==-1){
-		if(testImageIconViewHit(mouse.x,mouse.y)){
-			dragIcon = testImageIconHit(mouse.x,mouse.y);
-			if(dragIcon==-1){
-				dragIcon=-3;
-			}
+
+	else if(testImageIconViewHit(mouse.x,mouse.y)){
+		dragIcon = testImageIconHit(mouse.x,mouse.y);
+		if(dragIcon==-1){
+			dragIcon=-3;
 		}
 	}
 	
-	dragMarker=testMarkerHit(mouse.x,mouse.y);
-	
 	//Only check setting the color if the markers did not get hit
-	if(dragMarker==-1){
+	else if(dragMarker==-1){
 		colorMapDrag=checkSetColor(mouse.x,mouse.y);
 		if(colorMapDrag!=-1)
 			drawGraphs();
@@ -1490,6 +1526,8 @@ function handleMouseDown(event){
 			var temp = dragIcon-10000;
 			if(temp<img_panels.length){
 				TubesIndex=-1;
+				if(img_data[imgIndex].w!=img_data[temp].w||img_data[imgIndex].h!=img_data[temp].h)
+					imageSet=false;
 				imgIndex=temp;
 				view3D = false;
 			}
@@ -1502,13 +1540,6 @@ function handleMouseDown(event){
 			drawView();
 		}
 		
-	}
-	
-	if(testCanvas2Hit(mouse)){
-		rotCanvas2=true;
-	}
-	else if(testViewportHit(mouse)){
-		dragView=true;
 	}
 	
 	lastMouseX=mouse.x;
@@ -1533,6 +1564,7 @@ function handleMouseUp(event){
 	clearDrag();
 	rotCanvas2=false;
 	dragView=false;
+	dragLab=false;
 }
 
 //Called when the mouse moves
@@ -1546,6 +1578,14 @@ function handleMouseMove(event){
 	if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		draw2LabSpaces();
+	}
+	else if(dragLab){
+		var left=Number(labDiv.style.left.slice(0,-2))+(mouse.x-lastMouseX);
+		var top=Number(labDiv.style.top.slice(0,-2))+(mouse.y-lastMouseY);
+		if(left>-300&&left<canvas.width-30)
+			labDiv.style.left=left+"px";
+		if(top>0&&top<canvas.height-30)
+			labDiv.style.top=top+"px";
 	}
 	else if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
@@ -1761,13 +1801,13 @@ function drawImgIcons(){
 	
 	//Clear the edges
 	clearRectangle(imgIconX,imgIconY-3,iconViewWidth,iconHeight+3);
-	clearRectangle(imgIconX,imgIconY+iconViewHeight+iconHeight+6,iconViewWidth,iconHeight+3);
+	clearRectangle(imgIconX,imgIconY+iconViewHeight+iconHeight+5,iconViewWidth,iconHeight+3);
 }
 function updateLoader(){
 	var loader=document.getElementById("load");
 	if(loading>0){
 		var y = imgIconsTex.length*(iconHeight+10)+imgIconY+10-imgIconViewOffset;
-		var x = imgIconX+10;
+		var x = imgIconX+10*(canvas.width/min_width);
 		loader.style.top=y+"px";
 		loader.style.left= x+"px";
 		loader.style.display="block";
@@ -1868,8 +1908,8 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	//Draw lines to the markers
 	var marker1Loc = markerLocs[graphIndex][marker1];
 	var marker2Loc = markerLocs[graphIndex][marker2];
-	var color1 = getColorHeight(mapCIndices[graphIndex],marker1Loc);
-	var color2 = getColorHeight(mapCIndices[graphIndex],marker2Loc);
+	var color1 = getColorHeight(mapCIndices[graphIndex],marker1Loc,inverseColorHeight[graphIndex]);
+	var color2 = getColorHeight(mapCIndices[graphIndex],marker2Loc,inverseColorHeight[graphIndex]);
 	
 	drawLine(receiveX+scaleWidth*marker1Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x,y,color1);
 	drawLine(receiveX+scaleWidth*marker2Loc,receiveY+scaleHeight+receiveDelta*graphIndex,x+width,y,color2);
@@ -1943,13 +1983,14 @@ function clearRectangle(x,y,w,h){
 }
 
 function drawGraphs(){
+	var vscale=canvas.height/min_height;
 	for(var i=0;i<mapCIndices.length;i++){
 		var colorPanel=color_panels[mapCIndices[i]];
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth,120);
-		drawGraph(receiveX,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
+		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth+1,120*vscale);
+		drawGraph(receiveX,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i],inverseColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
 
@@ -1963,7 +2004,7 @@ function drawPanels(){
 		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX,receiveY+receiveDelta*i);
-		colorPanel.draw();
+		colorPanel.draw(inverseColorHeight[i]);
 	}
 }
 
@@ -2009,7 +2050,7 @@ function drawColorThumbnails(){
 	
 	//Clear the edges
 	clearRectangle(iconX,iconY-3,iconViewWidth,iconHeight+3);
-	clearRectangle(iconX,iconY+iconViewHeight+iconHeight+6,iconViewWidth,iconHeight+3);
+	clearRectangle(iconX,iconY+iconViewHeight+iconHeight+5,iconViewWidth,iconHeight+3);
 }
 
 function drawThumbnail(x,y,cindex){
@@ -2059,7 +2100,7 @@ function drawLabSpace(cid,bufid){
 			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
 			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
 		}
-	gl2.lineWidth(5);
+	gl2.lineWidth(3);
 	
 	var radx = transform2.degx * Math.PI / 180.0;
 	var rady = transform2.degy * Math.PI / 180.0;
@@ -2134,8 +2175,20 @@ function draw2LabSpaces(){
 	if(mapCIndices[0]<scales.length)
 		drawLabSpace(mapCIndices[0],0);
 	gl2.viewport(x2,y2,w,h);
-	if(mapCIndices[1]<scales.length)
+	if(mapCIndices[1]<scales.length){
 		drawLabSpace(mapCIndices[1],1);
+		//draw the line in between
+		gl2.viewport(0,0,w,h*2);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-1,0,0,1,0,0]), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0.8,0.8,0.8,1,0.8,0.8,0.8,1]), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+		gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(Matrix.I(4).flatten()));
+		gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(Matrix.I(4).flatten()));
+		gl2.drawArrays(gl2.LINES,0,2);
+	}
 }
 
 function setView(l,r,b,t){
@@ -2219,6 +2272,9 @@ function FileListenerInit(){
 			var screenshot1=document.getElementById("screenshot1");
 			var screenshot2=document.getElementById("screenshot2");
 			var button6 = document.getElementById('button6');
+			var hideLab= document.getElementById('hideLab');
+			var invert1 = document.getElementById("invert1");
+			var invert2 = document.getElementById("invert2");
 			
 			function cancel(e) {
 			   e.preventDefault(); 
@@ -2250,7 +2306,9 @@ function FileListenerInit(){
 			addEventHandler(button6,'click', handleModalButton);
 			addEventHandler(screenshot1,'click', function(){downloadView(0);});
 			addEventHandler(screenshot2,'click', function(){downloadView(1);});
-
+			addEventHandler(hideLab,'click', handleLabButton);
+			addEventHandler(invert1,'click', function(){handleInvertButton(0);});
+			addEventHandler(invert2,'click', function(){handleInvertButton(1);});
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
@@ -2537,13 +2595,28 @@ function handleResetButton(evt){
 
 function handleLabButton(evt){
 	var button = document.getElementById('button5');
-	if(canvas2.style.display=="none"||canvas2.style.display==""){
-		canvas2.style.display="inline";
+	if(labDiv.style.display=="none"||labDiv.style.display==""){
+		//canvas2.style.display="block";
+		labDiv.style.display="block";
 		button.innerHTML = "Hide LabGraph";
 	}else{
-		canvas2.style.display="none";
+		//canvas2.style.display="none";
+		labDiv.style.display="none";
 		button.innerHTML = "Show LabGraph";
 	}
+}
+
+function handleInvertButton(id){
+	var button = document.getElementById("invert"+(id+1));
+	if(inverseColorHeight[id]===false){
+		button.src="icon/invert2.png";
+		inverseColorHeight[id]=true;
+	}
+	else{
+		button.src="icon/invert1.png";
+		inverseColorHeight[id]=false;
+	}
+	drawScene();
 }
 
 function handleModalButton(evt){
@@ -2687,19 +2760,20 @@ function createImage(x,y,w,h){
 	ctx.putImageData(myImageData,0,0);
 }
 
-function drawGraph(x,y,w,h,cID,relative){
+function drawGraph(x,y,w,h,cID,relative,inverted){
 	var scale=scales[cID];
 	var len=scale.length;
 	var rect=Shape.rectangle;
-	var cref=getColorHeight(cID,relative);
+	var cref=getColorHeight(cID,relative,inverted);
 	var labref=rgb_to_lab({'R':cref.r*255, 'G':cref.g*255, 'B':cref.b*255});
+	var vscale=canvas.height/min_height;
 	
 	rect.changeColor(cref.r,cref.g,cref.b);
 	for(var i=0; i<len; i++){
 		var barWidth=w/len;
-		var color=getColorHeight(cID,i/len);
+		var color=getColorHeight(cID,i/len,inverted);
 		var lab=rgb_to_lab({'R':color.r*255, 'G':color.g*255, 'B':color.b*255});
-		var barHeight=ciede2000(labref,lab);
+		var barHeight=ciede2000(labref,lab)*vscale;
 		rect.scale(barWidth,barHeight);
 		rect.move(x+(barWidth*i),y+h-barHeight);
 		rect.draw();
