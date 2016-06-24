@@ -1,5 +1,5 @@
 
-var version="modal0"
+var version="modal1"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
