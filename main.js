@@ -2678,10 +2678,6 @@ function addColors(){
 		console.log(sel2.options[i].innerHTML);
 	}
 	
-	//Find all colormaps which are not loaded in yet
-	var unloaded = [];
-	for(var i=0;i<sel2.options.length)
-	
 	//Find all colormaps
 	
 	
