@@ -2517,7 +2517,7 @@ function readTextToScale(text,filename){
 			g: Number(color[1]),
 			b: Number(color[2])
 		};
-		if(!rgb.r||!rgb.g||!rgb.b)
+		if(isNaN(rgb.r)||isNaN(rgb.g)||isNaN(rgb.b))
 			throw("error reading at line "+(i+1));
 		scale.push(rgb);
 	}
