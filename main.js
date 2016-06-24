@@ -722,7 +722,7 @@ var Tubes3D = function(text){
 	var lines=text.split("\n");
 	
 	var numTubes=Number(lines[0]);
-	if(!numTubes||numTubes<1) throw("this is not a tube");
+	if(!numTubes||numTubes<1) throw("This is not a valid svl file.");
 	var i=1;
 	for(var t=0;t<numTubes;t++){
 		var numPoints=Number(lines[i]);
