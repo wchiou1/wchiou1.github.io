@@ -3,7 +3,7 @@ var m2 = document.theForm.menu2;
 
 var m3 = document.theForm.menu4;
 var m4 = document.theForm.menu5;
-function coloroone2two() {
+function colorone2two() {
     m1len = m1.length ;
     for ( i=0; i<m1len ; i++){
         if (m1.options[i].selected == true ) {
