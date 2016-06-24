@@ -423,10 +423,6 @@ var ColorPanel= function(x,y,w,h,cID){
 	
 	this.create= 
 	function(id){
-		//gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
-		//gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0, 1,0,0, 1,-1,0]), gl.STATIC_DRAW);
-		//gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
-		//gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, scales[id].length, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,flatten(scales[id]));
 		setTexParameter();
@@ -640,8 +636,7 @@ var Tube=function(points){
 		normals.push(Number(normal.e(2)));
 		normals.push(Number(normal.e(3)));
 		weights.push(Number(points[c].magnitude));
-	}
-	
+	}	
 	
 	//createIndices(plen,numSlice)
 	var nx=0;
@@ -878,7 +873,7 @@ function start() {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		initBuffers();
 		initMarkers();
-		//initTextureFramebuffer();
+		//initTextureFramebuffer(); //#not ready
 		initShaders();
 		initShape();
 		initViewport();
@@ -1087,7 +1082,7 @@ function initWebGL() {
   }
 }
 
-/////////////Not Done////////
+/////////////Not Done////////Do not use
 function initTextureFramebuffer(){
 	framebuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
@@ -1111,8 +1106,7 @@ function initTextureFramebuffer(){
 }
 //
 // initShaders
-//
-// Initialize the shaders, so WebGL knows how to light our scene.
+// Initialize the shaders
 //
 function initShaders() {
 	var img_vertexShader = getShader(gl, "img-shader-vs");
@@ -1532,6 +1526,8 @@ function handleMouseDown(event){
 			var temp = dragIcon-10000;
 			if(temp<img_panels.length){
 				TubesIndex=-1;
+				if(img_data[imgIndex].w!=img_data[temp].w||img_data[imgIndex].h!=img_data[temp].h)
+					imageSet=false;
 				imgIndex=temp;
 				view3D = false;
 			}
