@@ -1998,7 +1998,7 @@ function drawGraphs(){
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX,receiveY+receiveDelta*i,(scaleWidth|0)+1,120*vscale);
+		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth+2,120*vscale);
 		drawGraph(receiveX,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i],inverseColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
