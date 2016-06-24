@@ -124,10 +124,12 @@ select{
 	opacity: 0.2;
 	z-index:1;
 	transition: opacity 2s 0.5s;
+	
 }
 .fadeButton:hover{
 	opacity: 0.6;
 	transition: opacity 0.5s;
+	cursor: default;
 }
 .fadeButton:active{
 	opacity: 1.0;
