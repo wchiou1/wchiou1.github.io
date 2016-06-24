@@ -1,6 +1,6 @@
 bent-cool-warm.txt
 black-body.txt
-dmri-diverging-discrete.txt
+dMRI-diverging-discrete.txt
 dMRI-saturation-discrete.txt
 extended-black-body.txt
 extended-kindlmann.txt

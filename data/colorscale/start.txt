@@ -1,5 +1,5 @@
-smooth-cool-warm-0008
-smooth-cool-warm-1024
+smooth-cool-warm-0008.txt
+smooth-cool-warm-1024.txt
 gray.txt
 fMRI-lightness-continuous.txt
 bent-cool-warm.txt
