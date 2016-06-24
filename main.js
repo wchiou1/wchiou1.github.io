@@ -1467,7 +1467,7 @@ function handleMouseDown(event){
 	// assign default values for top and left properties
 	if(!targ.style.left) { targ.style.left='0px'};
 	if (!targ.style.top) { targ.style.top='0px'};
-	if(mouseDown||modal.style.display!="none"){
+	if(mouseDown||modal.style.display=="block"){
 		return;
 	}
 	
