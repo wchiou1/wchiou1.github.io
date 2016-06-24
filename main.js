@@ -363,7 +363,9 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			
 		gl.uniform1i(uniforms.imgShader.uTexValLoc, 0);  // texture unit 0
 		gl.uniform1i(uniforms.imgShader.uColormapLoc, 1);  // texture unit 1
-		gl.uniform1i(uniforms.imgShader.uInvertedLoc, inverted===true);
+
+		gl.uniform1f(uniforms.imgShader.uInvertedLoc, inverted|0);
+
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
 		gl.activeTexture(gl.TEXTURE1);
@@ -826,7 +828,7 @@ var Tubes3D = function(text){
 		
 		gl.uniformMatrix4fv(uniforms.tubeShader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
 		gl.uniformMatrix4fv(uniforms.tubeShader.mvUniform, false, new Float32Array(viewMatrix3D.flatten()));
-		gl.uniform1i(uniforms.tubeShader.uInvertedLoc, inverted===true);
+		gl.uniform1f(uniforms.tubeShader.uInvertedLoc, inverted|0);
 		var tlen=self.tubes.length;
 		for(var i=0;i<tlen;i++){
 			self.tubes[i].draw();

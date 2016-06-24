@@ -48,7 +48,7 @@
 		
 		uniform sampler2D uTexVal;
 		uniform sampler2D uColormap;
-		uniform bool uInverted;
+		uniform float uInverted; //1.0=true 0.0=false
 		
 		/*const vec4 bitDec = 1./vec4(1.,256.,65536.,16777216.); 
 		
@@ -69,10 +69,8 @@
 				discard;
 			}
 
-			float unpack = DecodeFloatRGBA(val.rgb);
-			if(uInverted){
-				unpack = 1.0-unpack;
-			}
+			float unpack = abs(uInverted-DecodeFloatRGBA(val.rgb));
+			
 			gl_FragColor = vec4(texture2D(uColormap, vec2(unpack,0)).rgb,1);
 			
 		}
@@ -145,7 +143,7 @@
 		
 		uniform mat4 uMVMatrix;
 		uniform mat4 uPMatrix;
-		uniform bool uInverted;
+		uniform float uInverted; //1.0=true 0.0=false
 		
 		varying float vWeight;
 		varying vec3 vNormal;
@@ -153,25 +151,23 @@
 		void main(void) {
 			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 			vNormal = normalize(mat3(uMVMatrix)*aVertexNormal);
-			if(uInverted){
-				vWeight=1.0-aVertexWeight;
-			}
-			else{
-				vWeight=aVertexWeight;
-			}	
+			vWeight=abs(uInverted-aVertexWeight);
 		}
     </script>
 
     <script id="tube-shader-fs" type="x-shader/x-fragment">
 		precision mediump float;
 		
+		const float ambient = 0.1;
+		const vec3 lightDir =vec3(0.0,0.0,1.0);
 		varying float vWeight;
 		varying vec3 vNormal;
 		
 		uniform sampler2D uColormap;
 		
 		void main(void) {
-			float lightWeight=min(max(dot(vNormal,vec3(0.0,0.0,1.0)),0.0) +0.1,1.0);
+		
+			float lightWeight=clamp(dot(vNormal,lightDir)+ambient,ambient,1.0);
 			gl_FragColor = vec4(   lightWeight * texture2D(uColormap, vec2(vWeight,0)).rgb	   ,1);
 		}
     </script>
