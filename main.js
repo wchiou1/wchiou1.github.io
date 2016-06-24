@@ -976,8 +976,8 @@ function initButtons(){
 	resetbutton.style.height = 30+"px";
 	
 	labbutton.style.left = imgIconX-30+"px";
-	labbutton.style.top = imgIconY-55+"px";
-	labbutton.style.width = iconViewWidth+100+"px";
+	labbutton.style.top = imgIconY-90+"px";
+	labbutton.style.width = iconViewWidth+60+"px";
 	labbutton.style.height = 30+"px";
 	
 	invertbutton1.style.top=receiveY+"px";
@@ -2706,7 +2706,7 @@ function addColors(){
 	//array.splice(start,amount);
 }
 
-function handleColorModalButton(evt){
+function handleImgModalButton(evt){
 	var sel4 = document.getElementById('select4');
 	var sel5 = document.getElementById('select5');
 	var sel6 = document.getElementById('select6');
