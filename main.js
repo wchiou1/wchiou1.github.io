@@ -84,6 +84,7 @@ var targ = document.getElementById("imageCanvas");
 targ.width=50;
 targ.height=50;
 var labDiv=document.getElementById("lab");
+var modal=document.getElementById("myModal");
 
 var min_width=1200;
 var min_height=700;
@@ -1466,7 +1467,7 @@ function handleMouseDown(event){
 	// assign default values for top and left properties
 	if(!targ.style.left) { targ.style.left='0px'};
 	if (!targ.style.top) { targ.style.top='0px'};
-	if(mouseDown){
+	if(mouseDown||modal.style.display!="none"){
 		return;
 	}
 	
