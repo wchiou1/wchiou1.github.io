@@ -2631,6 +2631,7 @@ function handleInvertButton(id){
 function handleModalButton(evt){
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
+	var sel3 = document.getElementById('select3');
 	for(var i=sel1.options.length-1;i>=0;i--)
 		sel1.removeChild(sel1.options[i]); 
 	for(var i=sel2.options.length-1;i>=0;i--)
@@ -2655,15 +2656,15 @@ function handleModalButton(evt){
 		if(loaded){
 			sel1.removeChild(sel1.options[i]);
 		}
-	}
+	}*/
 	//Add all the files that are already loaded
 	for(var i=0;i<colormapFileNames.length;i++){
 		var opt = document.createElement('option');
 		opt.appendChild(document.createTextNode(colormapFileNames[i]));
 		opt.value = colormapFileNames[i]; 
-		sel2.appendChild(opt); 
+		sel3.appendChild(opt); 
 	}
-	
+	/*
 	//Remove locally loaded files
 	for(var i=colormapFileNames.length-1;i>=0;i--){
 		//Verify if the file exists on the server, if it doesn't remove it
@@ -2681,13 +2682,13 @@ function handleModalButton(evt){
 }
 
 function addColors(){
+	var colorDirectory = "./data/colorscale/";
 	//Iterate through all html elements to get an array
 	var sel2 = document.getElementById('select2');
 	for(var i=0;i<sel2.options.length;i++){
 		console.log(sel2.options[i].innerHTML);
+		readOneFileFromServer(colorDirectory,sel2.options[i].innerHTML,"scale");
 	}
-	
-	//Find all colormaps
 	
 	
 	//array.splice(start,amount);
