@@ -2290,7 +2290,7 @@ function FileListenerInit(){
 			var screenshot1=document.getElementById("screenshot1");
 			var screenshot2=document.getElementById("screenshot2");
 			var button6 = document.getElementById('button6');
-			var button7 = document.getElementById('button7');
+			//var button7 = document.getElementById('button7');
 			var hideLab= document.getElementById('hideLab');
 			var invert1 = document.getElementById("invert1");
 			var invert2 = document.getElementById("invert2");
@@ -2323,7 +2323,7 @@ function FileListenerInit(){
 			addEventHandler(button4,'click', handleResetButton);
 			addEventHandler(button5,'click', handleLabButton);
 			addEventHandler(button6,'click', handleColorModalButton);
-			addEventHandler(button7,'click', handleImgModalButton);
+			//addEventHandler(button7,'click', handleImgModalButton);
 			addEventHandler(screenshot1,'click', function(){downloadView(0);});
 			addEventHandler(screenshot2,'click', function(){downloadView(1);});
 			addEventHandler(hideLab,'click', handleLabButton);
