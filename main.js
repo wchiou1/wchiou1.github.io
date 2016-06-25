@@ -183,7 +183,7 @@ function draw2DView(){
 	img_panels[imgIndex].changeColor(mapCIndices[0]);
 	img_panels[imgIndex].drawInViewport(0,inverseColorHeight[0]);
 	img_panels[imgIndex].changeColor(mapCIndices[1]);
-	img_panels[imgIndex].drawInViewport(1,inverseColorHeight[1]);
+	img_panels[imgIndex].drawInViewport(1,inverseColorHeight[1],true);
 }
 
 var transform3D={
@@ -231,6 +231,7 @@ var Viewport=function(x,y,w,h){
 	this.y=y;
 	this.w=w;
 	this.h=h;
+	this.ortho=makeOrtho(0, w, -h, 0, 0.1, 100.0)
 	var self=this;
 	
 	this.drawBorder=function(){
@@ -274,7 +275,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 	this.changeColor=function(cID){
 				self.cindex=cID;
 				if(cID==null)
-					self.colormap=null;
+					self.colormap=defaultColor;
 				else
 					self.colormap=color_panels[cID].texture;
 	};
@@ -336,10 +337,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 			gl.activeTexture(gl.TEXTURE0);
 			gl.bindTexture(gl.TEXTURE_2D, self.texture);
 			gl.activeTexture(gl.TEXTURE1);
-			if(!self.colormap)
-				gl.bindTexture(gl.TEXTURE_2D, defaultColor);
-			else
-				gl.bindTexture(gl.TEXTURE_2D, self.colormap);
+			gl.bindTexture(gl.TEXTURE_2D, self.colormap);
 			
 			perspectiveMatrix = orthoMatrix;
 			loadIdentity();	
@@ -353,12 +351,12 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		};
 
 
-	this.drawInViewport=function(vID,inverted){
+	this.drawInViewport=function(vID,inverted,same){
 		
 		var viewp=viewports[vID];
 		viewp.clear();
 		gl.viewport(viewp.x, canvas.height-viewp.y-viewp.h, viewp.w, viewp.h);
-		
+		if(!same){
 		if(lastShader!=="imgShader"){
 			lastShader="imgShader";
 			gl.useProgram(shaderProgram.imgShader);
@@ -372,28 +370,31 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		gl.vertexAttribPointer(attributes.imgShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 			
 		gl.uniform1i(uniforms.imgShader.uTexValLoc, 0);  // texture unit 0
-		gl.uniform1i(uniforms.imgShader.uColormapLoc, 1);  // texture unit 1
-
-		gl.uniform1f(uniforms.imgShader.uInvertedLoc, inverted|0);
-
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
+		
+		}
+		gl.uniform1f(uniforms.imgShader.uInvertedLoc, inverted|0);
+		gl.uniform1i(uniforms.imgShader.uColormapLoc, 1);  // texture unit 1
+
 		gl.activeTexture(gl.TEXTURE1);
 		if(!self.colormap)
 			gl.bindTexture(gl.TEXTURE_2D, defaultColor);
 		else
 			gl.bindTexture(gl.TEXTURE_2D, self.colormap);
 		
-		perspectiveMatrix = makeOrtho(0, viewp.w, -viewp.h, 0, 0.1, 100.0);
+		//perspectiveMatrix = makeOrtho(0, viewp.w, -viewp.h, 0, 0.1, 100.0);
 			
-		loadIdentity();	
-		mvPushMatrix();
-		multMatrix(viewMatrix);
+		//loadIdentity();	
+		//mvPushMatrix();
+		//multMatrix(viewMatrix);
+		//setMatrixUniforms(uniforms.imgShader);
 		
-		setMatrixUniforms(uniforms.imgShader);
+		gl.uniformMatrix4fv(uniforms.imgShader.pUniform, false, new Float32Array(viewp.ortho.flatten()));
+		gl.uniformMatrix4fv(uniforms.imgShader.mvUniform, false, new Float32Array(viewMatrix.flatten()));
 
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-		mvPopMatrix();
+		//mvPopMatrix();
 		
 		gl.viewport(0, 0, canvas.width, canvas.height);
 	};
@@ -796,7 +797,7 @@ var Tubes3D = function(text){
 		var viewp=viewports[vID];
 		viewp.clear();
 		gl.viewport(viewp.x, canvas.height-viewp.y-viewp.h, viewp.w, viewp.h);
-		
+
 		if(lastShader!=="tubeShader"){
 			lastShader="tubeShader";
 			gl.useProgram(shaderProgram.tubeShader);
@@ -1609,10 +1610,6 @@ function handleMouseMove(event){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		draw2LabSpaces();
 	}
-	else if(colorMapDrag!=-1){
-		checkSetColor(mouse.x,mouse.y);
-		drawGraphs();
-	}
 	else if(dragLab){
 		var left=Number(labDiv.style.left.slice(0,-2))+(mouse.x-lastMouseX);
 		var top=Number(labDiv.style.top.slice(0,-2))+(mouse.y-lastMouseY);
@@ -1624,6 +1621,10 @@ function handleMouseMove(event){
 	else if(dragView){
 		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		drawView();
+	}
+	else if(colorMapDrag!=-1){
+		checkSetColor(mouse.x,mouse.y);
+		drawGraphs();
 	}
 	else if(dragIcon==-1&&dragMarker==-1){
 		return;
