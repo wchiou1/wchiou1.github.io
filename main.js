@@ -183,7 +183,7 @@ function draw2DView(){
 	img_panels[imgIndex].changeColor(mapCIndices[0]);
 	img_panels[imgIndex].drawInViewport(0,inverseColorHeight[0]);
 	img_panels[imgIndex].changeColor(mapCIndices[1]);
-	img_panels[imgIndex].drawInViewport(1,inverseColorHeight[1],true);
+	img_panels[imgIndex].drawInViewport(1,inverseColorHeight[1]);
 }
 
 var transform3D={
@@ -351,12 +351,12 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		};
 
 
-	this.drawInViewport=function(vID,inverted,same){
+	this.drawInViewport=function(vID,inverted){
 		
 		var viewp=viewports[vID];
 		viewp.clear();
 		gl.viewport(viewp.x, canvas.height-viewp.y-viewp.h, viewp.w, viewp.h);
-		if(!same){
+	
 		if(lastShader!=="imgShader"){
 			lastShader="imgShader";
 			gl.useProgram(shaderProgram.imgShader);
@@ -373,7 +373,7 @@ var ImagePanel=function(x,y,w,h,dataID,cID){
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, self.texture);
 		
-		}
+		
 		gl.uniform1f(uniforms.imgShader.uInvertedLoc, inverted|0);
 		gl.uniform1i(uniforms.imgShader.uColormapLoc, 1);  // texture unit 1
 
