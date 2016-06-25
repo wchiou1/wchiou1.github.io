@@ -122,6 +122,7 @@ select{
 	position: absolute;
 	width:32px;
 	height: 32px;
+	line-height: 32px;
 	opacity: 0.2;
 	z-index:1;
 	transition: opacity 2s 0.5s;
@@ -133,6 +134,27 @@ select{
 	cursor: default;
 }
 .fadeButton:active{
+	opacity: 1.0;
+}
+.fadebutton{
+	float: right;
+	color: white;
+	background: #333333;
+	text-align: center;
+	width:36px;
+	height: 24px;
+	margin-right: 3px;
+	margin-top: 3px;
+	opacity: 0.2;
+	z-index:1;
+	transition: opacity 0.5s;
+}
+.fadebutton:hover{
+	opacity: 0.6;
+	transition: opacity 0.5s;
+	cursor: default;
+}
+.fadebutton:active{
 	opacity: 1.0;
 }
 #button1{
@@ -175,14 +197,6 @@ select{
 }
 #hideLab{
 	right: 0%;
-	float: right;
-	color: white;
-	background: #333333;
-	text-align: center;
-	width:36px;
-	height: 24px;
-	margin-right: 3px;
-	margin-top: 3px;
 }
 #glcanvas2{
 	position: absolute; 

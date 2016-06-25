@@ -849,14 +849,6 @@ $(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
 	canvas2 = document.getElementById("glcanvas2");
-
-	labDiv.style.width=canvas2.width+"px";
-	labDiv.style.height="30px";
-	canvas2.style.width=canvas2.width+"px";
-	canvas2.style.height=canvas2.height+"px";
-	labDiv.style.left=imgIconX+30-canvas2.width+iconViewWidth+"px";
-	labDiv.style.top = imgIconY-55+"px";
-	labDiv.style.display="none";
 	
 	addEventHandler(window,"resize",on_resize(resize));
 	initWebGL(canvas);
@@ -897,6 +889,11 @@ function start() {
 	  }
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
+		resizeCanvas2(1);
+		labDiv.style.left=imgIconX+30-canvas2.width+iconViewWidth+"px";
+		labDiv.style.top = imgIconY-55+"px";
+		labDiv.style.display="none";
+		
 }
 
 function initFileList(){
@@ -946,6 +943,17 @@ function resize(){
 	drawHelpText();
    }
 	
+}
+
+function resizeCanvas2(scale){
+	canvas2.width*=scale;
+	canvas2.height*=scale;
+	labDiv.style.width=canvas2.width+"px";
+	labDiv.style.height=30+"px";
+	canvas2.style.width=canvas2.width+"px";
+	canvas2.style.height=canvas2.height+"px";
+	labDiv.style.left=Number(labDiv.style.left.slice(0,-2))-canvas2.width+canvas2.width/scale+"px";
+	draw2LabSpaces();
 }
 function initButtons(){
 	var imgbutton = document.getElementById("button1");
@@ -1490,7 +1498,7 @@ function handleMouseDown(event){
 	mouseDown=true;
 	//Get the mouse x and y
 	var mouse = getMousePos(canvas, event);
-	dragMarker=testMarkerHit(mouse.x,mouse.y);
+	var tmh=testMarkerHit(mouse.x,mouse.y);
 	
 	if(testCanvas2Hit(mouse)){
 		rotCanvas2=true;
@@ -1524,15 +1532,17 @@ function handleMouseDown(event){
 			dragIcon=-3;
 		}
 	}
-	
 	//Only check setting the color if the markers did not get hit
-	else if(dragMarker==-1){
+	else if(tmh==-1){
 		colorMapDrag=checkSetColor(mouse.x,mouse.y);
 		if(colorMapDrag!=-1)
 			drawGraphs();
 		//drawPanels();
 		//drawMarkers();
 		//drawInfoBoxes();
+	}
+	else{
+		dragMarker=tmh;
 	}
 	
 	if(dragIcon>=0){
@@ -1595,18 +1605,18 @@ function handleMouseUp(event){
 function handleMouseMove(event){
 	var mouse = getMousePos(canvas, event);
 	updateFilenameIndicator(mouse.x,mouse.y);
-	if(colorMapDrag!=-1){
-		checkSetColor(mouse.x,mouse.y);
-		drawGraphs();
-	}
 	if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		draw2LabSpaces();
 	}
+	else if(colorMapDrag!=-1){
+		checkSetColor(mouse.x,mouse.y);
+		drawGraphs();
+	}
 	else if(dragLab){
 		var left=Number(labDiv.style.left.slice(0,-2))+(mouse.x-lastMouseX);
 		var top=Number(labDiv.style.top.slice(0,-2))+(mouse.y-lastMouseY);
-		if(left>-300&&left<canvas.width-30)
+		if(left>-canvas2.width+32&&left<canvas.width-32)
 			labDiv.style.left=left+"px";
 		if(top>0&&top<canvas.height-30)
 			labDiv.style.top=top+"px";
@@ -1624,12 +1634,12 @@ function handleMouseMove(event){
 	}
 	
 	
-	if(dragIcon==-2&&iconViewHeight<scales.length*60+10){
+	else if(dragIcon==-2&&iconViewHeight<scales.length*60+10){
 		updateIconViewOffset(mouse.x,mouse.y);
 		drawColorThumbnails();
 	}
 	
-	if(dragMarker!=-1){
+	else if(dragMarker!=-1){
 		updateMarkerLoc(mouse.x,mouse.y);
 		drawPanels();
 		drawMarkers();
@@ -1892,7 +1902,7 @@ function drawInfoBoxes(){
 	var xoffset=2*screenscale;
 	var yoffset=30*screenscale;
 	//Clear the area the lines go in
-	clearRectangle(receiveX-5,receiveY+scaleHeight+yoffset,scaleWidth+10,yoffset);
+	clearRectangle(receiveX-5,receiveY+scaleHeight+yoffset,scaleWidth+10,yoffset+1);
 	drawInfoBox(scaleWidth*.108+receiveX,receiveY+scaleHeight+yoffset,0,0,1);
 	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+yoffset,0,2,3);
 	drawText("RGB:",receiveX+xoffset,receiveY+scaleHeight+(30+25)*screenscale);
@@ -1905,7 +1915,7 @@ function drawInfoBoxes(){
 	rectangle.draw();
 	
 	//Clear the area the lines go in
-	clearRectangle(receiveX-5,receiveY+scaleHeight+yoffset+receiveDelta,scaleWidth+10,yoffset);
+	clearRectangle(receiveX-5,receiveY+scaleHeight+yoffset+receiveDelta,scaleWidth+10,yoffset+1);
 	drawInfoBox(scaleWidth*.108+receiveX,receiveY+scaleHeight+yoffset+receiveDelta,1,0,1);
 	drawInfoBox(scaleWidth*.56+receiveX,receiveY+scaleHeight+yoffset+receiveDelta,1,2,3);
 	drawText("RGB:",receiveX+xoffset,receiveY+scaleHeight+receiveDelta+(30+25)*screenscale);
@@ -2088,7 +2098,7 @@ function drawThumbnail(x,y,cindex){
 	color_panels[cindex].draw();
 }
 
-var pMatrix2=makeOrtho(-300,300,-300,300,-10000,10000);
+var pMatrix2=makeOrtho(-256,256,-256,256,-10000,10000);
 var lastShader2;
 var transform2={
 	degx: 0,
@@ -2305,6 +2315,10 @@ function FileListenerInit(){
 			var hideLab= document.getElementById('hideLab');
 			var invert1 = document.getElementById("invert1");
 			var invert2 = document.getElementById("invert2");
+			var expandLab=document.getElementById("expandLab");
+			var strinkLab=document.getElementById("strinkLab");
+			if(canvas2.height*1.1>canvas.height)expandLab.style.visibility="hidden";
+			if(canvas2.height/1.1<640)strinkLab.style.visibility="hidden";
 			
 			function cancel(e) {
 			   e.preventDefault(); 
@@ -2340,6 +2354,12 @@ function FileListenerInit(){
 			addEventHandler(hideLab,'click', handleLabButton);
 			addEventHandler(invert1,'click', function(){handleInvertButton(0);});
 			addEventHandler(invert2,'click', function(){handleInvertButton(1);});
+			addEventHandler(expandLab,'click', function(){resizeCanvas2(1.1);
+														if(canvas2.height*1.1>canvas.height)expandLab.style.visibility="hidden";
+														strinkLab.style.visibility="visible"});
+			addEventHandler(strinkLab,'click', function(){resizeCanvas2(1/1.1);
+														if(canvas2.height/1.1<640)strinkLab.style.visibility="hidden";
+														expandLab.style.visibility="visible"});
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
