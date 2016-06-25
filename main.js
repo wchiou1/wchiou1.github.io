@@ -890,8 +890,8 @@ function start() {
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
 		resizeCanvas2(1);
-		labDiv.style.left=imgIconX+30-canvas2.width+iconViewWidth+"px";
-		labDiv.style.top = imgIconY-55+"px";
+		labDiv.style.left=imgIconX+30*screenscale-canvas2.width+iconViewWidth+"px";
+		labDiv.style.top = imgIconY-55*screenscale+"px";
 		labDiv.style.display="none";
 		
 }
