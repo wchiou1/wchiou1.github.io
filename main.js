@@ -177,13 +177,14 @@ function scale2DView(scalar){
 }
 
 function draw2DView(){
-	if(img_panels[imgIndex]==null){
+	var ipanel=img_panels[imgIndex];
+	if(ipanel==null){
 		return;
 	}
-	img_panels[imgIndex].changeColor(mapCIndices[0]);
-	img_panels[imgIndex].drawInViewport(0,inverseColorHeight[0]);
-	img_panels[imgIndex].changeColor(mapCIndices[1]);
-	img_panels[imgIndex].drawInViewport(1,inverseColorHeight[1]);
+	ipanel.changeColor(mapCIndices[0]);
+	ipanel.drawInViewport(0,inverseColorHeight[0]);
+	ipanel.changeColor(mapCIndices[1]);
+	ipanel.drawInViewport(1,inverseColorHeight[1]);
 }
 
 var transform3D={
@@ -217,13 +218,14 @@ function scale3DView(scalar){
 }
 
 function draw3DView(){
-	if(Tubes3DList[TubesIndex]==null){
+	var tlist=Tubes3DList[TubesIndex];
+	if(tlist==null){
 		return;
 	}
-	Tubes3DList[TubesIndex].changeColor(mapCIndices[0]);
-	Tubes3DList[TubesIndex].drawInViewport(0,inverseColorHeight[0]);
-	Tubes3DList[TubesIndex].changeColor(mapCIndices[1]);
-	Tubes3DList[TubesIndex].drawInViewport(1,inverseColorHeight[1]);
+	tlist.changeColor(mapCIndices[0]);
+	tlist.drawInViewport(0,inverseColorHeight[0]);
+	tlist.changeColor(mapCIndices[1]);
+	tlist.drawInViewport(1,inverseColorHeight[1]);
 }
 
 var Viewport=function(x,y,w,h){
@@ -1561,7 +1563,7 @@ function handleMouseDown(event){
 			var temp = dragIcon-10000;
 			if(temp<img_panels.length){
 				TubesIndex=-1;
-				if(imgIndex>=0&&(img_data[imgIndex].w!=img_data[temp].w||img_data[imgIndex].h!=img_data[temp].h))
+				if(imgIndex<0||(img_data[imgIndex].w!=img_data[temp].w||img_data[imgIndex].h!=img_data[temp].h))
 					imageSet=false;
 				imgIndex=temp;
 				view3D = false;
