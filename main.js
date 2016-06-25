@@ -1847,9 +1847,10 @@ function updateLoader(){
 	var loader=document.getElementById("load");
 	if(loading>0){
 		var y = imgIconsTex.length*(iconHeight+10)+imgIconY+10-imgIconViewOffset;
-		var x = imgIconX+10*(canvas.width/min_width);
-		loader.style.top=y+"px";
-		loader.style.left= x+"px";
+		var x = imgIconX+10;
+		loader.style.top=y+iconHeight*(screenscale-1)/2+"px";
+		loader.style.left= x+(iconWidth-iconWidth/screenscale)/2+"px";
+
 		loader.style.display="block";
 	}
 	else{
