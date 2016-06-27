@@ -949,13 +949,32 @@ function resize(){
 }
 
 function resizeCanvas2(scale){
+	var left=Number(labDiv.style.left.slice(0,-2));
+	var top=Number(labDiv.style.top.slice(0,-2));
+	if(left+32>canvas.width){
+		left=canvas.width-32;
+	}
+	if(top+30>canvas.height){
+		labDiv.style.top=canvas.height-30+"px";
+	}
+
 	canvas2.width*=scale;
 	canvas2.height*=scale;
+	
 	labDiv.style.width=canvas2.width+"px";
 	labDiv.style.height=30+"px";
 	canvas2.style.width=canvas2.width+"px";
 	canvas2.style.height=canvas2.height+"px";
-	labDiv.style.left=Number(labDiv.style.left.slice(0,-2))-canvas2.width+canvas2.width/scale+"px";
+	labDiv.style.left=left-canvas2.width+canvas2.width/scale+"px";
+	if(canvas2.height*1.1>canvas.height)
+		expandLab.style.visibility="hidden";
+	else
+		expandLab.style.visibility="visible";
+	
+	if(canvas2.height/1.1<640)
+		strinkLab.style.visibility="hidden";
+	else
+		strinkLab.style.visibility="visible";
 	draw2LabSpaces();
 }
 function initButtons(){
@@ -1021,6 +1040,7 @@ function initButtons(){
 	drop2.style.height=iconViewHeight+"px";
 	drop2.style.position= 'absolute';
 
+	resizeCanvas2(1);
 
 	modalbutton.style.left = iconX-offset30+"px";
 	modalbutton.style.top = iconY-55*screenscale+"px";
@@ -2360,12 +2380,8 @@ function FileListenerInit(){
 			addEventHandler(hideLab,'click', handleLabButton);
 			addEventHandler(invert1,'click', function(){handleInvertButton(0);});
 			addEventHandler(invert2,'click', function(){handleInvertButton(1);});
-			addEventHandler(expandLab,'click', function(){resizeCanvas2(1.1);
-														if(canvas2.height*1.1>canvas.height)expandLab.style.visibility="hidden";
-														strinkLab.style.visibility="visible"});
-			addEventHandler(strinkLab,'click', function(){resizeCanvas2(1/1.1);
-														if(canvas2.height/1.1<640)strinkLab.style.visibility="hidden";
-														expandLab.style.visibility="visible"});
+			addEventHandler(expandLab,'click', function(){resizeCanvas2(1.1);});
+			addEventHandler(strinkLab,'click', function(){resizeCanvas2(1/1.1);});
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
