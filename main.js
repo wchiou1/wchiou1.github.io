@@ -2787,13 +2787,22 @@ function handleImgModalButton(evt){
 		sel4.appendChild(opt); 
 	}
 
-	//Add all the files that are already loaded
+	//Add all the imgfiles that are already loaded
 	for(var i=0;i<imgFileNames.length;i++){
 		var opt = document.createElement('option');
 		opt.appendChild(document.createTextNode(imgFileNames[i]));
 		opt.value = imgFileNames[i]; 
 		sel6.appendChild(opt); 
 	}
+	
+	//Add all the tube files that are loaded
+	for(var i=0;i<tubesFileNames.length;i++){
+		var opt = document.createElement('option');
+		opt.appendChild(document.createTextNode(tubesFileNames[i]));
+		opt.value = tubesFileNames[i]; 
+		sel6.appendChild(opt); 
+	}
+	
 }
 
 //Removes imagefiles
