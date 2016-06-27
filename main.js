@@ -2701,8 +2701,7 @@ function handleInvertButton(id){
 	}
 	drawScene();
 }
-
-function handleColorModalButton(evt){
+function updateColorModal(){
 	var sel1 = document.getElementById('select1');
 	var sel2 = document.getElementById('select2');
 	var sel3 = document.getElementById('select3');
@@ -2718,43 +2717,52 @@ function handleColorModalButton(evt){
 		opt.value = colorscaleList[i]; 
 		sel1.appendChild(opt); 
 	}
-	/*
-	//Remove files that are already added
-	for(var i=colorscaleList.length-1;i>=0;i--){
-		//For each colormap in the index check to see if it's already loaded in
-		var loaded = false;
-		for(var j=0;j<colormapFileNames.length;j++){
-			if(colorscaleList[i]==colormapFileNames[j]){
-				loaded=true;
-				break;
-			}
-		}
-		if(loaded){
-			sel1.removeChild(sel1.options[i]);
-		}
-	}*/
-	//Add all the files that are already loaded
 	for(var i=0;i<colormapFileNames.length;i++){
 		var opt = document.createElement('option');
 		opt.appendChild(document.createTextNode(colormapFileNames[i]));
 		opt.value = colormapFileNames[i]; 
 		sel3.appendChild(opt); 
 	}
-	/*
-	//Remove locally loaded files
-	for(var i=colormapFileNames.length-1;i>=0;i--){
-		//Verify if the file exists on the server, if it doesn't remove it
-		var verify=false;
-		for(var j=0;j<colorscaleList.length;j++){
-			if(colormapFileNames[i]==colorscaleList[j]){
-				verify=true;
-				break;
-			}
+}
+
+function handleColorModalButton(evt){
+	updateColorModal();
+}
+
+function getCIndexFromName(colorName){
+	for(var i=0;i<colormapFileNames.length;i++){
+		if(colormapFileNames[i]==colorName){
+			return i;
 		}
-		if(!verify)
-			sel2.removeChild(sel2.options[i]);
 	}
-	*/
+}
+
+//Removes the following 
+function removeColor(cindex){
+	colormapFileNames.splice(cindex,1);
+	scales.splice(cindex,1);
+	color_panels.splice(cindex,1);
+	colorIconsData.splice(cindex,1);
+}
+
+function removeColors(){
+	var sel3 = document.getElementById('select3');
+	var remove=false;
+	//check if there are any colors selected to be removed
+	for(var i=0;i<sel3.length;i++){
+		if (sel3.options[i].selected){
+			remove=true;
+			break;
+		}
+	}
+	
+	if(!confirm("Are you sure you want to remove selected colormaps?"))
+		return;
+	for(var i=sel3.length-1;i>=0;i--){
+		if(sel3.options[i].selected)
+			removeColor(getCIndexFromName(sel3.options[i].innerHTML));
+	}
+	updateColorModal();
 }
 
 function addColors(){
