@@ -2863,8 +2863,8 @@ function removeImgs(){
 		if(sel6.options[i].selected)
 			removeImg(getImgIndexFromName(sel6.options[i].innerHTML));
 	}
-	drawColorThumbnails();
-	updateColorModal();
+	drawImgIcons();
+	updateImgModal();
 }
 
 function addImgs(){
