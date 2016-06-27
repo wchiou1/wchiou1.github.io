@@ -153,7 +153,7 @@ function drawView(){
 	else{
 		draw3DView();
 	}
-	updateViewportText();
+	//updateViewportText();
 }
 
 var viewMatrix=Matrix.I(4);//2D
@@ -1575,6 +1575,7 @@ function handleMouseDown(event){
 			}
 			initView();
 			drawView();
+			updateViewportText();
 		}
 		
 	}
@@ -1726,7 +1727,7 @@ function scrollIconView(delta){
 
 function updateFilenameIndicator(mouseX,mouseY){
 	//Clear the text area where the fileName will go
-	ctx2.clearRect(iconX-10,iconY-40,600, 40);
+	ctx2.clearRect(iconX-10,iconY-40*screenscale,600*screenscale, 45*screenscale);
 	
 	if(!testIconViewHit(mouseX,mouseY))
 		return;
@@ -1791,6 +1792,7 @@ function drawScene() {
 		//initialize and draw img in viewports
 		initView();
 		drawView();
+		updateViewportText();
 	}
 	
 	drawColorThumbnails();
@@ -2588,7 +2590,7 @@ function addNewColorIconData(cindex){
 			pixelData[i*iconHeight*4+j]=pixelData[j];
 		}
 	}*/
-	Promise.resolve(createImageBitmap(pixelData).then(function(response) { colorIconsData.push(response);}));
+	createImageBitmap(pixelData).then(function(response) { colorIconsData.push(response);});
 	
 }
 
