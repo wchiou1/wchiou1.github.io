@@ -2790,10 +2790,15 @@ function handleImgModalButton(evt){
 	//Add all the files that are already loaded
 	for(var i=0;i<imgFileNames.length;i++){
 		var opt = document.createElement('option');
-		opt.appendChild(document.createTextNode(colormapFileNames[i]));
-		opt.value = colormapFileNames[i]; 
+		opt.appendChild(document.createTextNode(imgFileNames[i]));
+		opt.value = imgFileNames[i]; 
 		sel6.appendChild(opt); 
 	}
+}
+
+//Removes imagefiles
+function removeImgs(){
+
 }
 
 function addImgs(){
