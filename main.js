@@ -1760,7 +1760,7 @@ function updateFilenameIndicator(mouseX,mouseY){
 }
 
 function clearDrag(){
-	createImage(0,0,iconWidth,iconHeight);
+	createImage(0,0,iconWidth|0,iconHeight|0);
 	targ.style.left='0px';
 	targ.style.top='0px';
 	targ.style.display="none";
