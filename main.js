@@ -2762,6 +2762,7 @@ function removeColors(){
 		if(sel3.options[i].selected)
 			removeColor(getCIndexFromName(sel3.options[i].innerHTML));
 	}
+	drawColorThumbnails();
 	updateColorModal();
 }
 
