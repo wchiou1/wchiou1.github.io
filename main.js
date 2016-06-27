@@ -2823,8 +2823,8 @@ function getImgIndexFromName(imgName){
 		if(imgFileNames[i]==imgName)
 			return i;
 	//if not then check if it's in the 2d img array
-	for(var i=0;i<tubeFileNames.length;i++)
-		if(tubFileNames[i]==imgName)
+	for(var i=0;i<tubesFileNames.length;i++)
+		if(tubesFileNames[i]==imgName)
 			return imgFileNames.length+i;
 }
 
