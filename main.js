@@ -1,5 +1,5 @@
 
-var version="modal5"
+var version="removeColors"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
