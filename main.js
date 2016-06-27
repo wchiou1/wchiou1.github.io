@@ -1,5 +1,5 @@
 
-var version="removeColors"
+var version="removeColors2"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
