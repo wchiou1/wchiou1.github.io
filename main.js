@@ -1,5 +1,5 @@
 
-var version="removeColors2"
+var version="removeImgs"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -2779,7 +2779,7 @@ function addColors(){
 	//array.splice(start,amount);
 }
 
-function handleImgModalButton(evt){
+function updateImgModal(){
 	var sel4 = document.getElementById('select4');
 	var sel5 = document.getElementById('select5');
 	var sel6 = document.getElementById('select6');
@@ -2811,12 +2811,60 @@ function handleImgModalButton(evt){
 		opt.value = tubesFileNames[i]; 
 		sel6.appendChild(opt); 
 	}
+}
+
+function handleImgModalButton(evt){
+	updateImgModal();
+}
+
+function getImgIndexFromName(imgName){
+	//Check if it's in the 2d image array
+	for(var i=0;i<imgFileNames.length;i++)
+		if(imgFileNames[i]==imgName)
+			return i;
+	//if not then check if it's in the 2d img array
+	for(var i=0;i<tubeFileNames.length;i++)
+		if(tubFileNames[i]==imgName)
+			return imgFileNames.length+i;
+}
+
+function removeImg(imgIndex){
+	//Remove from icons
+	imgIconsTex.splice(imgIndex,1);
+	//If below the length of 2d images, remove from 2d images array
+	if(imgIndex<imgFileNames.length){
+		imgFileNames.splice(imgIndex,1);
+		img_data.splice(imgIndex,1);
+		img_panels.splice(imgIndex,1);
+	}
+	else{//else remove from 3d images
+		Tubes3DList.splice(imgIndex-imgFileNames.length,1);
+		tubesFileNames.splice(imgIndex-imgFileNames.length,1);
+	}
+	
 	
 }
 
 //Removes imagefiles
 function removeImgs(){
-
+	var sel6 = document.getElementById('select6');
+	var remove=false;
+	//check if there are any colors selected to be removed
+	for(var i=0;i<sel6.length;i++){
+		if (sel6.options[i].selected){
+			remove=true;
+			break;
+		}
+	}
+	
+	if(!confirm("Are you sure you want to remove selected images?"))
+		return;
+	for(var i=sel6.length-1;i>=0;i--){
+		if(sel6.options[i].selected)
+			removeImg(getImgIndexFromName(sel6.options[i].innerHTML));
+	}
+	drawColorThumbnails();
+	updateColorModal();
 }
 
 function addImgs(){
