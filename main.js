@@ -1808,7 +1808,7 @@ function drawScene() {
 	drawImgIcons();
 	viewports[0].drawBorder();
 	viewports[1].drawBorder();
-	if(img_panels.length!=0&&color_panels.length>1){
+	if(img_panels.length+Tubes3DList.length!=0&&color_panels.length>1){
 		//initialize and draw img in viewports
 		initView();
 		drawView();
