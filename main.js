@@ -211,11 +211,11 @@ var transform3D={
 				var C=e_minus_c.dot(e_minus_c)-(radius*radius);	// C = (e−c)·(e−c)−R2
 				var discriminant = (B*B)-(A*C);
 				if(discriminant>0){//2 intersections
-					var t1,t2,t;
-					t1= (-B+Math.sqrt(discriminant))/A;
-					t2= (-B-Math.sqrt(discriminant))/A;
-					t=Math.min(t1,t2);
-					return e.add(d.x(t));
+					//var t1,t2,t;
+					//t1= (-B+Math.sqrt(discriminant))/A;
+					var t2= (-B-Math.sqrt(discriminant))/A;
+					//t=Math.min(t1,t2);
+					return e.add(d.x(t2));
 				}
 				else{//on edge or outside sphere
 					return e;//.toUnitVector().x(radius);
@@ -234,19 +234,14 @@ var transform3D={
 			var lasty=centerY-lastmouseY;
 			var ray1=intersect(lastx,lasty,radius).toUnitVector();
 			var ray2=intersect(x,y,radius).toUnitVector();
-			//console.log("x "+x);
-			//console.log("y "+y);
-			//console.log("lastx "+lastx);
-			//console.log("lasty "+lasty);
-			//var axis=ray1.cross(ray2);
+
 			var unit_x=$V([1,0,0]);
 			var unit_y=$V([0,1,0]);
 			var unit_z=$V([0,0,1]);
 			var vv= ray1.cross(ray2).toUnitVector();//axis
 			var ww=ray1;
 			var uu=vv.cross(ww).toUnitVector();
-			//console.log("r1 "+ray1.elements);
-			//console.log("r2 "+ray2.elements);
+
 			var cos= ray2.dot(ray1);
 			var sign=(ray2.dot(uu) > 0) ? 1 : -1;
 			var sin= sign*Math.sqrt(1 - cos*cos);
@@ -255,11 +250,9 @@ var transform3D={
 										[vv.e(1),vv.e(2),vv.e(3),0],
 										[ww.e(1),ww.e(2),ww.e(3),0],
 										[0,0,0,1]]).ensure4x4();
-										//console.log(newBasis);
-										//console.log(rotateMatrix);
+
 			var transformMatrix=newBasis.transpose().x(rotateMatrix).x(newBasis);
 			transform3D.matrix=transformMatrix.x(transform3D.matrix);
-			//console.log(newBasis.transpose().x(newBasis));
 		},
 	
 	scale: function(s){
