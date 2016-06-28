@@ -1,5 +1,7 @@
 
-var version="removeImgs"
+
+var version="Removal error checking"
+
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -181,10 +183,14 @@ function draw2DView(){
 	if(ipanel==null){
 		return;
 	}
-	ipanel.changeColor(mapCIndices[0]);
-	ipanel.drawInViewport(0,inverseColorHeight[0]);
-	ipanel.changeColor(mapCIndices[1]);
-	ipanel.drawInViewport(1,inverseColorHeight[1]);
+	if(mapCIndices[0]<scales.length){
+		ipanel.changeColor(mapCIndices[0]);
+		ipanel.drawInViewport(0,inverseColorHeight[0]);
+	}
+	if(mapCIndices[1]<scales.length){
+		ipanel.changeColor(mapCIndices[1]);
+		ipanel.drawInViewport(1,inverseColorHeight[1]);
+	}
 }
 
 var transform3D={
@@ -279,10 +285,14 @@ function draw3DView(){
 	if(tlist==null){
 		return;
 	}
-	tlist.changeColor(mapCIndices[0]);
-	tlist.drawInViewport(0,inverseColorHeight[0]);
-	tlist.changeColor(mapCIndices[1]);
-	tlist.drawInViewport(1,inverseColorHeight[1]);
+	if(mapCIndices[0]<scales.length){
+		tlist.changeColor(mapCIndices[0]);
+		tlist.drawInViewport(0,inverseColorHeight[0]);
+	}
+	if(mapCIndices[1]<scales.length){
+		tlist.changeColor(mapCIndices[1]);
+		tlist.drawInViewport(1,inverseColorHeight[1]);
+	}
 }
 
 var Viewport=function(x,y,w,h){
@@ -1529,6 +1539,10 @@ function testCanvas2Hit(mouse){
 
 //Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
 function getColorHeight(cindex,height,inverse){
+	if(cindex<0||cindex>=scales.length){
+		//console.log("Warning: Attempted to get invalid color index("+cindex+").");
+		return {'R' : 0,'G' : 0,'B' : 0};
+	}
 	//if(inverse)
 	//	height=1.0-height;
 	if(height>=1.0||height<0.0){
@@ -1719,7 +1733,7 @@ function handleMouseMove(event){
 	}
 	
 	
-	else if(dragIcon==-2&&iconViewHeight<scales.length*60+10){
+	else if(dragIcon==-2&&iconViewHeight<scales.length*(iconHeight+10)+10){
 		updateIconViewOffset(mouse.x,mouse.y);
 		drawColorThumbnails();
 	}
@@ -1869,7 +1883,8 @@ function drawScene() {
 	drawImgIcons();
 	viewports[0].drawBorder();
 	viewports[1].drawBorder();
-	if(img_panels.length+Tubes3DList.length!=0&&color_panels.length>1){
+	
+	if(img_panels.length+Tubes3DList.length!=0&&color_panels.length>0){
 		//initialize and draw img in viewports
 		initView();
 		drawView();
@@ -2017,10 +2032,9 @@ function drawInfoBoxes(){
 }
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
-	
-	if(mapCIndices[graphIndex]>=scales.length){
-		return;
-	}
+	//if(mapCIndices[graphIndex]>=scales.length){
+	//	return;
+	//}
 	var rectangle=Shape.rectangle;
 	var width = scaleWidth*.44;
 	var height = 75*screenscale;
@@ -2048,19 +2062,32 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
 	var xoffset=2*screenscale;
-	//write rgb values
-	drawText(Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+xoffset,y+25*screenscale);
-	drawText(Math.round(color2.r*255)+" "+Math.round(color2.g*255)+" "+Math.round(color2.b*255),x+width/2+xoffset,y+25*screenscale);
+	if(mapCIndices[graphIndex]<scales.length){
+		//write rgb values
+		drawText(Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+xoffset,y+25*screenscale);
+		drawText(Math.round(color2.r*255)+" "+Math.round(color2.g*255)+" "+Math.round(color2.b*255),x+width/2+xoffset,y+25*screenscale);
+
+		var lab1=rgb_to_lab({'R':color1.r*255, 'G':color1.g*255, 'B':color1.b*255});
+		var lab2=rgb_to_lab({'R':color2.r*255, 'G':color2.g*255, 'B':color2.b*255});
+		
+		//write lab values
+		drawText(Math.round(lab1.L)+" "+Math.round(lab1.a)+" "+Math.round(lab1.b),x+xoffset,y+45*screenscale);
+		drawText(Math.round(lab2.L)+" "+Math.round(lab2.a)+" "+Math.round(lab2.b),x+width/2+xoffset,y+45*screenscale);
+		
+		
+		var deltaE=ciede2000(lab1,lab2);
+		//write ciede difference
+		drawText("CIEDE2000: "+deltaE.toPrecision(9),x+xoffset,y+65*screenscale);
+	}
+	else{
+		drawText("Error: Invalid Index",x+xoffset,y+25*screenscale);
+		//drawText("invalid index",x+width/2+xoffset,y+25*screenscale);
+		drawText("Was colormap removed?",x+xoffset,y+45*screenscale);
+		//drawText("this colormap.",x+width/2+xoffset,y+45*screenscale);
+		drawText("Please change colormap",x+xoffset,y+65*screenscale);
+	}
 	
-	//write lab values
-	var lab1=rgb_to_lab({'R':color1.r*255, 'G':color1.g*255, 'B':color1.b*255});
-	var lab2=rgb_to_lab({'R':color2.r*255, 'G':color2.g*255, 'B':color2.b*255});
-	drawText(Math.round(lab1.L)+" "+Math.round(lab1.a)+" "+Math.round(lab1.b),x+xoffset,y+45*screenscale);
-	drawText(Math.round(lab2.L)+" "+Math.round(lab2.a)+" "+Math.round(lab2.b),x+width/2+xoffset,y+45*screenscale);
-	
-	//write ciede difference
-	var deltaE=ciede2000(lab1,lab2);
-	drawText("CIEDE2000: "+deltaE.toPrecision(9),x+xoffset,y+65*screenscale);
+
 
 }
 
@@ -2120,14 +2147,24 @@ function drawGraphs(){
 	}
 }
 
+//Abandoned
+function errorCheckMapCIndices(){
+	for(var i=0;i<mapCIndices.length;i++){
+	if(mapCIndices[i]<0)
+		mapCIndices[i]=0;
+	console.log(""+i+":"+mapCIndices[i]+","+scales.length);
+	while(mapCIndices[i]>=scales.length&&mapCIndices[i]>=0)
+		mapCIndices[i]-=1;
+	}
+}
 function drawPanels(){
 	
 	for(var i=0;i<mapCIndices.length;i++){
 		var colorPanel=color_panels[mapCIndices[i]];
+		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX,receiveY+receiveDelta*i);
 		colorPanel.draw(inverseColorHeight[i]);
@@ -2817,14 +2854,18 @@ function removeColors(){
 		}
 	}
 	
-	if(!confirm("Are you sure you want to remove selected colormaps?"))
-		return;
+	//if(!confirm("Are you sure you want to remove selected colormaps?"))
+		//return;
 	for(var i=sel3.length-1;i>=0;i--){
 		if(sel3.options[i].selected)
 			removeColor(getCIndexFromName(sel3.options[i].innerHTML));
 	}
-	drawColorThumbnails();
+	//Check if there are not enough icons to validate scrolling
+	if(iconViewHeight>=scales.length*(iconHeight+10)+10)
+		iconViewOffset=0;
+	
 	updateColorModal();
+	drawScene();
 }
 
 function addColors(){
@@ -2836,7 +2877,7 @@ function addColors(){
 		readOneFileFromServer(colorDirectory,sel2.options[i].innerHTML,"scale");
 	}
 	
-	
+	drawScene();
 	//array.splice(start,amount);
 }
 
@@ -2918,14 +2959,18 @@ function removeImgs(){
 		}
 	}
 	
-	if(!confirm("Are you sure you want to remove selected images?"))
-		return;
+	//if(!confirm("Are you sure you want to remove selected images?"))
+		//return;
 	for(var i=sel6.length-1;i>=0;i--){
 		if(sel6.options[i].selected)
 			removeImg(getImgIndexFromName(sel6.options[i].innerHTML));
 	}
-	drawImgIcons();
+	
+	//If there is no need to scroll, reset the imgviewoffset
+	if(iconViewHeight>=imgIconsTex.length*(iconHeight+10)+10)
+		imgIconViewOffset=0;
 	updateImgModal();
+	drawScene();
 }
 
 function addImgs(){
@@ -2938,8 +2983,7 @@ function addImgs(){
 		readOneFileFromServer(dataDirectory,sel5.options[i].innerHTML,"data");
 	}
 	
-	
-	//array.splice(start,amount);
+	drawScene();
 }
 
 //change background 0 to -1
