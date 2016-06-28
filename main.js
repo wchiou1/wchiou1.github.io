@@ -1801,7 +1801,7 @@ function updateIconViewOffset(mouseX,mouseY){
 // Draw the scene.
 //
 function drawScene() {
-	errorCheckMapCIndices();
+	//errorCheckMapCIndices();
 	updateLoader();
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
