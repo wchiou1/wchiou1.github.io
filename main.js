@@ -1990,7 +1990,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.draw();
 	var xoffset=2*screenscale;
 	//write rgb values
-	if(mapCIndices[graphIndex]<0){
+	if(mapCIndices[graphIndex]>=0){
 		drawText(Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+xoffset,y+25*screenscale);
 		drawText(Math.round(color2.r*255)+" "+Math.round(color2.g*255)+" "+Math.round(color2.b*255),x+width/2+xoffset,y+25*screenscale);
 	}
