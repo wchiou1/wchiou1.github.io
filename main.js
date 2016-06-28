@@ -1957,7 +1957,6 @@ function drawInfoBoxes(){
 }
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
-	
 	if(mapCIndices[graphIndex]>=scales.length){
 		return;
 	}
@@ -1989,9 +1988,14 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.draw();
 	var xoffset=2*screenscale;
 	//write rgb values
-	drawText(Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+xoffset,y+25*screenscale);
-	drawText(Math.round(color2.r*255)+" "+Math.round(color2.g*255)+" "+Math.round(color2.b*255),x+width/2+xoffset,y+25*screenscale);
-	
+	if(mapCIndices[graphIndex]<0){
+		drawText(Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+xoffset,y+25*screenscale);
+		drawText(Math.round(color2.r*255)+" "+Math.round(color2.g*255)+" "+Math.round(color2.b*255),x+width/2+xoffset,y+25*screenscale);
+	}
+	else{
+		drawText("Error: no colormaps",x+xoffset,y+25*screenscale);
+		drawText("Error: no colormaps",x+width/2+xoffset,y+25*screenscale);
+	}
 	//write lab values
 	var lab1=rgb_to_lab({'R':color1.r*255, 'G':color1.g*255, 'B':color1.b*255});
 	var lab2=rgb_to_lab({'R':color2.r*255, 'G':color2.g*255, 'B':color2.b*255});
@@ -2062,8 +2066,10 @@ function drawGraphs(){
 
 function errorCheckMapCIndices(){
 	for(var i=0;i<mapCIndices.length;i++){
-		while(mapCIndices[i]>=colorMaps.length&&mapCIndices[i]>=0)
-			mapCIndices[i]-=1;
+	if(mapCIndices[i]<0)
+		mapCIndices[i]=0;
+	while(mapCIndices[i]>=colorMaps.length&&mapCIndices[i]>=0)
+		mapCIndices[i]-=1;
 	}
 }
 
