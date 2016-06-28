@@ -2062,7 +2062,7 @@ function drawGraphs(){
 
 function errorCheckMapCIndices(){
 	for(var i=0;i<mapCIndices.length;i++){
-		while(mapCIndices[i]>=colorMaps.length||mapCIndices[i]<0)
+		while(mapCIndices[i]>=colorMaps.length&&mapCIndices[i]>=0)
 			mapCIndices[i]-=1;
 	}
 }
