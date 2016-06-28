@@ -299,7 +299,7 @@ var Viewport=function(x,y,w,h){
 	this.drawBorder=function(){
 		var rectangle=Shape.rectangle;
 		rectangle.scale(self.w+6,self.h+6);
-		rectangle.move(self.x-4,self.y-2,0.5);
+		rectangle.move(self.x-3,self.y-3,0.5);
 		rectangle.changeColor(0.0,0.0,0.0);
 		rectangle.draw();
 		clearRectangle(self.x,self.y+self.h,self.w,self.h);
