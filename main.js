@@ -1,5 +1,9 @@
 
+<<<<<<< HEAD
 var version="Testing mapCIndices error checking3"
+=======
+var version="removeImgs"
+>>>>>>> parent of 86bedb4... Added mapcindices errorchecking
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -1801,7 +1805,6 @@ function updateIconViewOffset(mouseX,mouseY){
 // Draw the scene.
 //
 function drawScene() {
-	errorCheckMapCIndices();
 	updateLoader();
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -2056,14 +2059,15 @@ function drawGraphs(){
 	var vscale=canvas.height/min_height;
 	for(var i=0;i<mapCIndices.length;i++){
 		var colorPanel=color_panels[mapCIndices[i]];
-		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth+2,120*vscale);
 		if(colorPanel==null){
 			continue;
 		}
+		clearRectangle(receiveX,receiveY+receiveDelta*i,scaleWidth+2,120*vscale);
 		drawGraph(receiveX,receiveY+receiveDelta*i-scaleHeight*2,scaleWidth,scaleHeight*2,mapCIndices[i],setColorHeight[i],inverseColorHeight[i]);//x,y,w,h,colorID, relative position(0 to 1)
 	}
 }
 
+<<<<<<< HEAD
 function errorCheckMapCIndices(){
 	for(var i=0;i<mapCIndices.length;i++){
 	if(mapCIndices[i]<0)
@@ -2073,13 +2077,16 @@ function errorCheckMapCIndices(){
 	}
 }
 
+=======
+>>>>>>> parent of 86bedb4... Added mapcindices errorchecking
 function drawPanels(){
+	
 	for(var i=0;i<mapCIndices.length;i++){
 		var colorPanel=color_panels[mapCIndices[i]];
-		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		if(colorPanel==null){
 			continue;
 		}
+		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX,receiveY+receiveDelta*i);
 		colorPanel.draw(inverseColorHeight[i]);
@@ -2787,7 +2794,9 @@ function addColors(){
 		console.log(sel2.options[i].innerHTML);
 		readOneFileFromServer(colorDirectory,sel2.options[i].innerHTML,"scale");
 	}
-	drawScene();
+	
+	
+	//array.splice(start,amount);
 }
 
 function updateImgModal(){
@@ -2887,7 +2896,9 @@ function addImgs(){
 		console.log(sel5.options[i].innerHTML);
 		readOneFileFromServer(dataDirectory,sel5.options[i].innerHTML,"data");
 	}
-	drawScene();
+	
+	
+	//array.splice(start,amount);
 }
 
 //change background 0 to -1
