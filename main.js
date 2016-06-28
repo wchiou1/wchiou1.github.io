@@ -1,9 +1,7 @@
 
-<<<<<<< HEAD
-var version="Testing mapCIndices error checking3"
-=======
-var version="removeImgs"
->>>>>>> parent of 86bedb4... Added mapcindices errorchecking
+
+var version="revert error checking"
+
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
@@ -1805,6 +1803,7 @@ function updateIconViewOffset(mouseX,mouseY){
 // Draw the scene.
 //
 function drawScene() {
+	//errorcheckMapIndicies();
 	updateLoader();
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -2067,7 +2066,6 @@ function drawGraphs(){
 	}
 }
 
-<<<<<<< HEAD
 function errorCheckMapCIndices(){
 	for(var i=0;i<mapCIndices.length;i++){
 	if(mapCIndices[i]<0)
@@ -2076,9 +2074,6 @@ function errorCheckMapCIndices(){
 		mapCIndices[i]-=1;
 	}
 }
-
-=======
->>>>>>> parent of 86bedb4... Added mapcindices errorchecking
 function drawPanels(){
 	
 	for(var i=0;i<mapCIndices.length;i++){
