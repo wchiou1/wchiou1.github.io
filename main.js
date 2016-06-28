@@ -2021,7 +2021,7 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	else{
 		drawText("Error: Invalid Index",x+xoffset,y+25*screenscale);
 		//drawText("invalid index",x+width/2+xoffset,y+25*screenscale);
-		drawText("Was the colormap removed?",x+xoffset,y+45*screenscale);
+		drawText("Was colormap removed?",x+xoffset,y+45*screenscale);
 		//drawText("this colormap.",x+width/2+xoffset,y+45*screenscale);
 		drawText("Please change colormap",x+xoffset,y+65*screenscale);
 	}
@@ -2100,10 +2100,10 @@ function drawPanels(){
 	
 	for(var i=0;i<mapCIndices.length;i++){
 		var colorPanel=color_panels[mapCIndices[i]];
+		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX,receiveY+receiveDelta*i);
 		colorPanel.draw(inverseColorHeight[i]);
@@ -2815,8 +2815,8 @@ function addColors(){
 		console.log(sel2.options[i].innerHTML);
 		readOneFileFromServer(colorDirectory,sel2.options[i].innerHTML,"scale");
 	}
-	drawScene();
 	
+	drawScene();
 	//array.splice(start,amount);
 }
 
