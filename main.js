@@ -1,5 +1,5 @@
 
-var version="Testing mapCIndices error checking"
+var version="Testing mapCIndices error checking2"
 var canvas = document.getElementById("glcanvas");
 var gl;
 var imageCanvas;
