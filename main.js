@@ -129,12 +129,12 @@ function initView(){
 	updateViewportText();
 }
 
-function moveView(x,y){
+function moveView(x,y,lastx,lasty,vID){
 	if(!view3D){
 		move2DView(x,y);
 	}
 	else{
-		Rotate3DView(x,y);
+		Rotate3DView(x,y,lastx,lasty,vID);
 	}
 }
 function scaleView(scalar){
@@ -188,33 +188,90 @@ function draw2DView(){
 }
 
 var transform3D={
-	degx:0,
-	degy:0,
-	scale:1
+	//degx:0,
+	//degy:0,
+	//scale:1,
+
+	matrix: Matrix.I(4),
+
+	drag: function(mousex,mousey,lastmouseX,lastmouseY,vID){
+			if(mousex==lastmouseX&&mousey==lastmouseY)return;
+			function intersect(x,y,radius){//orthogonal ray sphere intersection//return intersection x,y,z ray from sphere center
+				var d=$V([0,0,-1]);
+				var e=$V([x,y,0]);
+				var e_minus_c= e;
+				var A=d.dot(d);										// A =(d·d)
+				var B=d.dot(e_minus_c);								// B = d·(e−c)
+				var C=e_minus_c.dot(e_minus_c)-(radius*radius);	// C = (e−c)·(e−c)−R2
+				var discriminant = (B*B)-(A*C);
+				if(discriminant>0){//2 intersections
+					var t1,t2,t;
+					t1= (-B+Math.sqrt(discriminant))/A;
+					t2= (-B-Math.sqrt(discriminant))/A;
+					t=Math.min(t1,t2);
+					return e.add(d.x(t));
+				}
+				else{//on edge or outside sphere
+					return e;//.toUnitVector().x(radius);
+				}
+			}
+			var left=viewports[vID].x;
+			var top=viewports[vID].y;
+			var w=viewports[vID].w;
+			var h=viewports[vID].h;
+			var radius=Math.min(w/2,h/2);
+			var centerX=left+w/2;
+			var centerY=top+h/2;
+			var x=mousex-centerX;
+			var y=centerY-mousey;
+			var lastx=lastmouseX-centerX;
+			var lasty=centerY-lastmouseY;
+			var ray1=intersect(lastx,lasty,radius).toUnitVector();
+			var ray2=intersect(x,y,radius).toUnitVector();
+			//console.log("x "+x);
+			//console.log("y "+y);
+			//console.log("lastx "+lastx);
+			//console.log("lasty "+lasty);
+			//var axis=ray1.cross(ray2);
+			var unit_x=$V([1,0,0]);
+			var unit_y=$V([0,1,0]);
+			var unit_z=$V([0,0,1]);
+			var vv= ray1.cross(ray2).toUnitVector();//axis
+			var ww=ray1;
+			var uu=vv.cross(ww).toUnitVector();
+			//console.log("r1 "+ray1.elements);
+			//console.log("r2 "+ray2.elements);
+			var cos= ray2.dot(ray1);
+			var sign=(ray2.dot(uu) > 0) ? 1 : -1;
+			var sin= sign*Math.sqrt(1 - cos*cos);
+			var rotateMatrix=Matrix.create([[cos,0,sin,0],[0,1,0,0], [-sin,0,cos,0], [0,0,0,1]]).ensure4x4();
+			var newBasis=Matrix.create([[uu.e(1),uu.e(2),uu.e(3),0],
+										[vv.e(1),vv.e(2),vv.e(3),0],
+										[ww.e(1),ww.e(2),ww.e(3),0],
+										[0,0,0,1]]).ensure4x4();
+										//console.log(newBasis);
+										//console.log(rotateMatrix);
+			var transformMatrix=newBasis.transpose().x(rotateMatrix).x(newBasis);
+			transform3D.matrix=transformMatrix.x(transform3D.matrix);
+			//console.log(newBasis.transpose().x(newBasis));
+		},
+	
+	scale: function(s){
+		transform3D.matrix=Matrix.Diagonal([s,s,s,1]).x(transform3D.matrix);
+	}
 };
 function init3DView(){
-	transform3D.degx=0;
-	transform3D.degy=0;
-	transform3D.scale=1;
+	transform3D.matrix=Matrix.I(4);
 }
 
-function Rotate3DView(x,y){
+function Rotate3DView(x,y,lastx,lasty,vID){
 	if(TubesIndex<0) return;
-	transform3D.degy+=x;
-	transform3D.degx+=-y;
-	if(transform3D.degy>=360)
-		transform3D.degy-=360;
-	else if(transform3D.degy<= -360)
-		transform3D.degy+=360;
-	if(transform3D.degx<-90)
-		transform3D.degx=-90;
-	else if(transform3D.degx>90)
-		transform3D.degx=90;
+	transform3D.drag(x,y,lastx,lasty,vID);
 }
 
 function scale3DView(scalar){
 	if(TubesIndex<0) return;
-	transform3D.scale*=scalar;
+	transform3D.scale(scalar);
 }
 
 function draw3DView(){
@@ -510,10 +567,10 @@ var Rectangle= function(){
 	gl.bindBuffer(gl.ARRAY_BUFFER, self.invertedTexCoordBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1,1, 1,0, 0,1, 0,0]), gl.STATIC_DRAW);
 
-	this.changeColor= function(r,b,g,a){
-		var a= a||1;
+	this.changeColor= function(r,g,b,a){
+		if(a==undefined) a=1;
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([r,b,g,a,	r,b,g,a, r,b,g,a,	r,b,g,a]), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([r,g,b,a,	r,g,b,a, r,g,b,a,	r,g,b,a]), gl.STATIC_DRAW);
 	};
 	this.draw= function(){
 		if(lastShader!=="simple"){
@@ -808,15 +865,13 @@ var Tubes3D = function(text){
 			gl.enableVertexAttribArray(attributes.tubeShader.vertexWeightAttribute);
 		}
 		
-		var radx = transform3D.degx * Math.PI / 180.0;
-		var rady = transform3D.degy * Math.PI / 180.0;
-		var s=transform3D.scale;
+		//var radx = transform3D.degx * Math.PI / 180.0;
+		//var rady = transform3D.degy * Math.PI / 180.0;
+		//var s=transform3D.scale;
 		//perspective
 			var viewMatrix3D = Matrix.Translation($V([0,0,-self.halfDimension*2])).ensure4x4()
-						.x(Matrix.RotationX(radx).ensure4x4())
-						.x(Matrix.RotationY(rady).ensure4x4())
-						.x(Matrix.Diagonal([s,s,s,1]).ensure4x4())
-						.x(Matrix.Translation($V(this.center).x(-1)).ensure4x4());
+								.x(transform3D.matrix)
+								.x(Matrix.Translation($V(this.center).x(-1)).ensure4x4());
 		
 			perspectiveMatrix = makePerspective(45, viewp.w/viewp.h, 0.1, 99999.9);
 		
@@ -1446,7 +1501,7 @@ function testViewportHit(mouse){
 	for(var i=0;i<viewports.length;i++){
 		var viewp=viewports[i];
 		if(mouse.x>viewp.x&&mouse.x<viewp.x+viewp.w&&mouse.y>viewp.y&&mouse.y<viewp.y+viewp.h){
-			return true;
+			return i+1;
 		}
 	}
 	return false;
@@ -1529,8 +1584,8 @@ function handleMouseDown(event){
 	else if(testDragLabHit(mouse.x,mouse.y)){
 		dragLab=true;
 	}
-	else if(testViewportHit(mouse)){
-		dragView=true;
+	else if(dragView=testViewportHit(mouse)){
+		
 	}
 	
 	//Test if resetbutton was pressed
@@ -1641,8 +1696,14 @@ function handleMouseMove(event){
 		if(top>0&&top<canvas.height-30)
 			labDiv.style.top=top+"px";
 	}
-	else if(dragView){
-		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
+	else if(dragView>0){
+		if(!view3D)
+			moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
+		else{
+			//console.log("x "+mouse.x);
+			//console.log("lastx "+lastMouseX);
+			moveView(mouse.x,mouse.y,lastMouseX,lastMouseY,dragView-1);
+		}
 		drawView();
 	}
 	else if(colorMapDrag!=-1){
