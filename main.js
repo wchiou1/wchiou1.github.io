@@ -289,12 +289,12 @@ function draw3DView(){
 }
 
 var Viewport=function(x,y,w,h){
-	this.x=x;
-	this.y=y;
-	this.w=w;
-	this.h=h;
-	this.ortho=makeOrtho(0, w, -h, 0, 0.1, 100.0)
+	this.x=x|0;
+	this.y=y|0;
+	this.w=w|0;
+	this.h=h|0;
 	var self=this;
+	this.ortho=makeOrtho(0, self.w, -self.h, 0, 0.1, 100.0)
 	
 	this.drawBorder=function(){
 		var rectangle=Shape.rectangle;
