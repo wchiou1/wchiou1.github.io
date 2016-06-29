@@ -2555,6 +2555,7 @@ function readImage(file){
         targ.width=iconWidth; 
 		loading--;
     }
+    createImageBitmap(file).then(addImage,function(err){alert("this is not an image"); loading--;}).then(drawScene,drawScene);
    // reader.onload=function(e){
         //var data=new Uint8Array(reader.result);
     //    console.log(new Uint8Array(reader.result));
