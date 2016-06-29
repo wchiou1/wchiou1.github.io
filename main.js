@@ -2516,8 +2516,6 @@ function readFiles(files,type){
 }
 
 function readImage(file){
-    //var reader= new FileReader();
-    //reader.file=file;
     function addImage(bitmap){
         targ.height=bitmap.height;
         targ.width=bitmap.width;
@@ -2555,12 +2553,7 @@ function readImage(file){
         targ.width=iconWidth; 
 		loading--;
     }
-    createImageBitmap(file).then(addImage,function(err){alert("this is not an image"); loading--;}).then(drawScene,drawScene);
-   // reader.onload=function(e){
-        //var data=new Uint8Array(reader.result);
-    //    console.log(new Uint8Array(reader.result));
-   // }
-    //reader.readAsDataURL(file);
+    createImageBitmap(file).then(addImage,function(err){alert("cannot read this image"); loading--;}).then(drawScene,drawScene);
 }
 function readFilesOnLoad(){
 	readFilesFromServer("./data/colorscale/","scale");
@@ -2654,40 +2647,40 @@ function readTextToImage(text,filename,file){
 	var imageWidth= undefined;
 	
 	try{
-	//parse the data into the array
-	var lines=text.split('\n');
-	if(lines[lines.length-1]==""||lines[lines.length-1]=="\r")lines.pop();
-	imageHeight=lines.length;
-	for(var i=0;i<lines.length;i++) {
-		var values=lines[i].split(' ');
-		if(values[values.length-1]=="\r"||values[values.length-1]=="")values.pop();
-		if(!imageWidth){
-			imageWidth = values.length;
-		}else if(imageWidth!=values.length){
-			throw('error reading the file. line:'+i+ ", num:"+values.length+", value=("+values[0]+")");
+		//parse the data into the array
+		var lines=text.split('\n');
+		if(lines[lines.length-1]==""||lines[lines.length-1]=="\r")lines.pop();
+		imageHeight=lines.length;
+		for(var i=0;i<lines.length;i++) {
+			var values=lines[i].split(' ');
+			if(values[values.length-1]=="\r"||values[values.length-1]=="")values.pop();
+			if(!imageWidth){
+				imageWidth = values.length;
+			}else if(imageWidth!=values.length){
+				throw('error reading the file. line:'+i+ ", num:"+values.length+", value=("+values[0]+")");
+			}
+			for(var j=0; j<values.length; j++){
+				var v=Number(values[j]);
+				if(isNaN(v)) throw("at ("+j+", "+i+") value="+v);
+				else image2DArray.push(v);
+			}
 		}
-		for(var j=0; j<values.length; j++){
-			var v=Number(values[j]);
-			if(isNaN(v)) throw("at ("+j+", "+i+") value="+v);
-			else image2DArray.push(v);
-		}
-	}
-	var imgData ={
-		w: imageWidth,
-		h: imageHeight,
-		data: fillBackground(image2DArray,imageWidth,imageHeight)
-	};
-	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
-	img_data.push(imgData);
-	img_panels.push(new ImagePanel(0,0,1,1,img_data.length-1,null));
-	imgFileNames.push(filename);
-	var tempIndex = img_panels.length-1;
-	img_panels[tempIndex].changeColor(null);
-	img_panels[tempIndex].scale(iconWidth, iconHeight);
-	img_panels[tempIndex].move(0,0,0);
-	img_panels[tempIndex].draw();
-	addNewImgIconData(2);
-	loading--;
+		var imgData ={
+			w: imageWidth,
+			h: imageHeight,
+			data: fillBackground(image2DArray,imageWidth,imageHeight)
+		};
+		if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
+		img_data.push(imgData);
+		img_panels.push(new ImagePanel(0,0,1,1,img_data.length-1,null));
+		imgFileNames.push(filename);
+		var tempIndex = img_panels.length-1;
+		img_panels[tempIndex].changeColor(null);
+		img_panels[tempIndex].scale(iconWidth, iconHeight);
+		img_panels[tempIndex].move(0,0,0);
+		img_panels[tempIndex].draw();
+		addNewImgIconData(2);
+		loading--;
 	}
 	catch(e){
 		if(file)
