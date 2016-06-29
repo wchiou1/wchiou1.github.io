@@ -2495,7 +2495,7 @@ function readFiles(files,type){
 		reader.file=file;
 		reader.onload = function(e2) { // finished reading file data.
 			if(type=='img'){
-				readTextToImage(e2.target.result,this.file.name);
+				readTextToImage(e2.target.result,this.file.name,this.file);
 			}
 			else if(type=='color'){
 				readTextToScale(e2.target.result,this.file.name);
@@ -2508,13 +2508,60 @@ function readFiles(files,type){
 				if(fname.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
 					readTextToTubes(e2.target.result,fname);
 				else
-					readTextToImage(e2.target.result,fname);
+					readTextToImage(e2.target.result,fname,this.file);
 			}
 		}
 		reader.readAsText(file); // start reading the file data.
 	}
 }
 
+function readImage(file){
+    //var reader= new FileReader();
+    //reader.file=file;
+    function addImage(bitmap){
+        targ.height=bitmap.height;
+        targ.width=bitmap.width;
+        ctx.clearRect(0,0,targ.width,targ.height);
+        ctx.drawImage(bitmap,0,0);
+        var img=ctx.getImageData(0,0,targ.width,targ.height);
+        //console.log(img.data);
+        var img_arr=[];
+        for(var i=0;i<targ.height;i++){
+            for(var j=0; j<targ.width; j++){
+                var idx=(i*targ.width+j)*4;
+                var lab=rgb_to_lab({'R':img.data[idx],'G':img.data[idx+1],'B':img.data[idx+2]});
+                img_arr.push(lab.L/100);
+            }
+        }
+        
+        var imgData ={
+            w: targ.width,
+            h: targ.height,
+            data: img_arr
+        };
+        var filename=file.name;
+        if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
+        img_data.push(imgData);
+        img_panels.push(new ImagePanel(0,0,1,1,img_data.length-1,null));
+        imgFileNames.push(filename);
+        var tempIndex = img_panels.length-1;
+        img_panels[tempIndex].changeColor(null);
+        img_panels[tempIndex].scale(iconWidth, iconHeight);
+        img_panels[tempIndex].move(0,0,0);
+        img_panels[tempIndex].draw();
+        addNewImgIconData(2);
+
+        targ.height=iconHeight;
+        targ.width=iconWidth; 
+		loading--;
+    }
+    createImageBitmap(file).then(addImage,function(err){alert("this aint image");}).then(drawScene);
+   // reader.onload=function(e){
+        //var data=new Uint8Array(reader.result);
+    //    console.log(new Uint8Array(reader.result));
+   // }
+    //reader.readAsDataURL(file);
+}
 function readFilesOnLoad(){
 	readFilesFromServer("./data/colorscale/","scale");
 	readFilesFromServer("./data/image/","data");
@@ -2601,7 +2648,7 @@ function readOneFileFromServer(directory,filename,type){
 });
 }
 
-function readTextToImage(text,filename){
+function readTextToImage(text,filename,file){
 	var image2DArray=[];
 	var imageHeight= undefined;
 	var imageWidth= undefined;
@@ -2640,12 +2687,16 @@ function readTextToImage(text,filename){
 	img_panels[tempIndex].move(0,0,0);
 	img_panels[tempIndex].draw();
 	addNewImgIconData(2);
+	loading--;
 	}
 	catch(e){
-		alert(e);
+		if(file)
+			readImage(file);
+		else{
+			alert("Error reading: "+e);
+		}
 	}
 	finally{
-		loading--;
 		drawScene();
 	}
 	
@@ -3110,10 +3161,11 @@ function downloadView(id){
 	myImageData.data.set(pixelData);
 	targ.width=w;
 	targ.height=h;
+    ctx.clearRect(0,0,w,h);
 	ctx.putImageData(myImageData,0,0);
 	ctx.translate(0,h);
 	ctx.scale(1, -1);
-	ctx.drawImage(imageCanvas,0,0);
+	ctx.drawImage(targ,0,0);
 	
 	var a = document.createElement("a");
     a.href = targ.toDataURL();
