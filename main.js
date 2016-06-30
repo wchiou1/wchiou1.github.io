@@ -1755,8 +1755,8 @@ function MouseWheelHandler(e) {
 		else if(delta<0)
 			scaleT2(0.9);
 		draw2LabSpaces();
-		event.preventDefault();
-		event.returnValue=false;
+		e.preventDefault();
+		e.returnValue=false;
 	}
 	else if(testViewportHit(mouse)){
 		if(delta>0)
@@ -1764,8 +1764,8 @@ function MouseWheelHandler(e) {
 		else if(delta<0)
 			scaleView(0.9);
 		drawView();
-		event.preventDefault();
-		event.returnValue=false;
+		e.preventDefault();
+		e.returnValue=false;
 	}
 	else if(testIconViewHit(mouse.x,mouse.y)){
 		if(iconViewHeight<scales.length*(iconHeight+10)+10){
@@ -1775,8 +1775,8 @@ function MouseWheelHandler(e) {
 				scrollIconView(15);
 			drawColorThumbnails();
 		}
-		event.preventDefault();
-		event.returnValue=false;
+		e.preventDefault();
+		e.returnValue=false;
 	}else if(testImageIconViewHit(mouse.x,mouse.y)){
 		if(iconViewHeight<imgIconsTex.length*(iconHeight+10)+10){
 			if(delta>0)
@@ -1785,8 +1785,8 @@ function MouseWheelHandler(e) {
 				scrollImageIconView(15);
 			drawImgIcons();
 		}
-		event.preventDefault();
-		event.returnValue=false;
+		e.preventDefault();
+		e.returnValue=false;
 	}
 	return false;
 }
@@ -2618,7 +2618,7 @@ function readOneFileFromServer(directory,filename,type){
 			readTextToScale(text,filename);
 		}
 		else if(type=="image"){
-			readTextToImage(text,filename);
+			readTextToImage(text,filename,null);
 		}
 		else if(type=="tubes"){
 			readTextToTubes(text,filename);
@@ -2627,7 +2627,7 @@ function readOneFileFromServer(directory,filename,type){
 			if(filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
 				readTextToTubes(text,filename);
 			else
-				readTextToImage(text,filename);
+				readTextToImage(text,filename,null);
 			}
 		else{
 			console.log("file does not match:");
@@ -2764,19 +2764,19 @@ function readTextToTubes(text,filename){
 
 //Reads the pixel data that's in the temporary zone and adds it to the pixeldata array
 function addNewImgIconData(dimension){
-	var w=iconWidth;
-	var h=iconHeight;
+	var w=iconWidth|0;
+	var h=iconHeight|0;
 	var x=0;
 	var y=0;
 	var pixelData = new Uint8Array(w*h*4);//unit8array
-	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
+	gl.readPixels(x, (canvas.height|0)-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
 	var texture=gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, texture);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, iconWidth, iconHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,pixelData);
 	setTexParameter();
 	//Test if the added file is 2d
 	if(dimension==2){
-		img_data.length+Tubes3DList.length
+		//img_data.length+Tubes3DList.length
 		//Shift all the 3d textures down the array
 		for(var i=imgIconsTex.length-1;i>=img_data.length-1;i--){
 			imgIconsTex[i+1]=imgIconsTex[i];
@@ -2910,7 +2910,7 @@ function addColors(){
 	//Iterate through all html elements to get an array
 	var sel2 = document.getElementById('select2');
 	for(var i=0;i<sel2.options.length;i++){
-		console.log(sel2.options[i].innerHTML);
+		//console.log(sel2.options[i].innerHTML);
 		readOneFileFromServer(colorDirectory,sel2.options[i].innerHTML,"scale");
 	}
 	
@@ -3025,7 +3025,7 @@ function addImgs(){
 
 //change background 0 to -1
 function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
-	console.log("width and height:"+w+","+h);
+	//console.log("width and height:"+w+","+h);
 	var data=data0;
 	var spreadable=[];
 	const bg=-1;
