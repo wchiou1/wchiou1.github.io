@@ -1691,6 +1691,7 @@ function handleMouseUp(event){
 function handleMouseMove(event){
 	var mouse = getMousePos(canvas, event);
 	updateFilenameIndicator(mouse.x,mouse.y);
+	updateImgFilenameIndicator(mouse.x,mouse.y);
 	if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		draw2LabSpaces();
@@ -1813,9 +1814,26 @@ function scrollIconView(delta){
 	}
 }
 
+function updateImgFilenameIndicator(mouseX,mouseY){
+	//Clear the text area where the fileName will go
+	ctx2.clearRect(imgIconX-30,imgIconY-40*screenscale,600*screenscale, 45*screenscale);
+	
+	if(!testImageIconViewHit(mouseX,mouseY))
+		return;
+	//Check what fileIcon the mouse is over
+	var hit=testImageIconHit(mouseX,mouseY);
+	console.log(hit);
+	if(hit!=-1){
+		if(hit<imgFileNames.length)
+			drawText(imgFileNames[hit],imgIconX-20,imgIconY-10);
+		else
+			drawText(tubesFileNames[hit],imgIconX-20,imgIconY-10);
+	}
+}
+
 function updateFilenameIndicator(mouseX,mouseY){
 	//Clear the text area where the fileName will go
-	ctx2.clearRect(iconX-10,iconY-40*screenscale,600*screenscale, 45*screenscale);
+	ctx2.clearRect(iconX-30,iconY-40*screenscale,600*screenscale, 45*screenscale);
 	
 	if(!testIconViewHit(mouseX,mouseY))
 		return;
@@ -1823,7 +1841,7 @@ function updateFilenameIndicator(mouseX,mouseY){
 	var hit=testIconHit(mouseX,mouseY);
 	
 	if(hit!=-1){
-		drawText(colormapFileNames[hit],iconX,iconY-10);
+		drawText(colormapFileNames[hit],iconX-20,iconY-10);
 	}
 }
 
