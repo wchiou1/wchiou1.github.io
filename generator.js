@@ -58,17 +58,6 @@ function initWebGL() {
     alert("Unable to initialize WebGL. Your browser may not support it.");
   }
   
-  //second gl canvas
-   gl2 = null;
-
-  try {
-    gl2 = canvas2.getContext("experimental-webgl");
-  }
-  catch(e) {
-  }
-  if (!gl2) {
-    alert("Unable to initialize WebGL. Your browser may not support it.");
-  }
 }
 
 function initShaders() {
