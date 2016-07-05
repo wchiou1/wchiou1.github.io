@@ -3,7 +3,14 @@ var version="Generating color maps"
 var canvas = document.getElementById("glcanvas");
 var gl;
 
-
+var min_width=1200;
+var min_height=700;
+var orthogonal={
+	l: 0,
+	r: 1200,
+	t: 0,
+	b: -700
+};
 
 
 
@@ -41,7 +48,6 @@ function start() {
 
 		//setInterval(drawScene, 15);
 	  }
-		
 }
 
 function initWebGL() {
