@@ -57,7 +57,6 @@ function initWebGL() {
   if (!gl) {
     alert("Unable to initialize WebGL. Your browser may not support it.");
   }
-  
 }
 
 function initShaders() {
