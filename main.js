@@ -3139,9 +3139,9 @@ function computeDeltaE(cID){
 	for(var i=0;i<scale.length;i++){
 		var rgb1=scale[i-1];
 		if(rgb1)
-			var lab1=rgb_to_lab({'R':rgb1.r, 'G':rgb1.g, 'B':rgb1.b});
+			var lab1=rgb_to_lab({'R':rgb1.r*255, 'G':rgb1.g*255, 'B':rgb1.b*255});
 		var rgb2=scale[i];
-		var lab2=rgb_to_lab({'R':rgb2.r, 'G':rgb2.g, 'B':rgb2.b});
+		var lab2=rgb_to_lab({'R':rgb2.r*255, 'G':rgb2.g*255, 'B':rgb2.b*255});
 		if(lab1&&lab2)
 			var deltaE=ciede2000(lab1,lab2);
 		outputText=outputText+rgb2.r+" "+rgb2.g+" "+rgb2.b+" "+"deltaE = "+deltaE+"\r\n";
@@ -3209,4 +3209,73 @@ function linearizeLightness(cID){
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
 	colormapFileNames.push(colormapFileNames[cID]+"(Adjusted Linear Lightness)");
 	drawScene();
+}
+var constraint={
+	steps: 100,
+	delta_e:1,
+	tolerance: 0.01,
+	ctrl_points:[{L:0,a:0,b:0},{L:25,a:20,b:20},{L:50, a:50, b:-50},{L:75,a:-20,b:-20},{L:100,a:0,b:0}]
+}
+
+function generateColormap(constraint){
+	var colors=[];
+	var last_ctrl_point=0;
+	var lastLab=constraint.ctrl_points[0];
+	colors.push(lastLab); //first Lab color
+	var i=1;
+	var bound={min:0, max:1, mid:function(){return (this.min+this.max)/2}};
+	
+	var dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
+	while(i<constraint.steps){
+		
+		var test=bound.mid()
+		var newLab=Lab_add(lastLab,timesLen(dirr,test));
+		var d_e=ciede2000(lastLab,newLab);
+		//console.log(lastLab);
+		//console.log(newLab);
+		if(d_e>constraint.delta_e+constraint.tolerance){
+			bound.max=test;//console.log(d_e+" max="+test);
+		}
+		else if(d_e<constraint.delta_e-constraint.tolerance){
+			bound.min=test;//console.log(d_e+" min="+test);
+		}
+		else{
+			colors.push(newLab);//console.log(newLab);
+			lastLab=newLab;
+			if(ciede2000(lastLab, constraint.ctrl_points[last_ctrl_point+1])<constraint.delta_e){
+				last_ctrl_point++;
+				if(last_ctrl_point>=constraint.ctrl_points.length-1){
+					alert("cannot generate enough points, path is too short or deltaE is too large");
+					break;
+				}
+				
+			}
+			dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
+			bound.min=0;
+			bound.max=1;
+			i++;
+		}
+	}
+	//return colors;
+	var outputText="";
+	for(var ii=0;ii<colors.length;ii++){
+		var rgb=lab_to_rgb(colors[ii]);
+		var r=rgb.R/255;
+		var g=rgb.G/255;
+		var b=rgb.B/255;
+		if(r>1||r<0||g>1||g<0||b>1||b<0)
+			console.log("non-displayable color on line "+ii);
+		outputText+=r+" "+g+" "+b+"\n";
+	}
+	download(outputText, "generated_colormap", 'text/plain');
+}
+
+function Lab_add(Lab,arr){
+	return {L:Lab.L+arr[0] , a:Lab.a+arr[1] , b:Lab.b+arr[2] };
+}
+function dir(Lab1,Lab2){
+	return [Lab1.L-Lab2.L,Lab1.a-Lab2.a,Lab1.b-Lab2.b];
+}
+function timesLen(dir,len){
+	return dir.map(function(x){return x*len});
 }
