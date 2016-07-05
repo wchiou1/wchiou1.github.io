@@ -1,5 +1,6 @@
 
 
+var version="Generating color maps"
 
 var canvas = document.getElementById("glcanvas");
 var gl;
