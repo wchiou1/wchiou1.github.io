@@ -17,7 +17,6 @@ var orthogonal={
 
 function start() {
 	console.log("version:"+version);
-	canvas2 = document.getElementById("glcanvas2");
 	
 	addEventHandler(window,"resize",on_resize(resize));
 	initWebGL(canvas);
@@ -35,17 +34,11 @@ function start() {
 		//gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
 		gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-		
-		if(gl2){
-				gl2.clearColor(0.0, 0.0, 0.0, 1.0);
-				gl2.clearDepth(1.0);
-				gl2.enable(gl.DEPTH_TEST);
-				gl2.depthFunc(gl.LEQUAL);
-		}
+
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		//initTextureFramebuffer(); //#not ready
-
+		initShaders();
 		//setInterval(drawScene, 15);
 	  }
 }
@@ -73,6 +66,99 @@ function initWebGL() {
   if (!gl2) {
     alert("Unable to initialize WebGL. Your browser may not support it.");
   }
+}
+
+function initShaders() {
+	var colormap_vertexShader = getShader(gl, "colormap-shader-vs");
+	var colormap_fragmentShader = getShader(gl, "colormap-shader-fs");
+	shaderProgram.colormapShader = gl.createProgram();
+	gl.attachShader(shaderProgram.colormapShader, colormap_vertexShader);
+	gl.attachShader(shaderProgram.colormapShader, colormap_fragmentShader);
+	gl.linkProgram(shaderProgram.colormapShader);
+	if (!gl.getProgramParameter(shaderProgram.colormapShader, gl.LINK_STATUS)) {
+		alert("Unable to initialize the shader program: ");
+	}
+	attributes.colormapShader={
+		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexPosition"),
+		vertexTexCoordAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexTexCoord")
+	};
+	uniforms.colormapShader={
+		pUniform : gl.getUniformLocation(shaderProgram.colormapShader, "uPMatrix"),
+		mvUniform : gl.getUniformLocation(shaderProgram.colormapShader, "uMVMatrix"),
+		uColormapLoc : gl.getUniformLocation(shaderProgram.colormapShader, "uColormap")
+	};
+	
+	var simple_vertexShader = getShader(gl, "simple-shader-vs");
+	var simple_fragmentShader = getShader(gl, "simple-shader-fs");
+	shaderProgram.simpleShader = gl.createProgram();
+	gl.attachShader(shaderProgram.simpleShader, simple_vertexShader);
+	gl.attachShader(shaderProgram.simpleShader, simple_fragmentShader);
+	gl.linkProgram(shaderProgram.simpleShader);
+	if (!gl.getProgramParameter(shaderProgram.simpleShader, gl.LINK_STATUS)) {
+		alert("Unable to initialize the shader program: " );
+	}
+	attributes.simpleShader={
+		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.simpleShader, "aVertexPosition"),
+		vertexColorAttribute : gl.getAttribLocation(shaderProgram.simpleShader, "aVertexColor")
+	};
+	uniforms.simpleShader={
+		pUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uPMatrix"),
+		mvUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uMVMatrix")
+	};
+}
+
+function getShader(gl, id) {
+  var shaderScript = document.getElementById(id);
+
+  // Didn't find an element with the specified ID; abort.
+
+  if (!shaderScript) {
+    return null;
+  }
+
+  // Walk through the source element's children, building the
+  // shader source string.
+
+  var theSource = "";
+  var currentChild = shaderScript.firstChild;
+
+  while(currentChild) {
+    if (currentChild.nodeType == 3) {
+      theSource += currentChild.textContent;
+    }
+
+    currentChild = currentChild.nextSibling;
+  }
+
+  // Now figure out what type of shader script we have,
+  // based on its MIME type.
+
+  var shader;
+
+  if (shaderScript.type == "x-shader/x-fragment") {
+    shader = gl.createShader(gl.FRAGMENT_SHADER);
+  } else if (shaderScript.type == "x-shader/x-vertex") {
+    shader = gl.createShader(gl.VERTEX_SHADER);
+  } else {
+    return null;  // Unknown shader type
+  }
+
+  // Send the source to the shader object
+
+  gl.shaderSource(shader, theSource);
+
+  // Compile the shader program
+
+  gl.compileShader(shader);
+
+  // See if it compiled successfully
+
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    alert("An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader));
+    return null;
+  }
+
+  return shader;
 }
 
 function getMousePos(canvas, evt) {
