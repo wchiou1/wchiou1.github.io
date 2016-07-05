@@ -3,6 +3,8 @@ var version="Testing init"
 var canvas = document.getElementById("glcanvas");
 var gl;
 
+var shaderProgram={};
+
 var min_width=1200;
 var min_height=700;
 var orthogonal={
@@ -69,25 +71,6 @@ function initWebGL() {
 }
 
 function initShaders() {
-	var colormap_vertexShader = getShader(gl, "colormap-shader-vs");
-	var colormap_fragmentShader = getShader(gl, "colormap-shader-fs");
-	shaderProgram.colormapShader = gl.createProgram();
-	gl.attachShader(shaderProgram.colormapShader, colormap_vertexShader);
-	gl.attachShader(shaderProgram.colormapShader, colormap_fragmentShader);
-	gl.linkProgram(shaderProgram.colormapShader);
-	if (!gl.getProgramParameter(shaderProgram.colormapShader, gl.LINK_STATUS)) {
-		alert("Unable to initialize the shader program: ");
-	}
-	attributes.colormapShader={
-		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexPosition"),
-		vertexTexCoordAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexTexCoord")
-	};
-	uniforms.colormapShader={
-		pUniform : gl.getUniformLocation(shaderProgram.colormapShader, "uPMatrix"),
-		mvUniform : gl.getUniformLocation(shaderProgram.colormapShader, "uMVMatrix"),
-		uColormapLoc : gl.getUniformLocation(shaderProgram.colormapShader, "uColormap")
-	};
-	
 	var simple_vertexShader = getShader(gl, "simple-shader-vs");
 	var simple_fragmentShader = getShader(gl, "simple-shader-fs");
 	shaderProgram.simpleShader = gl.createProgram();
