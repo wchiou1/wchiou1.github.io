@@ -2,6 +2,9 @@ var version="Testing init"
 
 var canvas = document.getElementById("glcanvas");
 var gl;
+shaderProgram={};
+attributes={};
+uniforms={};
 
 var shaderProgram={};
 
