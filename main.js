@@ -1,6 +1,5 @@
 
 
-var version="Removal error checking"
 
 var canvas = document.getElementById("glcanvas");
 var gl;
