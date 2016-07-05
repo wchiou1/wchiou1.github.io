@@ -3217,6 +3217,13 @@ var constraint={
 	ctrl_points:[{L:0,a:0,b:0},{L:25,a:20,b:20},{L:50, a:50, b:-50},{L:75,a:-20,b:-20},{L:100,a:0,b:0}]
 }
 
+var constraint2={
+	steps: 200,
+	delta_e:1.5,
+	tolerance: 0.01,
+	ctrl_points:[{L:39,a:39,b:-62},{L:60,a:24,b:-54},{L:76, a:10, b:-37},{L:86, a:1, b:-13},{L:86, a:6, b:11},{L:75, a:24, b:27},{L:58, a:44, b:34},{L:37, a:62, b:32}]
+}
+
 function generateColormap(constraint){
 	var colors=[];
 	var last_ctrl_point=0;
