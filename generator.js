@@ -6,8 +6,6 @@ shaderProgram={};
 attributes={};
 uniforms={};
 
-var shaderProgram={};
-
 var min_width=1200;
 var min_height=700;
 var orthogonal={
