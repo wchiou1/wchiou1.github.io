@@ -1,4 +1,4 @@
-var version="Testing init"
+var version="Testing init2"
 
 var canvas = document.getElementById("glcanvas");
 var gl;
