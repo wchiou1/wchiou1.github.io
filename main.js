@@ -3154,7 +3154,9 @@ function downloadColormap(cID){
 	var scale=scales[cID];
 	for(var i=0;i<scale.length;i++){
 		var rgb=scale[i];
-		outputText=outputText+rgb.r+" "+rgb.g+" "+rgb.b+"\r\n";
+		var lab=rgb_to_lab({R:rgb.r*255,G:rgb.g*255,B:rgb.b*255});
+		//outputText=outputText+rgb.r+" "+rgb.g+" "+rgb.b+"\r\n";
+		outputText=outputText+lab.L+" "+lab.a+" "+lab.b+"\r\n";
 	}
 	download(outputText, colormapFileNames[cID], 'text/plain');
 }
@@ -3214,9 +3216,15 @@ var constraint={
 	steps: 1000,
 	delta_e:2,
 	tolerance: 0.01,
-	ctrl_points:[{L:0,a:0,b:0},{L:39,a:55,b:36},{L:57, a:42, b:64},{L:83,a:-10,b:83},{L:100,a:0,b:0}]
+	//ctrl_points:[{L:0,a:0,b:0},{L:39,a:55,b:36},{L:57, a:42, b:64},{L:83,a:-10,b:83},{L:100,a:0,b:0}]
+	ctrl_points:[]
 }
-
+constraint.addPoint=function(){
+	this.ctrl_points.push({L:0,a:0,b:0});
+}
+constraint.removePoint=function(i){
+	this.ctrl_points.splice(i,1);
+}
 function generateColormap(constraint){
 	var colors=[];
 	var last_ctrl_point=0;
