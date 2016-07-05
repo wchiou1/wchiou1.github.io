@@ -1,4 +1,4 @@
-var version="Generating color maps"
+var version="Testing init"
 
 var canvas = document.getElementById("glcanvas");
 var gl;
