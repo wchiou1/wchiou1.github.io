@@ -3211,10 +3211,10 @@ function linearizeLightness(cID){
 	drawScene();
 }
 var constraint={
-	steps: 100,
+	steps: 1000,
 	delta_e:1,
 	tolerance: 0.01,
-	ctrl_points:[{L:0,a:0,b:0},{L:25,a:20,b:20},{L:50, a:50, b:-50},{L:75,a:-20,b:-20},{L:100,a:0,b:0}]
+	ctrl_points:[{L:0,a:0,b:0},{L:39,a:55,b:36},{L:57, a:42, b:64},{L:83,a:-10,b:83},{L:100,a:0,b:0}]
 }
 
 function generateColormap(constraint){
