@@ -298,6 +298,26 @@ function initShaders() {
 		pUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uPMatrix"),
 		mvUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uMVMatrix")
 	};
+	
+	var colormap_vertexShader = getShader(gl, "colormap-shader-vs");
+	var colormap_fragmentShader = getShader(gl, "colormap-shader-fs");
+	shaderProgram.colormapShader = gl.createProgram();
+	gl.attachShader(shaderProgram.colormapShader, colormap_vertexShader);
+	gl.attachShader(shaderProgram.colormapShader, colormap_fragmentShader);
+	gl.linkProgram(shaderProgram.colormapShader);
+	if (!gl.getProgramParameter(shaderProgram.colormapShader, gl.LINK_STATUS)) {
+		alert("Unable to initialize the shader program: ");
+	}
+	attributes.colormapShader={
+		vertexPositionAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexPosition"),
+		vertexTexCoordAttribute : gl.getAttribLocation(shaderProgram.colormapShader, "aVertexTexCoord")
+	};
+	uniforms.colormapShader={
+		pUniform : gl.getUniformLocation(shaderProgram.colormapShader, "uPMatrix"),
+		mvUniform : gl.getUniformLocation(shaderProgram.colormapShader, "uMVMatrix"),
+		uColormapLoc : gl.getUniformLocation(shaderProgram.colormapShader, "uColormap")
+	};
+	
 	gl.useProgram(shaderProgram.simpleShader);
 	gl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
 	gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
@@ -415,6 +435,51 @@ var transform2={
 	degy: 0,
 	scale: 1
 };
+
+//
+// Matrix utility functions
+//
+
+function loadIdentity() {
+  mvMatrix = Matrix.I(4);
+}
+
+function multMatrix(m) {
+  mvMatrix = mvMatrix.x(m);
+}
+
+function mvTranslate(v) {
+  multMatrix(Matrix.Translation($V([v[0], v[1], v[2]])).ensure4x4());
+}
+function mvScale(v){
+	multMatrix(Matrix.Diagonal([v[0], v[1], v[2],1]).ensure4x4());
+}
+
+
+var mvMatrixStack = [];
+function mvPushMatrix(m) {
+  if (m) {
+    mvMatrixStack.push(m.dup());
+    mvMatrix = m.dup();
+  } else {
+    mvMatrixStack.push(mvMatrix.dup());
+  }
+}
+
+function mvPopMatrix() {
+  if (!mvMatrixStack.length) {
+    throw("Can't pop from an empty matrix stack.");
+  }
+  mvMatrix = mvMatrixStack.pop();
+  return mvMatrix;
+}
+
+function setMatrixUniforms(shader) {
+	if(!shader)
+		shader = uniforms.simpleShader;
+  gl.uniformMatrix4fv(shader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
+  gl.uniformMatrix4fv(shader.mvUniform, false, new Float32Array(mvMatrix.flatten()));
+}
 
 function initT2(){
 	transform2.degx=45;
