@@ -625,7 +625,7 @@ function addEventHandler(obj, evt, handler) {
 
 function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)};return c};//http://louisremi.mit-license.org/
 function resize(){
-	
+	console.log("I was called");
 	var newwidth = Math.max(min_width,canvas.clientWidth);
 	var newheight = Math.max(min_height,canvas.clientHeight);
 	if (canvas.width != newwidth || canvas.height != newheight) {
