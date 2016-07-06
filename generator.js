@@ -243,7 +243,7 @@ function start() {
         stop : function(event, ui){
           alert($(this).sortable('toArray'));
         }
-	});
+	}).disableSelection();
 }
 
 function clearRectangle(x,y,w,h){
@@ -850,7 +850,7 @@ function generateColormap(constraint){
 }
 
 function addPointToList(){
-	$("#list_of_ctrl_points").append("<li id='ctrl1' class='ui-state-default'>new point</li>").sortable();
+	$("#list_of_ctrl_points").append("<li id='ctrl1' class='ui-state-default'><span></span>new point</li>");
 }
 
 function Lab_add(Lab,arr){
