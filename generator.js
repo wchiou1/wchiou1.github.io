@@ -25,8 +25,8 @@ var iconY = 150;
 var verticesBuffer;
 var verticesColorBuffer;
 
-var min_width=1200;
-var min_height=700;
+var min_width=512;
+var min_height=512;
 var orthogonal={
 	l: 0,
 	r: 1200,
