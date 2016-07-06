@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+  <head>
+  <?php
+		//$dir    = '/data/colorscale';
+		//$files1 = scandir($dir);
+		//$files2 = scandir($dir, 1);
+		
+		echo "Chickens";
+		print "Chickens";
+		//print_r("chicken");
+		//print_r($files1);
+		//print_r($files2);
+	?>
+    <title>Color Analysis Tool</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="style.css" type="text/css">
+	<script src="lib/jquery-2.2.4.js" type="text/javascript"></script>
+	<script src="lib/sylvester.js" type="text/javascript"></script>
+    <script src="lib/glUtils.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<!--script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script-->
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+   	<script type="text/javascript" src="lib/diff.js"></script>
+	<script type="text/javascript" src="lib/convert.js"></script>
+	<script type="text/javascript" src="lib/convert_extend.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+    <script src="lib/jquery.base64.js"></script>
+	<link rel="stylesheet" href="./jquery-ui-1.11.4.custom/jquery-ui.css">
+	<script src="./jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+	
+
+	<!--shader with texture-->
+    <script id="colormap-shader-vs" type="x-shader/x-vertex">
+		attribute vec3 aVertexPosition;
+		attribute vec2 aVertexTexCoord;
+
+		uniform mat4 uMVMatrix;
+		uniform mat4 uPMatrix;
+		
+		varying vec2 vTexCoord;
+
+		void main(void) {
+			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			vTexCoord = aVertexTexCoord;
+		}
+    </script>
+
+    <script id="colormap-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		
+		varying vec2 vTexCoord;
+		
+		uniform sampler2D uColormap;
+		
+		void main(void) {
+			gl_FragColor = texture2D(uColormap, vTexCoord);
+		}
+    </script>
+	
+	
+	<!--simple shader-->
+	    <script id="simple-shader-vs" type="x-shader/x-vertex">
+		attribute vec3 aVertexPosition;
+		attribute vec4 aVertexColor;
+		
+		uniform mat4 uMVMatrix;
+		uniform mat4 uPMatrix;
+		
+		varying vec4 vColor;
+
+		void main(void) {
+			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			gl_PointSize=5.0;
+			vColor=aVertexColor;
+		}
+    </script>
+	
+
+    <script id="simple-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		
+		varying vec4 vColor;
+		
+		void main(void) {
+			gl_FragColor = vColor;
+		}
+    </script>
+    
+
+  </head>
+
+  <body onload="start()">
+	<div class="container" id="container1" >
+		<canvas id="glcanvas"  class="webgl" >
+			<!--Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element. -->
+		</canvas>
+		<canvas id="imageCanvas"></canvas>
+		<DIV class=drop id="drop2">	</DIV>
+		<div class=button id="button4">Reset view</div>
+		<canvas id="glcanvas2" width="320" height="640" class="webgl">	</canvas>
+	</div>	
+	
+	<div id="LabList">
+		<div class="lab-el">b</div>
+		<div class="lab-el">a</div>
+		<div class="lab-el">L</div>
+		<div>
+			<ol id="list_of_ctrl_points" >
+
+			</ol>
+		</div>
+	</div>
+	
+  </body>
+  
+  <script src="generator.js" type="text/javascript"></script>
+  <script src="lib/colorform.js" type="text/javascript"></script>
+</html>

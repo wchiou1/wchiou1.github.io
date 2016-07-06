@@ -1,6 +1,6 @@
 
 
-var version="revert error checking"
+var version="Generating color maps"
 
 var canvas = document.getElementById("glcanvas");
 var gl;
@@ -131,12 +131,12 @@ function initView(){
 	updateViewportText();
 }
 
-function moveView(x,y){
+function moveView(x,y,lastx,lasty,vID){
 	if(!view3D){
 		move2DView(x,y);
 	}
 	else{
-		Rotate3DView(x,y);
+		Rotate3DView(x,y,lastx,lasty,vID);
 	}
 }
 function scaleView(scalar){
@@ -183,40 +183,94 @@ function draw2DView(){
 	if(ipanel==null){
 		return;
 	}
-	ipanel.changeColor(mapCIndices[0]);
-	ipanel.drawInViewport(0,inverseColorHeight[0]);
-	ipanel.changeColor(mapCIndices[1]);
-	ipanel.drawInViewport(1,inverseColorHeight[1]);
+	if(mapCIndices[0]<scales.length){
+		ipanel.changeColor(mapCIndices[0]);
+		ipanel.drawInViewport(0,inverseColorHeight[0]);
+	}
+	if(mapCIndices[1]<scales.length){
+		ipanel.changeColor(mapCIndices[1]);
+		ipanel.drawInViewport(1,inverseColorHeight[1]);
+	}
 }
 
 var transform3D={
-	degx:0,
-	degy:0,
-	scale:1
+	//degx:0,
+	//degy:0,
+	//scale:1,
+
+	matrix: Matrix.I(4),
+
+	drag: function(mousex,mousey,lastmouseX,lastmouseY,vID){
+			if(mousex==lastmouseX&&mousey==lastmouseY)return;
+			function intersect(x,y,radius){//orthogonal ray sphere intersection//return intersection x,y,z ray from sphere center
+				var d=$V([0,0,-1]);
+				var e=$V([x,y,0]);
+				var e_minus_c= e;
+				var A=d.dot(d);										// A =(d·d)
+				var B=d.dot(e_minus_c);								// B = d·(e−c)
+				var C=e_minus_c.dot(e_minus_c)-(radius*radius);	// C = (e−c)·(e−c)−R2
+				var discriminant = (B*B)-(A*C);
+				if(discriminant>0){//2 intersections
+					//var t1,t2,t;
+					//t1= (-B+Math.sqrt(discriminant))/A;
+					var t2= (-B-Math.sqrt(discriminant))/A;
+					//t=Math.min(t1,t2);
+					return e.add(d.x(t2));
+				}
+				else{//on edge or outside sphere
+					return e;//.toUnitVector().x(radius);
+				}
+			}
+			var left=viewports[vID].x;
+			var top=viewports[vID].y;
+			var w=viewports[vID].w;
+			var h=viewports[vID].h;
+			var radius=Math.min(w/2,h/2);
+			var centerX=left+w/2;
+			var centerY=top+h/2;
+			var x=mousex-centerX;
+			var y=centerY-mousey;
+			var lastx=lastmouseX-centerX;
+			var lasty=centerY-lastmouseY;
+			var ray1=intersect(lastx,lasty,radius).toUnitVector();
+			var ray2=intersect(x,y,radius).toUnitVector();
+
+			var unit_x=$V([1,0,0]);
+			var unit_y=$V([0,1,0]);
+			var unit_z=$V([0,0,1]);
+			var vv= ray1.cross(ray2).toUnitVector();//axis
+			var ww=ray1;
+			var uu=vv.cross(ww).toUnitVector();
+
+			var cos= ray2.dot(ray1);
+			var sign=(ray2.dot(uu) > 0) ? 1 : -1;
+			var sin= sign*Math.sqrt(1 - cos*cos);
+			var rotateMatrix=Matrix.create([[cos,0,sin,0],[0,1,0,0], [-sin,0,cos,0], [0,0,0,1]]).ensure4x4();
+			var newBasis=Matrix.create([[uu.e(1),uu.e(2),uu.e(3),0],
+										[vv.e(1),vv.e(2),vv.e(3),0],
+										[ww.e(1),ww.e(2),ww.e(3),0],
+										[0,0,0,1]]).ensure4x4();
+
+			var transformMatrix=newBasis.transpose().x(rotateMatrix).x(newBasis);
+			transform3D.matrix=transformMatrix.x(transform3D.matrix);
+		},
+	
+	scale: function(s){
+		transform3D.matrix=Matrix.Diagonal([s,s,s,1]).x(transform3D.matrix);
+	}
 };
 function init3DView(){
-	transform3D.degx=0;
-	transform3D.degy=0;
-	transform3D.scale=1;
+	transform3D.matrix=Matrix.I(4);
 }
 
-function Rotate3DView(x,y){
+function Rotate3DView(x,y,lastx,lasty,vID){
 	if(TubesIndex<0) return;
-	transform3D.degy+=x;
-	transform3D.degx+=-y;
-	if(transform3D.degy>=360)
-		transform3D.degy-=360;
-	else if(transform3D.degy<= -360)
-		transform3D.degy+=360;
-	if(transform3D.degx<-90)
-		transform3D.degx=-90;
-	else if(transform3D.degx>90)
-		transform3D.degx=90;
+	transform3D.drag(x,y,lastx,lasty,vID);
 }
 
 function scale3DView(scalar){
 	if(TubesIndex<0) return;
-	transform3D.scale*=scalar;
+	transform3D.scale(scalar);
 }
 
 function draw3DView(){
@@ -224,19 +278,23 @@ function draw3DView(){
 	if(tlist==null){
 		return;
 	}
-	tlist.changeColor(mapCIndices[0]);
-	tlist.drawInViewport(0,inverseColorHeight[0]);
-	tlist.changeColor(mapCIndices[1]);
-	tlist.drawInViewport(1,inverseColorHeight[1]);
+	if(mapCIndices[0]<scales.length){
+		tlist.changeColor(mapCIndices[0]);
+		tlist.drawInViewport(0,inverseColorHeight[0]);
+	}
+	if(mapCIndices[1]<scales.length){
+		tlist.changeColor(mapCIndices[1]);
+		tlist.drawInViewport(1,inverseColorHeight[1]);
+	}
 }
 
 var Viewport=function(x,y,w,h){
-	this.x=x;
-	this.y=y;
-	this.w=w;
-	this.h=h;
-	this.ortho=makeOrtho(0, w, -h, 0, 0.1, 100.0)
+	this.x=x|0;
+	this.y=y|0;
+	this.w=w|0;
+	this.h=h|0;
 	var self=this;
+	this.ortho=makeOrtho(0, self.w, -self.h, 0, 0.1, 100.0)
 	
 	this.drawBorder=function(){
 		var rectangle=Shape.rectangle;
@@ -512,10 +570,10 @@ var Rectangle= function(){
 	gl.bindBuffer(gl.ARRAY_BUFFER, self.invertedTexCoordBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1,1, 1,0, 0,1, 0,0]), gl.STATIC_DRAW);
 
-	this.changeColor= function(r,b,g,a){
-		var a= a||1;
+	this.changeColor= function(r,g,b,a){
+		if(a==undefined) a=1;
 		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([r,b,g,a,	r,b,g,a, r,b,g,a,	r,b,g,a]), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([r,g,b,a,	r,g,b,a, r,g,b,a,	r,g,b,a]), gl.STATIC_DRAW);
 	};
 	this.draw= function(){
 		if(lastShader!=="simple"){
@@ -810,15 +868,13 @@ var Tubes3D = function(text){
 			gl.enableVertexAttribArray(attributes.tubeShader.vertexWeightAttribute);
 		}
 		
-		var radx = transform3D.degx * Math.PI / 180.0;
-		var rady = transform3D.degy * Math.PI / 180.0;
-		var s=transform3D.scale;
+		//var radx = transform3D.degx * Math.PI / 180.0;
+		//var rady = transform3D.degy * Math.PI / 180.0;
+		//var s=transform3D.scale;
 		//perspective
 			var viewMatrix3D = Matrix.Translation($V([0,0,-self.halfDimension*2])).ensure4x4()
-						.x(Matrix.RotationX(radx).ensure4x4())
-						.x(Matrix.RotationY(rady).ensure4x4())
-						.x(Matrix.Diagonal([s,s,s,1]).ensure4x4())
-						.x(Matrix.Translation($V(this.center).x(-1)).ensure4x4());
+								.x(transform3D.matrix)
+								.x(Matrix.Translation($V(this.center).x(-1)).ensure4x4());
 		
 			perspectiveMatrix = makePerspective(45, viewp.w/viewp.h, 0.1, 99999.9);
 		
@@ -1448,7 +1504,7 @@ function testViewportHit(mouse){
 	for(var i=0;i<viewports.length;i++){
 		var viewp=viewports[i];
 		if(mouse.x>viewp.x&&mouse.x<viewp.x+viewp.w&&mouse.y>viewp.y&&mouse.y<viewp.y+viewp.h){
-			return true;
+			return i+1;
 		}
 	}
 	return false;
@@ -1476,6 +1532,10 @@ function testCanvas2Hit(mouse){
 
 //Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
 function getColorHeight(cindex,height,inverse){
+	if(cindex<0||cindex>=scales.length){
+		//console.log("Warning: Attempted to get invalid color index("+cindex+").");
+		return {'R' : 0,'G' : 0,'B' : 0};
+	}
 	//if(inverse)
 	//	height=1.0-height;
 	if(height>=1.0||height<0.0){
@@ -1531,8 +1591,8 @@ function handleMouseDown(event){
 	else if(testDragLabHit(mouse.x,mouse.y)){
 		dragLab=true;
 	}
-	else if(testViewportHit(mouse)){
-		dragView=true;
+	else if(dragView=testViewportHit(mouse)){
+		
 	}
 	
 	//Test if resetbutton was pressed
@@ -1631,6 +1691,7 @@ function handleMouseUp(event){
 function handleMouseMove(event){
 	var mouse = getMousePos(canvas, event);
 	updateFilenameIndicator(mouse.x,mouse.y);
+	updateImgFilenameIndicator(mouse.x,mouse.y);
 	if(rotCanvas2){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
 		draw2LabSpaces();
@@ -1643,8 +1704,14 @@ function handleMouseMove(event){
 		if(top>0&&top<canvas.height-30)
 			labDiv.style.top=top+"px";
 	}
-	else if(dragView){
-		moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
+	else if(dragView>0){
+		if(!view3D)
+			moveView(mouse.x-lastMouseX,lastMouseY-mouse.y);
+		else{
+			//console.log("x "+mouse.x);
+			//console.log("lastx "+lastMouseX);
+			moveView(mouse.x,mouse.y,lastMouseX,lastMouseY,dragView-1);
+		}
 		drawView();
 	}
 	else if(colorMapDrag!=-1){
@@ -1660,7 +1727,7 @@ function handleMouseMove(event){
 	}
 	
 	
-	else if(dragIcon==-2&&iconViewHeight<scales.length*60+10){
+	else if(dragIcon==-2&&iconViewHeight<scales.length*(iconHeight+10)+10){
 		updateIconViewOffset(mouse.x,mouse.y);
 		drawColorThumbnails();
 	}
@@ -1689,8 +1756,8 @@ function MouseWheelHandler(e) {
 		else if(delta<0)
 			scaleT2(0.9);
 		draw2LabSpaces();
-		event.preventDefault();
-		event.returnValue=false;
+		e.preventDefault();
+		e.returnValue=false;
 	}
 	else if(testViewportHit(mouse)){
 		if(delta>0)
@@ -1698,8 +1765,8 @@ function MouseWheelHandler(e) {
 		else if(delta<0)
 			scaleView(0.9);
 		drawView();
-		event.preventDefault();
-		event.returnValue=false;
+		e.preventDefault();
+		e.returnValue=false;
 	}
 	else if(testIconViewHit(mouse.x,mouse.y)){
 		if(iconViewHeight<scales.length*(iconHeight+10)+10){
@@ -1709,8 +1776,8 @@ function MouseWheelHandler(e) {
 				scrollIconView(15);
 			drawColorThumbnails();
 		}
-		event.preventDefault();
-		event.returnValue=false;
+		e.preventDefault();
+		e.returnValue=false;
 	}else if(testImageIconViewHit(mouse.x,mouse.y)){
 		if(iconViewHeight<imgIconsTex.length*(iconHeight+10)+10){
 			if(delta>0)
@@ -1719,8 +1786,8 @@ function MouseWheelHandler(e) {
 				scrollImageIconView(15);
 			drawImgIcons();
 		}
-		event.preventDefault();
-		event.returnValue=false;
+		e.preventDefault();
+		e.returnValue=false;
 	}
 	return false;
 }
@@ -1747,9 +1814,26 @@ function scrollIconView(delta){
 	}
 }
 
+function updateImgFilenameIndicator(mouseX,mouseY){
+	//Clear the text area where the fileName will go
+	ctx2.clearRect(imgIconX-30,imgIconY-40*screenscale,600*screenscale, 45*screenscale);
+	
+	if(!testImageIconViewHit(mouseX,mouseY))
+		return;
+	//Check what fileIcon the mouse is over
+	var hit=testImageIconHit(mouseX,mouseY);
+	console.log(hit);
+	if(hit!=-1){
+		if(hit<imgFileNames.length)
+			drawText(imgFileNames[hit],imgIconX-20,imgIconY-10);
+		else
+			drawText(tubesFileNames[hit],imgIconX-20,imgIconY-10);
+	}
+}
+
 function updateFilenameIndicator(mouseX,mouseY){
 	//Clear the text area where the fileName will go
-	ctx2.clearRect(iconX-10,iconY-40*screenscale,600*screenscale, 45*screenscale);
+	ctx2.clearRect(iconX-30,iconY-40*screenscale,600*screenscale, 45*screenscale);
 	
 	if(!testIconViewHit(mouseX,mouseY))
 		return;
@@ -1757,7 +1841,7 @@ function updateFilenameIndicator(mouseX,mouseY){
 	var hit=testIconHit(mouseX,mouseY);
 	
 	if(hit!=-1){
-		drawText(colormapFileNames[hit],iconX,iconY-10);
+		drawText(colormapFileNames[hit],iconX-20,iconY-10);
 	}
 }
 
@@ -1803,7 +1887,6 @@ function updateIconViewOffset(mouseX,mouseY){
 // Draw the scene.
 //
 function drawScene() {
-	//errorcheckMapIndicies();
 	updateLoader();
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -1811,7 +1894,8 @@ function drawScene() {
 	drawImgIcons();
 	viewports[0].drawBorder();
 	viewports[1].drawBorder();
-	if(img_panels.length+Tubes3DList.length!=0&&color_panels.length>1){
+	
+	if(img_panels.length+Tubes3DList.length!=0&&color_panels.length>0){
 		//initialize and draw img in viewports
 		initView();
 		drawView();
@@ -1959,9 +2043,9 @@ function drawInfoBoxes(){
 }
 
 function drawInfoBox(x,y,graphIndex, marker1, marker2){
-	if(mapCIndices[graphIndex]>=scales.length){
-		return;
-	}
+	//if(mapCIndices[graphIndex]>=scales.length){
+	//	return;
+	//}
 	var rectangle=Shape.rectangle;
 	var width = scaleWidth*.44;
 	var height = 75*screenscale;
@@ -1989,24 +2073,32 @@ function drawInfoBox(x,y,graphIndex, marker1, marker2){
 	rectangle.move(x+width/2,y+2);
 	rectangle.draw();
 	var xoffset=2*screenscale;
-	//write rgb values
-	if(mapCIndices[graphIndex]>=0){
+	if(mapCIndices[graphIndex]<scales.length){
+		//write rgb values
 		drawText(Math.round(color1.r*255)+" "+Math.round(color1.g*255)+" "+Math.round(color1.b*255),x+xoffset,y+25*screenscale);
 		drawText(Math.round(color2.r*255)+" "+Math.round(color2.g*255)+" "+Math.round(color2.b*255),x+width/2+xoffset,y+25*screenscale);
+
+		var lab1=rgb_to_lab({'R':color1.r*255, 'G':color1.g*255, 'B':color1.b*255});
+		var lab2=rgb_to_lab({'R':color2.r*255, 'G':color2.g*255, 'B':color2.b*255});
+		
+		//write lab values
+		drawText(Math.round(lab1.L)+" "+Math.round(lab1.a)+" "+Math.round(lab1.b),x+xoffset,y+45*screenscale);
+		drawText(Math.round(lab2.L)+" "+Math.round(lab2.a)+" "+Math.round(lab2.b),x+width/2+xoffset,y+45*screenscale);
+		
+		
+		var deltaE=ciede2000(lab1,lab2);
+		//write ciede difference
+		drawText("CIEDE2000: "+deltaE.toPrecision(9),x+xoffset,y+65*screenscale);
 	}
 	else{
-		drawText("Error: no colormaps",x+xoffset,y+25*screenscale);
-		drawText("Error: no colormaps",x+width/2+xoffset,y+25*screenscale);
+		drawText("Error: Invalid Index",x+xoffset,y+25*screenscale);
+		//drawText("invalid index",x+width/2+xoffset,y+25*screenscale);
+		drawText("Was colormap removed?",x+xoffset,y+45*screenscale);
+		//drawText("this colormap.",x+width/2+xoffset,y+45*screenscale);
+		drawText("Please change colormap",x+xoffset,y+65*screenscale);
 	}
-	//write lab values
-	var lab1=rgb_to_lab({'R':color1.r*255, 'G':color1.g*255, 'B':color1.b*255});
-	var lab2=rgb_to_lab({'R':color2.r*255, 'G':color2.g*255, 'B':color2.b*255});
-	drawText(Math.round(lab1.L)+" "+Math.round(lab1.a)+" "+Math.round(lab1.b),x+xoffset,y+45*screenscale);
-	drawText(Math.round(lab2.L)+" "+Math.round(lab2.a)+" "+Math.round(lab2.b),x+width/2+xoffset,y+45*screenscale);
 	
-	//write ciede difference
-	var deltaE=ciede2000(lab1,lab2);
-	drawText("CIEDE2000: "+deltaE.toPrecision(9),x+xoffset,y+65*screenscale);
+
 
 }
 
@@ -2066,11 +2158,13 @@ function drawGraphs(){
 	}
 }
 
+//Abandoned
 function errorCheckMapCIndices(){
 	for(var i=0;i<mapCIndices.length;i++){
 	if(mapCIndices[i]<0)
 		mapCIndices[i]=0;
-	while(mapCIndices[i]>=colorMaps.length&&mapCIndices[i]>=0)
+	console.log(""+i+":"+mapCIndices[i]+","+scales.length);
+	while(mapCIndices[i]>=scales.length&&mapCIndices[i]>=0)
 		mapCIndices[i]-=1;
 	}
 }
@@ -2078,10 +2172,10 @@ function drawPanels(){
 	
 	for(var i=0;i<mapCIndices.length;i++){
 		var colorPanel=color_panels[mapCIndices[i]];
+		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		if(colorPanel==null){
 			continue;
 		}
-		clearRectangle(receiveX-10,receiveY+receiveDelta*i+scaleHeight,scaleWidth+20,scaleHeight);
 		colorPanel.scale(scaleWidth,scaleHeight);
 		colorPanel.move(receiveX,receiveY+receiveDelta*i);
 		colorPanel.draw(inverseColorHeight[i]);
@@ -2419,7 +2513,7 @@ function readFiles(files,type){
 		reader.file=file;
 		reader.onload = function(e2) { // finished reading file data.
 			if(type=='img'){
-				readTextToImage(e2.target.result,this.file.name);
+				readTextToImage(e2.target.result,this.file.name,this.file);
 			}
 			else if(type=='color'){
 				readTextToScale(e2.target.result,this.file.name);
@@ -2432,13 +2526,53 @@ function readFiles(files,type){
 				if(fname.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
 					readTextToTubes(e2.target.result,fname);
 				else
-					readTextToImage(e2.target.result,fname);
+					readTextToImage(e2.target.result,fname,this.file);
 			}
 		}
 		reader.readAsText(file); // start reading the file data.
 	}
 }
 
+function readImage(file){
+    function addImage(bitmap){
+        targ.height=bitmap.height;
+        targ.width=bitmap.width;
+        ctx.clearRect(0,0,targ.width,targ.height);
+        ctx.drawImage(bitmap,0,0);
+        var img=ctx.getImageData(0,0,targ.width,targ.height);
+        //console.log(img.data);
+        var img_arr=[];
+        for(var i=0;i<targ.height;i++){
+            for(var j=0; j<targ.width; j++){
+                var idx=(i*targ.width+j)*4;
+                var lab=rgb_to_lab({'R':img.data[idx],'G':img.data[idx+1],'B':img.data[idx+2]});
+                img_arr.push(lab.L/100);
+            }
+        }
+        
+        var imgData ={
+            w: targ.width,
+            h: targ.height,
+            data: img_arr
+        };
+        var filename=file.name;
+        if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
+        img_data.push(imgData);
+        img_panels.push(new ImagePanel(0,0,1,1,img_data.length-1,null));
+        imgFileNames.push(filename);
+        var tempIndex = img_panels.length-1;
+        img_panels[tempIndex].changeColor(null);
+        img_panels[tempIndex].scale(iconWidth, iconHeight);
+        img_panels[tempIndex].move(0,0,0);
+        img_panels[tempIndex].draw();
+        addNewImgIconData(2);
+
+        targ.height=iconHeight;
+        targ.width=iconWidth; 
+		loading--;
+    }
+    createImageBitmap(file).then(addImage,function(err){alert("cannot read this image"); loading--;}).then(drawScene,drawScene);
+}
 function readFilesOnLoad(){
 	readFilesFromServer("./data/colorscale/","scale");
 	readFilesFromServer("./data/image/","data");
@@ -2502,7 +2636,7 @@ function readOneFileFromServer(directory,filename,type){
 			readTextToScale(text,filename);
 		}
 		else if(type=="image"){
-			readTextToImage(text,filename);
+			readTextToImage(text,filename,null);
 		}
 		else if(type=="tubes"){
 			readTextToTubes(text,filename);
@@ -2511,7 +2645,7 @@ function readOneFileFromServer(directory,filename,type){
 			if(filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
 				readTextToTubes(text,filename);
 			else
-				readTextToImage(text,filename);
+				readTextToImage(text,filename,null);
 			}
 		else{
 			console.log("file does not match:");
@@ -2525,51 +2659,55 @@ function readOneFileFromServer(directory,filename,type){
 });
 }
 
-function readTextToImage(text,filename){
+function readTextToImage(text,filename,file){
 	var image2DArray=[];
 	var imageHeight= undefined;
 	var imageWidth= undefined;
 	
 	try{
-	//parse the data into the array
-	var lines=text.split('\n');
-	if(lines[lines.length-1]==""||lines[lines.length-1]=="\r")lines.pop();
-	imageHeight=lines.length;
-	for(var i=0;i<lines.length;i++) {
-		var values=lines[i].split(' ');
-		if(values[values.length-1]=="\r"||values[values.length-1]=="")values.pop();
-		if(!imageWidth){
-			imageWidth = values.length;
-		}else if(imageWidth!=values.length){
-			throw('error reading the file. line:'+i+ ", num:"+values.length+", value=("+values[0]+")");
+		//parse the data into the array
+		var lines=text.split('\n');
+		if(lines[lines.length-1]==""||lines[lines.length-1]=="\r")lines.pop();
+		imageHeight=lines.length;
+		for(var i=0;i<lines.length;i++) {
+			var values=lines[i].split(' ');
+			if(values[values.length-1]=="\r"||values[values.length-1]=="")values.pop();
+			if(!imageWidth){
+				imageWidth = values.length;
+			}else if(imageWidth!=values.length){
+				throw('error reading the file. line:'+i+ ", num:"+values.length+", value=("+values[0]+")");
+			}
+			for(var j=0; j<values.length; j++){
+				var v=Number(values[j]);
+				if(isNaN(v)) throw("at ("+j+", "+i+") value="+v);
+				else image2DArray.push(v);
+			}
 		}
-		for(var j=0; j<values.length; j++){
-			var v=Number(values[j]);
-			if(isNaN(v)) throw("at ("+j+", "+i+") value="+v);
-			else image2DArray.push(v);
-		}
-	}
-	var imgData ={
-		w: imageWidth,
-		h: imageHeight,
-		data: fillBackground(image2DArray,imageWidth,imageHeight)
-	};
-	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
-	img_data.push(imgData);
-	img_panels.push(new ImagePanel(0,0,1,1,img_data.length-1,null));
-	imgFileNames.push(filename);
-	var tempIndex = img_panels.length-1;
-	img_panels[tempIndex].changeColor(null);
-	img_panels[tempIndex].scale(iconWidth, iconHeight);
-	img_panels[tempIndex].move(0,0,0);
-	img_panels[tempIndex].draw();
-	addNewImgIconData(2);
+		var imgData ={
+			w: imageWidth,
+			h: imageHeight,
+			data: fillBackground(image2DArray,imageWidth,imageHeight)
+		};
+		if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
+		img_data.push(imgData);
+		img_panels.push(new ImagePanel(0,0,1,1,img_data.length-1,null));
+		imgFileNames.push(filename);
+		var tempIndex = img_panels.length-1;
+		img_panels[tempIndex].changeColor(null);
+		img_panels[tempIndex].scale(iconWidth, iconHeight);
+		img_panels[tempIndex].move(0,0,0);
+		img_panels[tempIndex].draw();
+		addNewImgIconData(2);
+		loading--;
 	}
 	catch(e){
-		alert(e);
+		if(file)
+			readImage(file);
+		else{
+			alert("Error reading: "+e);
+		}
 	}
 	finally{
-		loading--;
 		drawScene();
 	}
 	
@@ -2644,19 +2782,19 @@ function readTextToTubes(text,filename){
 
 //Reads the pixel data that's in the temporary zone and adds it to the pixeldata array
 function addNewImgIconData(dimension){
-	var w=iconWidth;
-	var h=iconHeight;
+	var w=iconWidth|0;
+	var h=iconHeight|0;
 	var x=0;
 	var y=0;
 	var pixelData = new Uint8Array(w*h*4);//unit8array
-	gl.readPixels(x, canvas.height-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
+	gl.readPixels(x, (canvas.height|0)-y-h, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
 	var texture=gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, texture);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, iconWidth, iconHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE,pixelData);
 	setTexParameter();
 	//Test if the added file is 2d
 	if(dimension==2){
-		img_data.length+Tubes3DList.length
+		//img_data.length+Tubes3DList.length
 		//Shift all the 3d textures down the array
 		for(var i=imgIconsTex.length-1;i>=img_data.length-1;i--){
 			imgIconsTex[i+1]=imgIconsTex[i];
@@ -2771,14 +2909,18 @@ function removeColors(){
 		}
 	}
 	
-	if(!confirm("Are you sure you want to remove selected colormaps?"))
-		return;
+	//if(!confirm("Are you sure you want to remove selected colormaps?"))
+		//return;
 	for(var i=sel3.length-1;i>=0;i--){
 		if(sel3.options[i].selected)
 			removeColor(getCIndexFromName(sel3.options[i].innerHTML));
 	}
-	drawColorThumbnails();
+	//Check if there are not enough icons to validate scrolling
+	if(iconViewHeight>=scales.length*(iconHeight+10)+10)
+		iconViewOffset=0;
+	
 	updateColorModal();
+	drawScene();
 }
 
 function addColors(){
@@ -2786,11 +2928,11 @@ function addColors(){
 	//Iterate through all html elements to get an array
 	var sel2 = document.getElementById('select2');
 	for(var i=0;i<sel2.options.length;i++){
-		console.log(sel2.options[i].innerHTML);
+		//console.log(sel2.options[i].innerHTML);
 		readOneFileFromServer(colorDirectory,sel2.options[i].innerHTML,"scale");
 	}
 	
-	
+	drawScene();
 	//array.splice(start,amount);
 }
 
@@ -2872,14 +3014,18 @@ function removeImgs(){
 		}
 	}
 	
-	if(!confirm("Are you sure you want to remove selected images?"))
-		return;
+	//if(!confirm("Are you sure you want to remove selected images?"))
+		//return;
 	for(var i=sel6.length-1;i>=0;i--){
 		if(sel6.options[i].selected)
 			removeImg(getImgIndexFromName(sel6.options[i].innerHTML));
 	}
-	drawImgIcons();
+	
+	//If there is no need to scroll, reset the imgviewoffset
+	if(iconViewHeight>=imgIconsTex.length*(iconHeight+10)+10)
+		imgIconViewOffset=0;
 	updateImgModal();
+	drawScene();
 }
 
 function addImgs(){
@@ -2892,13 +3038,12 @@ function addImgs(){
 		readOneFileFromServer(dataDirectory,sel5.options[i].innerHTML,"data");
 	}
 	
-	
-	//array.splice(start,amount);
+	drawScene();
 }
 
 //change background 0 to -1
 function fillBackground(data0,w,h){ //data = 2d array flattened to 1d
-	console.log("width and height:"+w+","+h);
+	//console.log("width and height:"+w+","+h);
 	var data=data0;
 	var spreadable=[];
 	const bg=-1;
@@ -2994,9 +3139,9 @@ function computeDeltaE(cID){
 	for(var i=0;i<scale.length;i++){
 		var rgb1=scale[i-1];
 		if(rgb1)
-			var lab1=rgb_to_lab({'R':rgb1.r, 'G':rgb1.g, 'B':rgb1.b});
+			var lab1=rgb_to_lab({'R':rgb1.r*255, 'G':rgb1.g*255, 'B':rgb1.b*255});
 		var rgb2=scale[i];
-		var lab2=rgb_to_lab({'R':rgb2.r, 'G':rgb2.g, 'B':rgb2.b});
+		var lab2=rgb_to_lab({'R':rgb2.r*255, 'G':rgb2.g*255, 'B':rgb2.b*255});
 		if(lab1&&lab2)
 			var deltaE=ciede2000(lab1,lab2);
 		outputText=outputText+rgb2.r+" "+rgb2.g+" "+rgb2.b+" "+"deltaE = "+deltaE+"\r\n";
@@ -3009,7 +3154,9 @@ function downloadColormap(cID){
 	var scale=scales[cID];
 	for(var i=0;i<scale.length;i++){
 		var rgb=scale[i];
-		outputText=outputText+rgb.r+" "+rgb.g+" "+rgb.b+"\r\n";
+		var lab=rgb_to_lab({R:rgb.r*255,G:rgb.g*255,B:rgb.b*255});
+		//outputText=outputText+rgb.r+" "+rgb.g+" "+rgb.b+"\r\n";
+		outputText=outputText+lab.L+" "+lab.a+" "+lab.b+"\r\n";
 	}
 	download(outputText, colormapFileNames[cID], 'text/plain');
 }
@@ -3027,10 +3174,11 @@ function downloadView(id){
 	myImageData.data.set(pixelData);
 	targ.width=w;
 	targ.height=h;
+    ctx.clearRect(0,0,w,h);
 	ctx.putImageData(myImageData,0,0);
 	ctx.translate(0,h);
 	ctx.scale(1, -1);
-	ctx.drawImage(imageCanvas,0,0);
+	ctx.drawImage(targ,0,0);
 	
 	var a = document.createElement("a");
     a.href = targ.toDataURL();
@@ -3063,4 +3211,87 @@ function linearizeLightness(cID){
 	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
 	colormapFileNames.push(colormapFileNames[cID]+"(Adjusted Linear Lightness)");
 	drawScene();
+}
+var constraint={
+	steps: 1000,
+	delta_e:2,
+	tolerance: 0.01,
+	//ctrl_points:[{L:0,a:0,b:0},{L:39,a:55,b:36},{L:57, a:42, b:64},{L:83,a:-10,b:83},{L:100,a:0,b:0}]
+	ctrl_points:[]
+}
+constraint.addPoint=function(){
+	this.ctrl_points.push({L:0,a:0,b:0});
+}
+constraint.removePoint=function(i){
+	this.ctrl_points.splice(i,1);
+}
+
+var constraint2={
+	steps: 200,
+	delta_e:1.5,
+	tolerance: 0.01,
+	ctrl_points:[{L:39,a:39,b:-62},{L:60,a:24,b:-54},{L:76, a:10, b:-37},{L:86, a:1, b:-13},{L:86, a:6, b:11},{L:75, a:24, b:27},{L:58, a:44, b:34},{L:37, a:62, b:32}]
+}
+
+function generateColormap(constraint){
+	var colors=[];
+	var last_ctrl_point=0;
+	var lastLab=constraint.ctrl_points[0];
+	colors.push(lastLab); //first Lab color
+	var i=1;
+	var bound={min:0, max:1, mid:function(){return (this.min+this.max)/2}};
+	
+	var dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
+	while(i<constraint.steps){
+		
+		var test=bound.mid()
+		var newLab=Lab_add(lastLab,timesLen(dirr,test));
+		var d_e=ciede2000(lastLab,newLab);
+		//console.log(lastLab);
+		//console.log(newLab);
+		if(d_e>constraint.delta_e+constraint.tolerance){
+			bound.max=test;//console.log(d_e+" max="+test);
+		}
+		else if(d_e<constraint.delta_e-constraint.tolerance){
+			bound.min=test;//console.log(d_e+" min="+test);
+		}
+		else{
+			colors.push(newLab);//console.log(newLab);
+			lastLab=newLab;
+			if(ciede2000(lastLab, constraint.ctrl_points[last_ctrl_point+1])<constraint.delta_e){
+				last_ctrl_point++;
+				if(last_ctrl_point>=constraint.ctrl_points.length-1){
+					alert("cannot generate enough points, path is too short or deltaE is too large");
+					break;
+				}
+				
+			}
+			dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
+			bound.min=0;
+			bound.max=1;
+			i++;
+		}
+	}
+	//return colors;
+	var outputText="";
+	for(var ii=0;ii<colors.length;ii++){
+		var rgb=lab_to_rgb(colors[ii]);
+		var r=rgb.R/255;
+		var g=rgb.G/255;
+		var b=rgb.B/255;
+		if(r>1||r<0||g>1||g<0||b>1||b<0)
+			console.log("non-displayable color on line "+ii);
+		outputText+=r+" "+g+" "+b+"\n";
+	}
+	download(outputText, "generated_colormap", 'text/plain');
+}
+
+function Lab_add(Lab,arr){
+	return {L:Lab.L+arr[0] , a:Lab.a+arr[1] , b:Lab.b+arr[2] };
+}
+function dir(Lab1,Lab2){
+	return [Lab1.L-Lab2.L,Lab1.a-Lab2.a,Lab1.b-Lab2.b];
+}
+function timesLen(dir,len){
+	return dir.map(function(x){return x*len});
 }
