@@ -233,7 +233,7 @@ function start() {
 		initShaders();
 		readFilesOnLoad()
 		initShape();
-		
+		resize();
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
 		drawScene();
@@ -625,7 +625,6 @@ function addEventHandler(obj, evt, handler) {
 
 function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)};return c};//http://louisremi.mit-license.org/
 function resize(){
-	console.log("I was called");
 	var newwidth = Math.max(min_width,canvas.clientWidth);
 	var newheight = Math.max(min_height,canvas.clientHeight);
 	if (canvas.width != newwidth || canvas.height != newheight) {
@@ -658,8 +657,9 @@ function resize(){
 	orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
 	initButtons();
 	initViewport();
-    drawScene();
 	drawHelpText();*/
+    drawScene();
+	
    }
 }
 
