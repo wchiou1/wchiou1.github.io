@@ -239,12 +239,13 @@ function start() {
 		drawScene();
 	  }
 	  
-	$("#list_of_ctrl_points").sortable({
+	
+}
+$("#list_of_ctrl_points").sortable({
         stop : function(event, ui){
           alert($(this).sortable('toArray'));
         }
 	}).disableSelection();
-}
 
 function clearRectangle(x,y,w,h){
 	gl.enable(gl.SCISSOR_TEST);
