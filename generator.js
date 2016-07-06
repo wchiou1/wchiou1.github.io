@@ -634,17 +634,13 @@ function resize(){
 	gl.viewport(0,0,canvas.width,canvas.height);
 	var scaleX=newwidth/min_width;
 	var scaleY=newheight/min_height;
-	var scaleSquare=Math.min(scaleX,scaleY);/*
+	var scaleSquare=Math.min(scaleX,scaleY);
 	screenscale=scaleSquare;
 	var iconDim=50*scaleSquare;
     iconHeight = iconDim;
     iconWidth = iconDim;
-	textCanvas.width=canvas.width;
-	textCanvas.height=canvas.height;
     iconX = 50*scaleSquare;
     iconY = 150*scaleY;
-    imgIconX=1080*scaleX;
-    imgIconY=150*scaleY;
     receiveX = 200*scaleX;
     receiveY = 150*scaleY;
     receiveDelta = 325*scaleY;
@@ -659,7 +655,7 @@ function resize(){
 	initButtons();
 	initViewport();
     drawScene();
-	drawHelpText();*/
+	drawHelpText();
    }
 }
 
