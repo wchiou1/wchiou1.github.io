@@ -227,7 +227,7 @@ select{
 	z-index: 1;
 }
 
-#lab-el{
+.lab-el{
 	float: right;
 	text-align: center;
 	width: 33%;
