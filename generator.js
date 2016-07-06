@@ -5,6 +5,8 @@ var gl;
 shaderProgram={};
 attributes={};
 uniforms={};
+var verticesBuffer;
+var verticesColorBuffer;
 
 var min_width=1200;
 var min_height=700;
@@ -58,7 +60,10 @@ function initWebGL() {
     alert("Unable to initialize WebGL. Your browser may not support it.");
   }
 }
-
+function initBuffer(){
+	verticesBuffer=gl.createBuffer();
+	verticesColorBuffer=gl.createBuffer();
+}
 function initShaders() {
 	var simple_vertexShader = getShader(gl, "simple-shader-vs");
 	var simple_fragmentShader = getShader(gl, "simple-shader-fs");
@@ -77,6 +82,10 @@ function initShaders() {
 		pUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uPMatrix"),
 		mvUniform : gl.getUniformLocation(shaderProgram.simpleShader, "uMVMatrix")
 	};
+	gl.useProgram(shaderProgram.simpleShader);
+	gl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
+	gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
+	gl.lineWidth(3);
 }
 
 function getShader(gl, id) {
@@ -163,19 +172,39 @@ function handleMouseMove(event){
 function MouseWheelHandler(e) {
 
 }
+var pMatrix2=makeOrtho(-256,256,-256,256,-10000,10000);
+var transform2={
+	degx: 0,
+	degy: 0,
+	scale: 1
+};
 
+function initT2(){
+	transform2.degx=45;
+	transform2.degy=45;
+	transform2.scale=1;
+}
+
+function rotateT2(x,y){
+	transform2.degy+=x;
+	transform2.degx+=-y;
+	if(transform2.degy>=360)
+		transform2.degy-=360;
+	else if(transform2.degy<= -360)
+		transform2.degy+=360;
+	if(transform2.degx<-90)
+		transform2.degx=-90;
+	else if(transform2.degx>90)
+		transform2.degx=90;
+}
+function scaleT2(scalar){
+	transform2.scale*=scalar;
+}
 function drawLabSpace(cid,bufid){
 	
 	if(cid==null) cid=LabSpaceColor;
 	if(bufid==null) bufid=0;
 	
-	if(lastShader2!=="simple"){
-			lastShader2="simple";
-			gl.useProgram(shaderProgram.simpleShader2);
-			gl.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
-			gl.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
-		}
-	gl.lineWidth(3);
 	
 	var radx = transform2.degx * Math.PI / 180.0;
 	var rady = transform2.degy * Math.PI / 180.0;
@@ -183,19 +212,17 @@ function drawLabSpace(cid,bufid){
 
 	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
 
-	gl.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
-	gl.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
+	gl.uniformMatrix4fv(uniforms.simpleShader.pUniform, false, new Float32Array(pMatrix2.flatten()));
+	gl.uniformMatrix4fv(uniforms.simpleShader.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
 	
 	//draw axes
-	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer2);
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-128,0,0,	128,0,0, 0,-50,0,	0,50,0, 0,0,-128, 0,0,128]), gl.STATIC_DRAW);
-	gl.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer2);
+	gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 1,1,1,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl.STATIC_DRAW);
-	gl.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer2);
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl.STATIC_DRAW);
-	gl.drawElements(gl.LINES, 6, gl.UNSIGNED_SHORT, 0);
+	gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+	gl.drawArrays(gl.LINES, 0, 6);
 	
 	//draw colors
 	if(scales[cid]==undefined)return;
