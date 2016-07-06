@@ -5,7 +5,6 @@ var gl;
 shaderProgram={};
 attributes={};
 uniforms={};
-<<<<<<< HEAD
 var imageCanvas;
 var ctx;
 var lastShader=null;
@@ -23,10 +22,8 @@ var colormapFileNames=[];
 var colorIconsData=[];
 var iconX = 50;
 var iconY = 150;
-=======
 var verticesBuffer;
 var verticesColorBuffer;
->>>>>>> origin/master
 
 var min_width=1200;
 var min_height=700;
@@ -503,7 +500,6 @@ function drawLabSpace(cid,bufid){
 function drawScene() {
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-<<<<<<< HEAD
 	drawColorThumbnails();
 }
 
@@ -527,8 +523,6 @@ function drawColorThumbnails(){
 	clearRectangle(iconX,iconY-3,iconViewWidth,iconHeight+3);
 	clearRectangle(iconX,iconY+iconViewHeight+iconHeight+5,iconViewWidth,iconHeight+3);
 }
-=======
->>>>>>> origin/master
 
 function drawThumbnail(x,y,cindex){
 	color_panels[cindex].scale(iconWidth,iconHeight);
