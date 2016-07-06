@@ -2,6 +2,7 @@ var version="Testing init2"
 
 var canvas = document.getElementById("glcanvas");
 var gl;
+var gl2;
 shaderProgram={};
 attributes={};
 uniforms={};
@@ -218,6 +219,7 @@ var Rectangle= function(){
 $(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
+	canvas2 = document.getElementById("glcanvas2");
 	
 	addEventHandler(window,"resize",on_resize(resize));
 	initWebGL(canvas);
@@ -235,7 +237,13 @@ function start() {
 		//gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
 		gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-
+		
+		if(gl2){
+				gl2.clearColor(0.0, 0.0, 0.0, 1.0);
+				gl2.clearDepth(1.0);
+				gl2.enable(gl.DEPTH_TEST);
+				gl2.depthFunc(gl.LEQUAL);
+		}
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		//initTextureFramebuffer(); //#not ready
@@ -287,10 +295,13 @@ function initBuffers(){
 	verticesBuffer = gl.createBuffer();
 	verticesColorBuffer = gl.createBuffer();
 	verticesIndexBuffer=gl.createBuffer();
-	pointBuffer2[0]=gl.createBuffer();
-	pointColorBuffer2[0]=gl.createBuffer();
-	pointBuffer2[1]=gl.createBuffer();
-	pointColorBuffer2[1]=gl.createBuffer();
+	verticesBuffer2=gl2.createBuffer();
+	verticesColorBuffer2=gl2.createBuffer();
+	verticesIndexBuffer2=gl2.createBuffer();
+	pointBuffer2[0]=gl2.createBuffer();
+	pointColorBuffer2[0]=gl2.createBuffer();
+	pointBuffer2[1]=gl2.createBuffer();
+	pointColorBuffer2[1]=gl2.createBuffer();
 }
 
 function clearRectangle(x,y,w,h){
@@ -375,6 +386,25 @@ function initShaders() {
 	gl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
 	gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
 	gl.lineWidth(3);
+	
+	//second gl 
+	var simple_vertexShader2 = getShader(gl2, "simple-shader-vs");
+	var simple_fragmentShader2 = getShader(gl2, "simple-shader-fs");
+	shaderProgram.simpleShader2 = gl2.createProgram();
+	gl2.attachShader(shaderProgram.simpleShader2, simple_vertexShader2);
+	gl2.attachShader(shaderProgram.simpleShader2, simple_fragmentShader2);
+	gl2.linkProgram(shaderProgram.simpleShader2);
+	if (!gl2.getProgramParameter(shaderProgram.simpleShader2, gl2.LINK_STATUS)) {
+		alert("Unable to initialize the shader program: " );
+	}
+	attributes.simpleShader2={
+		vertexPositionAttribute : gl2.getAttribLocation(shaderProgram.simpleShader2, "aVertexPosition"),
+		vertexColorAttribute : gl2.getAttribLocation(shaderProgram.simpleShader2, "aVertexColor")
+	};
+	uniforms.simpleShader2={
+		pUniform : gl2.getUniformLocation(shaderProgram.simpleShader2, "uPMatrix"),
+		mvUniform : gl2.getUniformLocation(shaderProgram.simpleShader2, "uMVMatrix")
+	};
 }
 
 function getShader(gl, id) {
@@ -559,64 +589,6 @@ function rotateT2(x,y){
 }
 function scaleT2(scalar){
 	transform2.scale*=scalar;
-}
-function drawLabSpace(cid,bufid){
-	if(cid==null) cid=LabSpaceColor;
-	if(bufid==null) bufid=0;
-	
-	
-	var radx = transform2.degx * Math.PI / 180.0;
-	var rady = transform2.degy * Math.PI / 180.0;
-	var s=transform2.scale;
-
-	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
-
-	gl.uniformMatrix4fv(uniforms.simpleShader.pUniform, false, new Float32Array(pMatrix2.flatten()));
-	gl.uniformMatrix4fv(uniforms.simpleShader.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
-	
-	//draw axes
-	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-128,0,0,	128,0,0, 0,-50,0,	0,50,0, 0,0,-128, 0,0,128]), gl.STATIC_DRAW);
-	gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 1,1,1,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl.STATIC_DRAW);
-	gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-	gl.drawArrays(gl.LINES, 0, 6);
-	
-	//draw colors
-	if(scales[cid]==undefined)return;
-	var len=scales[cid].length;
-	
-	if(tempid[bufid]!=cid){
-		tempid[bufid]=cid;
-		var scale=scales[cid];
-		var list_rgba=[];
-		var list_pos=[];
-		for(var i=0;i<len;i++){
-			var rgb=scale[i];
-			list_rgba.push(rgb.r);
-			list_rgba.push(rgb.g);
-			list_rgba.push(rgb.b);
-			list_rgba.push(1);
-			var lab=rgb_to_lab({'R':rgb.r*255, 'G':rgb.g*255, 'B':rgb.b*255});
-			list_pos.push(lab.a);
-			list_pos.push(lab.L-50);
-			list_pos.push(lab.b);
-		}
-
-		gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer2[bufid]);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(list_pos), gl.STATIC_DRAW);
-		gl.bindBuffer(gl.ARRAY_BUFFER, pointColorBuffer2[bufid]);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(list_rgba), gl.STATIC_DRAW);
-	}
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer2[bufid]);
-	gl.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ARRAY_BUFFER, pointColorBuffer2[bufid]);
-	gl.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-	
-	gl.drawArrays(gl.POINTS, 0, len);
-	
 }
 
 function drawScene() {
@@ -834,29 +806,31 @@ function addNewColorIconData(cindex){
 var lastShader2;
 var tempid=[null,null];
 function drawLabSpace(cid,bufid){
-	var w=canvas.width/4;
-	var h=canvas.height/2;
+	var w=canvas2.width;
+	var h=canvas2.height/2;
 	//|
 	//(0,0)__
 	var x1=0;
 	var y1=h;
+	var x2=0;
+	var y2=0;
 
-	gl.clearColor(0.5,0.5,0.5,1.0);
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	gl2.clearColor(0.5,0.5,0.5,1.0);
+	gl2.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
-	gl.viewport(x1,y1,w,h);
+	gl2.viewport(x1,y1,w,h);
 	if(cid==-1)
 		return;
 	if(cid==null) cid=LabSpaceColor;
 	if(bufid==null) bufid=0;
 	
-	if(lastShader!=="simple"){
-			lastShader="simple";
-			gl.useProgram(shaderProgram.simpleShader2);
-			gl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
-			gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
+	if(lastShader2!=="simple"){
+			lastShader2="simple";
+			gl2.useProgram(shaderProgram.simpleShader2);
+			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
+			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
 		}
-	gl.lineWidth(3);
+	gl2.lineWidth(3);
 	
 	var radx = transform2.degx * Math.PI / 180.0;
 	var rady = transform2.degy * Math.PI / 180.0;
@@ -864,19 +838,19 @@ function drawLabSpace(cid,bufid){
 
 	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
 
-	gl.uniformMatrix4fv(uniforms.simpleShader.pUniform, false, new Float32Array(pMatrix2.flatten()));
-	gl.uniformMatrix4fv(uniforms.simpleShader.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
+	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
+	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
 	
 	//draw axes
-	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-128,0,0,	128,0,0, 0,-50,0,	0,50,0, 0,0,-128, 0,0,128]), gl.STATIC_DRAW);
-	gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 1,1,1,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl.STATIC_DRAW);
-	gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer);
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl.STATIC_DRAW);
-	gl.drawElements(gl.LINES, 6, gl.UNSIGNED_SHORT, 0);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,0,0,	128,0,0, 0,-50,0,	0,50,0, 0,0,-128, 0,0,128]), gl2.STATIC_DRAW);
+	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 1,1,1,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl2.STATIC_DRAW);
+	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+	gl2.bindBuffer(gl2.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer2);
+	gl2.bufferData(gl2.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl2.STATIC_DRAW);
+	gl2.drawElements(gl2.LINES, 6, gl2.UNSIGNED_SHORT, 0);
 	
 	//draw colors
 	if(scales[cid]==undefined)return;
@@ -898,19 +872,19 @@ function drawLabSpace(cid,bufid){
 			list_pos.push(lab.L-50);
 			list_pos.push(lab.b);
 		}
-		gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer2[bufid]);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(list_pos), gl.STATIC_DRAW);
-		gl.bindBuffer(gl.ARRAY_BUFFER, pointColorBuffer2[bufid]);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(list_rgba), gl.STATIC_DRAW);
+
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[bufid]);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[bufid]);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
 	}
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer2[bufid]);
-	gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ARRAY_BUFFER, pointColorBuffer2[bufid]);
-	gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[bufid]);
+	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[bufid]);
+	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	
-	gl.drawArrays(gl.POINTS, 0, len);
-	
+	gl2.drawArrays(gl2.POINTS, 0, len);
 }
 
 function FileListenerInit(){
