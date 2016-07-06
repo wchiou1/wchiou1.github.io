@@ -238,6 +238,12 @@ function start() {
 		ctx=imageCanvas.getContext("2d");
 		drawScene();
 	  }
+	  
+	$("#list_of_ctrl_points").sortable({
+        stop : function(event, ui){
+          alert($(this).sortable('toArray'));
+        }
+	});
 }
 
 function clearRectangle(x,y,w,h){
@@ -769,4 +775,90 @@ function addNewColorIconData(cindex){
 	
 }
 
+var constraint={
+	steps: 1000,
+	delta_e:2,
+	tolerance: 0.01,
+	//ctrl_points:[{L:0,a:0,b:0},{L:39,a:55,b:36},{L:57, a:42, b:64},{L:83,a:-10,b:83},{L:100,a:0,b:0}]
+	ctrl_points:[]
+}
+constraint.addPoint=function(){
+	this.ctrl_points.push({L:0,a:0,b:0});
+}
+constraint.removePoint=function(i){
+	this.ctrl_points.splice(i,1);
+}
 
+var constraint2={
+	steps: 200,
+	delta_e:1.5,
+	tolerance: 0.01,
+	ctrl_points:[{L:39,a:39,b:-62},{L:60,a:24,b:-54},{L:76, a:10, b:-37},{L:86, a:1, b:-13},{L:86, a:6, b:11},{L:75, a:24, b:27},{L:58, a:44, b:34},{L:37, a:62, b:32}]
+}
+
+function generateColormap(constraint){
+	var colors=[];
+	var last_ctrl_point=0;
+	var lastLab=constraint.ctrl_points[0];
+	colors.push(lastLab); //first Lab color
+	var i=1;
+	var bound={min:0, max:1, mid:function(){return (this.min+this.max)/2}};
+	
+	var dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
+	while(i<constraint.steps){
+		
+		var test=bound.mid()
+		var newLab=Lab_add(lastLab,timesLen(dirr,test));
+		var d_e=ciede2000(lastLab,newLab);
+		//console.log(lastLab);
+		//console.log(newLab);
+		if(d_e>constraint.delta_e+constraint.tolerance){
+			bound.max=test;//console.log(d_e+" max="+test);
+		}
+		else if(d_e<constraint.delta_e-constraint.tolerance){
+			bound.min=test;//console.log(d_e+" min="+test);
+		}
+		else{
+			colors.push(newLab);//console.log(newLab);
+			lastLab=newLab;
+			if(ciede2000(lastLab, constraint.ctrl_points[last_ctrl_point+1])<constraint.delta_e){
+				last_ctrl_point++;
+				if(last_ctrl_point>=constraint.ctrl_points.length-1){
+					alert("cannot generate enough points, path is too short or deltaE is too large");
+					break;
+				}
+				
+			}
+			dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
+			bound.min=0;
+			bound.max=1;
+			i++;
+		}
+	}
+	//return colors;
+	var outputText="";
+	for(var ii=0;ii<colors.length;ii++){
+		var rgb=lab_to_rgb(colors[ii]);
+		var r=rgb.R/255;
+		var g=rgb.G/255;
+		var b=rgb.B/255;
+		if(r>1||r<0||g>1||g<0||b>1||b<0)
+			console.log("non-displayable color on line "+ii);
+		outputText+=r+" "+g+" "+b+"\n";
+	}
+	download(outputText, "generated_colormap", 'text/plain');
+}
+
+function addPointToList(){
+	$("#list_of_ctrl_points").append("<li id="ctrl1" class="ui-state-default">new point</li>");
+}
+
+function Lab_add(Lab,arr){
+	return {L:Lab.L+arr[0] , a:Lab.a+arr[1] , b:Lab.b+arr[2] };
+}
+function dir(Lab1,Lab2){
+	return [Lab1.L-Lab2.L,Lab1.a-Lab2.a,Lab1.b-Lab2.b];
+}
+function timesLen(dir,len){
+	return dir.map(function(x){return x*len});
+}
