@@ -24,9 +24,17 @@ var iconX = 50;
 var iconY = 150;
 var verticesBuffer;
 var verticesColorBuffer;
+var verticesIndexBuffer;
+var verticesBuffer2;
+var verticesColorBuffer2;
+var verticesIndexBuffer2;
+var pointBuffer2=[];
+var pointColorBuffer2=[];
+var selected=-1;
+var screenscale=1;
 
-var min_width=512;
-var min_height=512;
+var min_width=1200;
+var min_height=700;
 var orthogonal={
 	l: 0,
 	r: 1200,
@@ -207,6 +215,7 @@ var Rectangle= function(){
 	};
 };
 
+$(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
 	
@@ -231,6 +240,9 @@ function start() {
 
 		//initTextureFramebuffer(); //#not ready
 		initShaders();
+		initBuffers();
+		initButtons();
+		initT2();
 		readFilesOnLoad()
 		initShape();
 		resize();
@@ -238,6 +250,40 @@ function start() {
 		ctx=imageCanvas.getContext("2d");
 		drawScene();
 	  }
+}
+
+function initButtons(){
+	var resetbutton = document.getElementById("button4");
+
+	
+	var offset60=60*screenscale;
+	var offset30=30*screenscale;
+	$(".button").width(iconViewWidth+offset60+"px").height(offset30+"px")
+	.css("font-size",((12*screenscale)|0)+"px").css("line-height",offset30+"px");
+	
+	resetbutton.style.left = 200-offset30+"px";
+	resetbutton.style.top = 200+iconViewHeight+110*screenscale+"px";
+
+	var drop2 = document.getElementById('drop2');
+
+	
+	drop2.style.left= iconX+'px';
+	drop2.style.top= iconY+"px";
+	drop2.style.width=iconViewWidth+"px";
+	drop2.style.height=iconViewHeight+"px";
+	drop2.style.position= 'absolute';
+	
+
+}
+
+function initBuffers(){
+	verticesBuffer = gl.createBuffer();
+	verticesColorBuffer = gl.createBuffer();
+	verticesIndexBuffer=gl.createBuffer();
+	pointBuffer2[0]=gl.createBuffer();
+	pointColorBuffer2[0]=gl.createBuffer();
+	pointBuffer2[1]=gl.createBuffer();
+	pointColorBuffer2[1]=gl.createBuffer();
 }
 
 function clearRectangle(x,y,w,h){
@@ -481,6 +527,11 @@ function setMatrixUniforms(shader) {
   gl.uniformMatrix4fv(shader.mvUniform, false, new Float32Array(mvMatrix.flatten()));
 }
 
+function handleResetButton(evt){
+	initT2();
+	drawLabSpace(selected,0);
+}
+
 function initT2(){
 	transform2.degx=45;
 	transform2.degy=45;
@@ -503,7 +554,6 @@ function scaleT2(scalar){
 	transform2.scale*=scalar;
 }
 function drawLabSpace(cid,bufid){
-	
 	if(cid==null) cid=LabSpaceColor;
 	if(bufid==null) bufid=0;
 	
@@ -566,6 +616,7 @@ function drawScene() {
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	drawColorThumbnails();
+	drawLabSpace(selected,0);
 }
 
 function drawColorThumbnails(){
@@ -651,9 +702,6 @@ function resize(){
     scaleHeight = 100*scaleSquare;
 	setView(0,canvas.width,-canvas.height,0);
 	orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
-	initButtons();
-	initViewport();
-	drawHelpText();
     drawScene();
    }
 }
@@ -748,6 +796,14 @@ function readTextToScale(text,filename){
 	}
 }
 
+function setView(l,r,b,t){
+	orthogonal.l=l;
+	orthogonal.r=r;
+	orthogonal.b=b;
+	orthogonal.t=t;
+}
+
+
 function addNewColorIconData(cindex){
 	var icondataside=64;
 	var pixelData = ctx.createImageData(icondataside,1);//new Uint8Array(iconWidth*iconHeight*4);
@@ -766,7 +822,117 @@ function addNewColorIconData(cindex){
 		}
 	}*/
 	createImageBitmap(pixelData).then(function(response) { colorIconsData.push(response);});
+	selected=colorIconsData.length-1;
+}
+var lastShader2;
+var tempid=[null,null];
+function drawLabSpace(cid,bufid){
+	var w=canvas.width/4;
+	var h=canvas.height/2;
+	//|
+	//(0,0)__
+	var x1=0;
+	var y1=h;
+
+	gl.clearColor(0.5,0.5,0.5,1.0);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
+	gl.viewport(x1,y1,w,h);
+	if(cid==-1)
+		return;
+	if(cid==null) cid=LabSpaceColor;
+	if(bufid==null) bufid=0;
+	
+	if(lastShader!=="simple"){
+			lastShader="simple";
+			gl.useProgram(shaderProgram.simpleShader2);
+			gl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
+			gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
+		}
+	gl.lineWidth(3);
+	
+	var radx = transform2.degx * Math.PI / 180.0;
+	var rady = transform2.degy * Math.PI / 180.0;
+	var s=transform2.scale;
+
+	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
+
+	gl.uniformMatrix4fv(uniforms.simpleShader.pUniform, false, new Float32Array(pMatrix2.flatten()));
+	gl.uniformMatrix4fv(uniforms.simpleShader.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
+	
+	//draw axes
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-128,0,0,	128,0,0, 0,-50,0,	0,50,0, 0,0,-128, 0,0,128]), gl.STATIC_DRAW);
+	gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ARRAY_BUFFER, verticesColorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 1,1,1,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl.STATIC_DRAW);
+	gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl.STATIC_DRAW);
+	gl.drawElements(gl.LINES, 6, gl.UNSIGNED_SHORT, 0);
+	
+	//draw colors
+	if(scales[cid]==undefined)return;
+	var len=scales[cid].length;
+	
+	if(tempid[bufid]!=cid){
+		tempid[bufid]=cid;
+		var scale=scales[cid];
+		var list_rgba=[];
+		var list_pos=[];
+		for(var i=0;i<len;i++){
+			var rgb=scale[i];
+			list_rgba.push(rgb.r);
+			list_rgba.push(rgb.g);
+			list_rgba.push(rgb.b);
+			list_rgba.push(1);
+			var lab=rgb_to_lab({'R':rgb.r*255, 'G':rgb.g*255, 'B':rgb.b*255});
+			list_pos.push(lab.a);
+			list_pos.push(lab.L-50);
+			list_pos.push(lab.b);
+		}
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer2[bufid]);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(list_pos), gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ARRAY_BUFFER, pointColorBuffer2[bufid]);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(list_rgba), gl.STATIC_DRAW);
+	}
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer2[bufid]);
+	gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ARRAY_BUFFER, pointColorBuffer2[bufid]);
+	gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+	
+	gl.drawArrays(gl.POINTS, 0, len);
 	
 }
 
+function FileListenerInit(){
+	if(window.FileReader) {
+		addEventHandler(window, 'load', function() {
+			var drop2  = document.getElementById('drop2');
+			var button4 = document.getElementById('button4');
+			
+			function cancel(e) {
+			   e.preventDefault(); 
+			}
+			
+			function readDroppedFiles(e,type) {
+				e = e || window.event;
+				cancel(e);
+				e.stopPropagation();
+				
+				var files = e.dataTransfer.files; // Array of all files
+				readFiles(files,type);
+			}
+			
+			addEventHandler(drop2, 'dragover', cancel);
+			addEventHandler(drop2, 'dragenter', cancel);
+			addEventHandler(drop2,'drop', function(e){readDroppedFiles(e,'color');});
+			addEventHandler(button4,'click', handleResetButton);
 
+		});
+	} else {
+	  alert('Your browser does not support the HTML5 FileReader.');
+	}
+}
