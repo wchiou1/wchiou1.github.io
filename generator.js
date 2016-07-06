@@ -850,7 +850,7 @@ function generateColormap(constraint){
 }
 
 function addPointToList(a){
-	$("#list_of_ctrl_points").append("<li id='ctrl1' class='ui-state-default'>"+a+"</li>");
+	$("#list_of_ctrl_points").append("<li id='ctrl"+a+"' class='ui-state-default'>"+"point "+a+"</li>");
 }
 
 function Lab_add(Lab,arr){
