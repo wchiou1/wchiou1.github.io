@@ -1,6 +1,7 @@
 var version="Testing init2"
 
 var canvas = document.getElementById("glcanvas");
+var canvas2;
 var gl;
 var gl2;
 shaderProgram={};
@@ -237,7 +238,7 @@ function start() {
 		//gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 		gl.enable(gl.DEPTH_TEST);           // Enable depth testing
 		gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-		
+
 		if(gl2){
 				gl2.clearColor(0.0, 0.0, 0.0, 1.0);
 				gl2.clearDepth(1.0);
@@ -339,6 +340,18 @@ function initWebGL() {
   if (!gl) {
     alert("Unable to initialize WebGL. Your browser may not support it.");
   }
+  
+  //second gl canvas
+   gl2 = null;
+
+  try {
+    gl2 = canvas2.getContext("experimental-webgl");
+  }
+  catch(e) {
+  }
+  if (!gl2) {
+    alert("Unable to initialize WebGL. Your browser may not support it.");
+  }
 }
 function initBuffer(){
 	verticesBuffer=gl.createBuffer();
@@ -435,6 +448,7 @@ function getShader(gl, id) {
 
   var shader;
 
+  console.log(gl);
   if (shaderScript.type == "x-shader/x-fragment") {
     shader = gl.createShader(gl.FRAGMENT_SHADER);
   } else if (shaderScript.type == "x-shader/x-vertex") {
