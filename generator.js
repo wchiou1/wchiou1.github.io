@@ -236,8 +236,6 @@ function drawLabSpace(cid,bufid){
 function drawScene() {
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
-	
 
 }
 
@@ -265,7 +263,7 @@ function resize(){
 	gl.viewport(0,0,canvas.width,canvas.height);
 	var scaleX=newwidth/min_width;
 	var scaleY=newheight/min_height;
-	var scaleSquare=Math.min(scaleX,scaleY);
+	var scaleSquare=Math.min(scaleX,scaleY);/*
 	screenscale=scaleSquare;
 	var iconDim=50*scaleSquare;
     iconHeight = iconDim;
@@ -292,7 +290,7 @@ function resize(){
 	initButtons();
 	initViewport();
     drawScene();
-	drawHelpText();
+	drawHelpText();*/
    }
 	
 }
