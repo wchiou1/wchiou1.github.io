@@ -5,6 +5,23 @@ var gl;
 shaderProgram={};
 attributes={};
 uniforms={};
+var imageCanvas;
+var ctx;
+var lastShader=null;
+
+var colorMaps = [];//2d array of objects which stores the colors
+var color_panels=[];
+var iconViewWidth = 70;
+var iconViewHeight = 400;
+var iconHeight = 50;
+var iconWidth = 50;
+var iconViewOffset = 0;
+var scales=[];
+var Shape={};
+var colormapFileNames=[];
+var colorIconsData=[];
+var iconX = 50;
+var iconY = 150;
 
 var min_width=1200;
 var min_height=700;
@@ -14,9 +31,179 @@ var orthogonal={
 	t: 0,
 	b: -700
 };
+var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
+
+var ColorPanel= function(x,y,w,h,cID){
+	this.x=x;
+	this.y=y;
+	this.z=0;
+	this.w=w;
+	this.h=h;
+	this.cindex=cID;
+	this.verticesBuffer=Shape.rectangle.verticesBuffer;
+	this.verticesTexCoordBuffer=Shape.rectangle.verticesTexCoordBuffer;
+	this.texture=gl.createTexture();
+	var self=this;
+	this.move=function(x,y,z){
+		self.x=x;
+		self.y=-y;
+		self.z=-z||0;
+	};
+	this.scale=function(w,h){
+		self.w=w;
+		self.h=h;
+	};
+	
+	function flatten(scale){
+		var array=[];
+		for(var i=0;i<scale.length;i++){
+			array.push(Math.round(scale[i].r*255));
+			array.push(Math.round(scale[i].g*255));
+			array.push(Math.round(scale[i].b*255));
+			array.push(255);
+		}
+		return new Uint8Array(array);
+	}
+	
+	this.create= 
+	function(id){
+		gl.bindTexture(gl.TEXTURE_2D, self.texture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, scales[id].length, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,flatten(scales[id]));
+		setTexParameter();
+	};
+	this.create(cID);
+	this.draw=function(inverted){
+		if(lastShader!=="colormapShader"){
+			lastShader="colormapShader";
+			gl.useProgram(shaderProgram.colormapShader);
+			gl.enableVertexAttribArray(attributes.colormapShader.vertexPositionAttribute);
+			gl.enableVertexAttribArray(attributes.colormapShader.vertexTexCoordAttribute);
+		}
+			
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+		gl.vertexAttribPointer(attributes.colormapShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+		if(inverted)
+			gl.bindBuffer(gl.ARRAY_BUFFER, Shape.rectangle.invertedTexCoordBuffer);
+		else
+			gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+		gl.vertexAttribPointer(attributes.colormapShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+		
+		gl.uniform1i(uniforms.colormapShader.uColormapLoc, 0);  
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, self.texture);
+		
+		perspectiveMatrix = orthoMatrix;
+
+		loadIdentity();
+		mvPushMatrix();
+		mvTranslate([self.x, self.y, self.z-1.0]);
+		mvScale([self.w,self.h,1]);
+
+		setMatrixUniforms(uniforms.colormapShader);
+
+		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		
+		mvPopMatrix();
+	};
+	
+};
+
+var Rectangle= function(){
+	this.x = 0;
+	this.y = 0;
+	this.w = 0;
+	this.h = 0;
+	this.verticesBuffer = gl.createBuffer();
+	this.verticesColorBuffer = gl.createBuffer();
+	this.verticesTexCoordBuffer=gl.createBuffer();
+	this.invertedTexCoordBuffer=gl.createBuffer();
+	var self=this;
+	this.scale=function(w,h){
+		self.w=w;
+		self.h=h;
+	};
+	this.move=function(x,y,z){
+		self.x=x;
+		self.y=-y;
+		self.z=-z||0;
+	};
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0,	1,0,0, 1,-1,0]), gl.STATIC_DRAW);
+		
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1,1,1,1,	1,1,1,1, 1,1,1,1,	1,1,1,1]), gl.STATIC_DRAW);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, self.invertedTexCoordBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1,1, 1,0, 0,1, 0,0]), gl.STATIC_DRAW);
+
+	this.changeColor= function(r,g,b,a){
+		if(a==undefined) a=1;
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([r,g,b,a,	r,g,b,a, r,g,b,a,	r,g,b,a]), gl.STATIC_DRAW);
+	};
+	this.draw= function(){
+		if(lastShader!=="simple"){
+			lastShader="simple";
+			gl.useProgram(shaderProgram.simpleShader);
+			gl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
+			gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
+		}
 
 
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+		gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
+		gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+		
+		perspectiveMatrix = orthoMatrix;
+		
+		loadIdentity();
+		mvPushMatrix();
+		mvTranslate([self.x, self.y, self.z-1.0]);
+		mvScale([self.w,self.h,1]);
+		
+		setMatrixUniforms();
+		
+		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		
+		mvPopMatrix();
+	};
+	this.drawWithTexture=function(texture){
+		if(lastShader!=="colormapShader"){
+			lastShader="colormapShader";
+			gl.useProgram(shaderProgram.colormapShader);
+			gl.enableVertexAttribArray(attributes.colormapShader.vertexPositionAttribute);
+			gl.enableVertexAttribArray(attributes.colormapShader.vertexTexCoordAttribute);
+		}
+			
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+		gl.vertexAttribPointer(attributes.colormapShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
+		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+		gl.vertexAttribPointer(attributes.colormapShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+		
+		gl.uniform1i(uniforms.colormapShader.uColormapLoc, 0);  
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		
+		perspectiveMatrix = orthoMatrix;
+
+		loadIdentity();
+		mvPushMatrix();
+		mvTranslate([self.x, self.y, self.z-1.0]);
+		mvScale([self.w,self.h,1]);
+
+		setMatrixUniforms(uniforms.colormapShader);
+
+		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		
+		mvPopMatrix();
+	};
+};
 
 function start() {
 	console.log("version:"+version);
@@ -42,8 +229,37 @@ function start() {
 
 		//initTextureFramebuffer(); //#not ready
 		initShaders();
-		//setInterval(drawScene, 15);
+		readFilesOnLoad()
+		initShape();
+		
+		imageCanvas=document.getElementById("imageCanvas");
+		ctx=imageCanvas.getContext("2d");
+		drawScene();
 	  }
+}
+
+function clearRectangle(x,y,w,h){
+	gl.enable(gl.SCISSOR_TEST);
+	
+	gl.scissor(x,canvas.height-y,w,h);
+	
+	gl.clearColor(0.5,0.5,0.5,1.0);
+	
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
+	gl.disable(gl.SCISSOR_TEST);
+
+}
+
+function setTexParameter(){
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+}
+
+function initShape(){
+	Shape.rectangle= new Rectangle();
 }
 
 function initWebGL() {
@@ -131,6 +347,27 @@ function getShader(gl, id) {
   }
 
   return shader;
+}
+
+//Gets the color at the specified "height" assuming first color in a map is 0.0 and last color is 1.0
+function getColorHeight(cindex,height,inverse){
+	if(cindex<0||cindex>=scales.length){
+		//console.log("Warning: Attempted to get invalid color index("+cindex+").");
+		return {'R' : 0,'G' : 0,'B' : 0};
+	}
+	//if(inverse)
+	//	height=1.0-height;
+	if(height>=1.0||height<0.0){
+		console.log("Warning: Attempted to get invalid color height("+height+").");
+		return {'R' : 0,'G' : 0,'B' : 0};
+	}
+	if(scales[cindex]==null){
+		console.log("Color Height debug:"+cindex+","+scales[cindex]);
+	}
+	var index=Math.floor(1.0*(scales[cindex].length)*height);
+	if(inverse)
+		index=scales[cindex].length-index-1;
+	return scales[cindex][index];
 }
 
 function getMousePos(canvas, evt) {
@@ -236,9 +473,49 @@ function drawLabSpace(cid,bufid){
 function drawScene() {
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
-	
+	drawColorThumbnails();
+}
 
+function drawColorThumbnails(){
+	
+	//Erase the whole of the iconview area
+	clearRectangle(iconX,iconY+iconViewHeight,iconViewWidth,iconViewHeight);
+	
+	//this draw colormap as thumbnails;
+	for(var i=0;i<color_panels.length;i++){
+		if((iconHeight+10)*i+10-iconViewOffset+iconHeight<0||(iconHeight+10)*i+10-iconViewOffset>iconViewHeight){
+			continue;
+		}
+		drawThumbnail(iconX+10,iconY+(iconHeight+10)*i+10-iconViewOffset,i);
+	}
+	
+	//Draw the borders
+	drawBorder(iconX,iconY,iconViewWidth,iconViewHeight,{r:.3,g:.3,b:.3});
+	
+	//Clear the edges
+	clearRectangle(iconX,iconY-3,iconViewWidth,iconHeight+3);
+	clearRectangle(iconX,iconY+iconViewHeight+iconHeight+5,iconViewWidth,iconHeight+3);
+}
+
+function drawThumbnail(x,y,cindex){
+	color_panels[cindex].scale(iconWidth,iconHeight);
+	color_panels[cindex].move(x,y);
+	color_panels[cindex].draw();
+}
+
+function drawBorder(x,y,w,h,color){
+	var rectangle=Shape.rectangle;
+	rectangle.scale(w+6,3);
+	rectangle.move(x-3,y-3,-.5);
+	rectangle.changeColor(color.r,color.g,color.b);
+	rectangle.draw();
+	rectangle.move(x-3,y+h,-.5);
+	rectangle.draw();
+	rectangle.scale(3,h+6);
+	rectangle.move(x-3,y-3,-.5);
+	rectangle.draw();
+	rectangle.move(x+w,y-3,-.5);
+	rectangle.draw();
 }
 
 function addEventHandler(obj, evt, handler) {
@@ -270,8 +547,6 @@ function resize(){
 	var iconDim=50*scaleSquare;
     iconHeight = iconDim;
     iconWidth = iconDim;
-	targ.width=iconDim;
-	targ.height=iconDim;
 	textCanvas.width=canvas.width;
 	textCanvas.height=canvas.height;
     iconX = 50*scaleSquare;
@@ -294,6 +569,117 @@ function resize(){
     drawScene();
 	drawHelpText();
    }
+}
+
+function readFilesOnLoad(){
+	readFilesFromServer("./data/colorscale/","scale");
+}
+function readFilesFromServer(directory,type){//type=scale, image
+	$.ajax({
+    type:    "GET",
+    url:     directory+"start.txt",
+    success: function(text) {		
+            var lines=text.split('\n');
+			if(lines[lines.length-1]==""||lines[lines.length-1]=="/r")lines.pop();
+			if(type!="scale"){
+				loading+=lines.length;
+				updateLoader();
+			}
+			for(var i=0;i<lines.length;i++) {
+				if(lines[i][lines[i].length-1]==""||lines[i][lines[i].length-1]=="\r")
+					readOneFileFromServer(directory,lines[i].slice(0,-1),type);
+				else
+					readOneFileFromServer(directory,lines[i],type);
+			}
+    },
+    error:   function() {
+        // An error occurred
+		alert("cannot read files from server");
+    }
+});
+}
+
+function readOneFileFromServer(directory,filename,type){
+	$.ajax({
+    type:    "GET",
+    url:     directory+filename,
+    success: function(text) {
+        // `text` is the file text
+		if(type=="scale"){
+			readTextToScale(text,filename);
+		}
+		else if(type=="image"){
+			readTextToImage(text,filename,null);
+		}
+		else if(type=="tubes"){
+			readTextToTubes(text,filename);
+		}
+		else if(type=='data'){
+			if(filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2)=="data")//if extension is .data
+				readTextToTubes(text,filename);
+			else
+				readTextToImage(text,filename,null);
+			}
+		else{
+			console.log("file does not match:");
+			console.log(text);
+		}
+    },
+    error:   function() {
+        // An error occurred
+		alert("cannot read files from server");
+    }
+});
+}
+
+function readTextToScale(text,filename){
+	var scale=[];
+	var lines=text.split('\n');
+	if(lines[lines.length-1]=="")lines.pop();
+	try{
+	for(var i=0; i<lines.length;i++){
+		var color=lines[i].split(" ");
+		var rgb={
+			r: Number(color[0]),
+			g: Number(color[1]),
+			b: Number(color[2])
+		};
+		if(isNaN(rgb.r)||isNaN(rgb.g)||isNaN(rgb.b))
+			throw("error reading at line "+(i+1));
+		scale.push(rgb);
+	}
+	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
+	scales.push(scale);
+	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
+	colormapFileNames.push(filename);
+	addNewColorIconData(scales.length-1);
+	}catch(e){
+		alert(e);
+	}
+	finally{
+		drawScene();
+	}
+}
+
+function addNewColorIconData(cindex){
+	var icondataside=64;
+	var pixelData = ctx.createImageData(icondataside,1);//new Uint8Array(iconWidth*iconHeight*4);
+	var interval = 1/icondataside;
+	var tempColor;
+	for(var i=0;i<icondataside;i++){
+		tempColor = getColorHeight(cindex,i*interval);
+		pixelData.data[i*4]=Math.round(tempColor.r*255);
+		pixelData.data[i*4+1]=Math.round(tempColor.g*255);
+		pixelData.data[i*4+2]=Math.round(tempColor.b*255);
+		pixelData.data[i*4+3]=255;
+	}
+	/*for(var i=1;i<iconHeight;i++){
+		for(var j=0;j<iconWidth*4;j++){
+			pixelData[i*iconHeight*4+j]=pixelData[j];
+		}
+	}*/
+	createImageBitmap(pixelData).then(function(response) { colorIconsData.push(response);});
 	
 }
+
 
