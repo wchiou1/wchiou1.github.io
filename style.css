@@ -227,14 +227,13 @@ select{
 	z-index: 1;
 }
 
-.fr{
+#lab-el{
 	float: right;
 	text-align: center;
+	width: 33%;
+	background-color: #cccccc;
 }
 
-.wp33{
-	width: 33%;
-}
 #LabList{
 	width: 20%;
 }
