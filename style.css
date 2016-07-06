@@ -227,3 +227,11 @@ select{
 	z-index: 1;
 }
 
+.fr{
+	float: right;
+	text-align: center;
+}
+
+.wp33{
+	width: 33%;
+}
