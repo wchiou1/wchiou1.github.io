@@ -1123,9 +1123,15 @@ function generateColormap(constraint){
 }
 var how_many_points_has_been_added=0;
 function addPointToList(lab){
-	var l=lab.L||0;
-	var a=lab.a||0;
-	var b=lab.b||0;
+	if(!lab){
+		var l=0;
+		var a=0;
+		var b=0;
+	}else{
+		var l=lab.L;
+		var a=lab.a;
+		var b=lab.b;
+	}
 	var labspan="<div>"+l+"</div><div>"+a+"</div><div>"+b+"</div>"
 	$("#list_of_ctrl_points").append("<li id='ctrl"+how_many_points_has_been_added+"' class='ui-state-default'>"+labspan+"</li>");
 	if(!lab) update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));

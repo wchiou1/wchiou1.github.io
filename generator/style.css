@@ -240,6 +240,7 @@ select{
 	width: 33%;
 	float: left;
 	text-align: center;
+	overflow: hidden;
 }
 #LabList{
 	float: left;
