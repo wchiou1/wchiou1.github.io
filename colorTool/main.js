@@ -958,8 +958,8 @@ function start() {
 }
 
 function initFileList(){
-	getFileList("./data/colorscale/","scale");
-	getFileList("./data/image/","data");
+	getFileList("../data/colorscale/","scale");
+	getFileList("../data/image/","data");
 }
 
 function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)};return c};//http://louisremi.mit-license.org/
@@ -2574,8 +2574,8 @@ function readImage(file){
     createImageBitmap(file).then(addImage,function(err){alert("cannot read this image"); loading--;}).then(drawScene,drawScene);
 }
 function readFilesOnLoad(){
-	readFilesFromServer("./data/colorscale/","scale");
-	readFilesFromServer("./data/image/","data");
+	readFilesFromServer("../data/colorscale/","scale");
+	readFilesFromServer("../data/image/","data");
 }
 
 function getFileList(directory,type){
@@ -2924,7 +2924,7 @@ function removeColors(){
 }
 
 function addColors(){
-	var colorDirectory = "./data/colorscale/";
+	var colorDirectory = "../data/colorscale/";
 	//Iterate through all html elements to get an array
 	var sel2 = document.getElementById('select2');
 	for(var i=0;i<sel2.options.length;i++){
@@ -3029,7 +3029,7 @@ function removeImgs(){
 }
 
 function addImgs(){
-	var dataDirectory = "./data/image/";
+	var dataDirectory = "../data/image/";
 	//Iterate through all html elements to get an array
 	var sel5 = document.getElementById('select5');
 	console.log("Reading Images");

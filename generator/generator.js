@@ -695,7 +695,7 @@ function resize(){
 }
 
 function readFilesOnLoad(){
-	readFilesFromServer("./data/colorscale/","scale");
+	readFilesFromServer("../data/colorscale/","scale");
 }
 function readFilesFromServer(directory,type){//type=scale, image
 	$.ajax({
