@@ -267,7 +267,7 @@ function start() {
 
 $("#list_of_ctrl_points").sortable({
         stop : function(event, ui){
-          alert($(this).sortable('toArray'));
+          update_ctrl_points($(this).sortable('toArray'));
         }
 	}).disableSelection();
 
@@ -1005,9 +1005,26 @@ function generateColormap(constraint){
 }
 
 function addPointToList(a){
-	$("#list_of_ctrl_points").append("<li id='ctrl"+a+"' class='ui-state-default'>"+"point "+a+"</li>");
+	$("#list_of_ctrl_points").append("<li id='ctrl"+a+"' class='ui-state-default'>"+a+"</li>");
+	 update_ctrl_points($("#list_of_ctrl_points").sortable('toArray'));
 }
-
+function removePointFromList(id){
+	$("#"+id).remove();
+	update_ctrl_points($("#list_of_ctrl_points").sortable('toArray'));
+}
+function update_ctrl_points(idarray){
+	var a_points=[];
+	for(var i=0;i<idarray.length;i++){
+		var li=document.getElementById(idarray[i]);
+		var Lab=li.children;
+		var L=Number(Lab[0].textContent);
+		var a=Number(Lab[1].textContent);
+		var b=Number(Lab[2].textContent);
+		a_points.push({'L':L,'a':a,'b':b});
+	}
+	constraint.ctrl_points=a_points;
+	
+}
 function Lab_add(Lab,arr){
 	return {L:Lab.L+arr[0] , a:Lab.a+arr[1] , b:Lab.b+arr[2] };
 }
