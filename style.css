@@ -71,6 +71,13 @@ html, body
   border: 1px solid #000000;
   z-index: 2;
 }
+#colordrop {
+  border: 1px solid #000000;
+  z-index: 2;
+  top: 50px;
+  left: 50px;
+  position: absolute;
+}
 select{
     width: 225px;
     overflow-x: hidden;
@@ -204,6 +211,25 @@ select{
 	z-index: 5;
 	display: block;
 	margin-top: 30px;
+	clear: both;
+	border: 2px solid #cccccc;
+}
+#labcanvas{
+	position: absolute; 
+	left: 500px;
+	z-index: 5;
+	display: block;
+	margin-top: 30px;
+	clear: both;
+	border: 2px solid #cccccc;
+}
+#coloriconcanvas{
+	position: absolute; 
+	left: 50px;
+	top: 50px;
+	z-index: 1;
+	display: block;
+	margin-top: 0px;
 	clear: both;
 	border: 2px solid #cccccc;
 }
