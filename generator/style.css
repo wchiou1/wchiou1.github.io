@@ -216,22 +216,16 @@ select{
 	border: 2px solid #cccccc;
 }
 #labcanvas{
-	position: absolute; 
-	left: 500px;
+	float: left;
 	z-index: 5;
 	display: block;
-	margin-top: 30px;
-	clear: both;
 	border: 2px solid #cccccc;
 }
 #coloriconcanvas{
-	position: absolute; 
-	left: 50px;
-	top: 50px;
+
+	float: left;
 	z-index: 1;
 	display: block;
-	margin-top: 0px;
-	clear: both;
 	border: 2px solid #cccccc;
 }
 #button6{
@@ -263,4 +257,5 @@ select{
 
 #LabList{
 	width: 20%;
+	float: left;
 }
