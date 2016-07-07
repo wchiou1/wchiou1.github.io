@@ -61,24 +61,10 @@ html, body
 	z-index: 1;
 	display: block;
 }
-
-#drop1 {
-  border: 1px solid #000000;
-  z-index: 2;
-}
-
-#drop2 {
-
-  border: 1px solid #000000;
-  z-index: 2;
-}
 #colordrop {
-  z-index: 2;
-  top: 0px;
-  left: 0px;
-  width: 1200px;
-  height: 700px;
-  position: absolute;
+	border: 1px solid #000000;
+	z-index: 2;
+	position: absolute;
 }
 select{
     width: 225px;
