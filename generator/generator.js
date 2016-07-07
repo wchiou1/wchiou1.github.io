@@ -1003,10 +1003,12 @@ function generateColormap(constraint){
 	}
 	download(outputText, "generated_colormap", 'text/plain');
 }
-
-function addPointToList(a){
-	$("#list_of_ctrl_points").append("<li id='ctrl"+a+"' class='ui-state-default'>"+a+"</li>");
-	 update_ctrl_points($("#list_of_ctrl_points").sortable('toArray'));
+var how_many_points_has_been_added=0;
+function addPointToList(){
+	var labspan="<div>"+0+"</div><div>"+0+"</div><div>"+0+"</div>"
+	$("#list_of_ctrl_points").append("<li id='ctrl"+how_many_points_has_been_added+"' class='ui-state-default'>"+labspan+"</li>");
+	update_ctrl_points($("#list_of_ctrl_points").sortable('toArray'));
+	how_many_points_has_been_added++;
 }
 function removePointFromList(id){
 	$("#"+id).remove();
