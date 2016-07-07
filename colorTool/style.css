@@ -257,7 +257,14 @@ select{
 	float: right;
 	text-align: center;
 	width: 33%;
+	height: 50%;
 	background-color: #cccccc;
+}
+#list_of_ctrl_points{
+	clear: both;
+}
+#list_of_ctrl_points li{
+	width: 100%;
 }
 
 #LabList{
