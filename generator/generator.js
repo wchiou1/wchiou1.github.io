@@ -37,6 +37,7 @@ var screenscale=1;
 var lastMouseX;
 var lastMouseY;
 var clickedElement=null;
+var mouseDown=false;
 
 
 var min_width=iconViewWidth;
@@ -229,6 +230,7 @@ function start() {
 	addEventHandler(window,"resize",on_resize(resize));
 	initWebGL(canvas);
 	  if (gl) {
+		document.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
 		document.onmousemove = 	handleMouseMove;
 		addEventHandler(document,"mousewheel",MouseWheelHandler);
@@ -285,7 +287,12 @@ function initElements(){
 	resetbutton.style.left = 200-offset30+"px";
 	resetbutton.style.top = 200+iconViewHeight+110*screenscale+"px";
 	
-
+	var colordrop=document.getElementById("colordrop");
+	var iconstyle = window.getComputedStyle(canvas, null);
+	colordrop.style.left=iconstyle.left;
+	colordrop.style.top=iconstyle.top;
+	colordrop.style.width=(canvas.width+4)+"px";
+	colordrop.style.height=(canvas.height+4)+"px";
 }
 
 function initBuffers(){
@@ -501,10 +508,65 @@ function getMousePos(canvas, evt) {
 	};
 }
 
+//Returns which index of the color map the icon represents or -1 if no icon was hit
+function testIconHit(event){
+	var mouse=getMousePos(canvas,event);
+	//First test x value
+	if(mouse.x<iconX+10||mouse.x>iconX+10+iconWidth){
+		return -1;
+	}
+	//Test y values
+	for(var i=0;i<scales.length;i++){
+		if(mouse.y>iconY+10+i*(iconHeight+10)-iconViewOffset&&mouse.y<iconY+10+iconHeight+i*(iconHeight+10)-iconViewOffset){
+			return i;
+		}
+	}
+	return -1;
+}
+
+function testIconViewHit(event){
+	var mouse=getMousePos(canvas,event);
+	if(mouse.x>iconX&&mouse.x<iconX+iconViewWidth){
+		if(mouse.y>iconY&&mouse.y<iconY+iconViewHeight){
+			return true;
+		}
+	}
+	return false;
+}
+
+//Returns which index of the color map the icon represents or -1 if no icon was hit
+function testIconHit(event){
+	var mouse=getMousePos(canvas,event);
+	//First test x value
+	if(mouse.x<iconX+10||mouse.x>iconX+10+iconWidth){
+		return -1;
+	}
+	//Test y values
+	for(var i=0;i<scales.length;i++){
+		if(mouse.y>iconY+10+i*(iconHeight+10)-iconViewOffset&&mouse.y<iconY+10+iconHeight+i*(iconHeight+10)-iconViewOffset){
+			return i;
+		}
+	}
+	return -1;
+}
+
+function handleMouseDown(event){
+	if(mouseDown)
+		return;
+	mouseDown=true;
+	if(clickedElement==null&&testIconViewHit(event)){
+		clickedElement=canvas;
+		var temp=testIconHit(event);
+		if(temp!=-1)
+			selectedColor=temp;
+		drawLabSpace(selectedColor,0);
+	}
+	
+}
 //Called when the mouse is released
 function handleMouseUp(event){
+	mouseDown=false;
 	clickedElement=null;
-
 }
 
 //Called when the mouse moves
@@ -516,14 +578,36 @@ function handleMouseMove(event){
 		drawLabSpace(selectedColor,0);
 	}
 	
+	if(clickedElement!=null&&clickedElement==canvas&&iconViewHeight<scales.length*(iconHeight+10)+10){
+		updateIconViewOffset(mouse.x,mouse.y);
+		drawColorThumbnails();
+	}
+	
 	lastMouseX=mouse.x;
 	lastMouseY=mouse.y;
 	return false;
 }
 
 function MouseWheelHandler(e) {
-
+	
 }
+
+function updateIconViewOffset(mouseX,mouseY){
+	var dy=lastMouseY-mouseY;
+	scrollIconView(dy);
+}
+
+function scrollIconView(delta){
+	iconViewOffset = iconViewOffset+delta;
+	var spacing=iconHeight+10;
+	if(iconViewOffset<0){
+		iconViewOffset=0;
+	}
+	else if(0<scales.length*spacing-iconViewHeight+10&&iconViewOffset>scales.length*spacing-iconViewHeight+10){
+		iconViewOffset=scales.length*spacing-iconViewHeight+10;
+	}
+}
+
 var pMatrix2=makeOrtho(-256,256,-256,256,-10000,10000);
 var transform2={
 	degx: 0,
@@ -895,12 +979,30 @@ function drawLabSpace(cid,bufid){
 	gl2.drawArrays(gl2.POINTS, 0, len);
 }
 
-function handleCanvasClick(evt){
+function handleLabCanvasClick(evt){
 	var mouse=getMousePos(canvas2,evt);
 	console.log("Mouse click on canvas2("+mouse.x+","+mouse.y+")");
 	clickedElement=document.getElementById("labcanvas");
 }
 
+function handleIconCanvasClick(evt){
+	var mouse=getMousePos(canvas2,evt);
+	console.log("Mouse click on canvas("+mouse.x+","+mouse.y+")");
+	clickedElement=document.getElementById("coloriconcanvas");
+}
+
+function handleLabCanvasWheel(evt){
+	var e = window.event || e; // old IE support
+	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+	if(delta>0)
+		scaleT2(1.1);
+	else if(delta<0)
+		scaleT2(0.9);
+	drawLabSpace(selectedColor,0);
+	e.preventDefault();
+	e.returnValue=false;
+	return false;
+}
 function FileListenerInit(){
 	if(window.FileReader) {
 		addEventHandler(window, 'load', function() {
@@ -924,7 +1026,12 @@ function FileListenerInit(){
 			addEventHandler(drop2, 'dragenter', cancel);
 			addEventHandler(drop2,'drop', function(e){readDroppedFiles(e,'color');});
 			addEventHandler(button4,'click', handleResetButton);
-			addEventHandler(canvas2,'mousedown', handleCanvasClick);
+			addEventHandler(canvas2,'mousedown', handleLabCanvasClick);
+			addEventHandler(canvas2,'wheel', handleLabCanvasWheel);
+			
+			
+			//Icon canvas cannot use eventhandler because all events are blocked by drop
+			//addEventHandler(canvas,'mousedown', handleIconCanvasClick);
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
