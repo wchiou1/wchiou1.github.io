@@ -251,11 +251,23 @@ select{
 .lab-el{
 	float: right;
 	text-align: center;
-	width: 33%;
+	width: 29%;
 	background-color: #cccccc;
 }
-
+#list_of_ctrl_points{
+	clear: both;
+}
+#list_of_ctrl_points li{
+	width:100%;
+}
+#list_of_ctrl_points li div{
+	width: 33%;
+	float: left;
+	text-align: center;
+}
 #LabList{
 	width: 20%;
-	float: left;
+	height: 100%;
+	overflow: auto;
+	
 }
