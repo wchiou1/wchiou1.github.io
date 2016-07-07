@@ -589,7 +589,19 @@ function handleMouseMove(event){
 }
 
 function MouseWheelHandler(e) {
-	
+	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+	if(testIconViewHit(e)){
+		if(iconViewHeight<scales.length*(iconHeight+10)+10){
+			if(delta>0)
+				scrollIconView(-15);
+			else if(delta<0)
+				scrollIconView(15);
+			drawColorThumbnails();
+		}
+		e.preventDefault();
+		e.returnValue=false;
+	}
+	return false;
 }
 
 function updateIconViewOffset(mouseX,mouseY){
