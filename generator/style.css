@@ -1,0 +1,265 @@
+html, body
+{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+	width: 100%;
+    height: 100%;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+	overflow: visible;
+	background-color:gray;
+}
+
+.container{
+	position: relative;
+	overflow: hidden;
+}
+#container1{
+	width: 100%;
+	height: 100%;
+	display: block;
+	border: 0;
+	min-width: 1200px;
+	min-height:700px;
+}
+
+#glcanvas{
+	position: absolute; 
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	min-width: 1200px;
+	min-height:700px;
+	z-index: 0;
+	display: block;
+}
+
+#imageCanvas{
+	position: absolute; 
+	top: 0%;
+	left: 0%;
+	z-index: 3;
+	display: none;
+}
+
+#text{
+	position: absolute; 
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	min-width: 1200px;
+	min-height:700px;
+	z-index: 1;
+	display: block;
+}
+
+#drop1 {
+  border: 1px solid #000000;
+  z-index: 2;
+}
+
+#drop2 {
+
+  border: 1px solid #000000;
+  z-index: 2;
+}
+#colordrop {
+  border: 1px solid #000000;
+  z-index: 2;
+  top: 50px;
+  left: 50px;
+  position: absolute;
+}
+select{
+    width: 225px;
+    overflow-x: hidden;
+	overflow-y:scroll;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+#selector1{
+	display: none;
+}
+#selector2{
+	display: none;
+}
+#selector3{
+	display: none;
+}
+.loader {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+	position: absolute;
+	display: none;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.button{
+	font: 12px, sans-serif;
+	font-weight: bold;
+	text-align: center;
+	color: white;
+	position: absolute;
+	width:100px;
+	height: 50px;
+}
+.button:hover{
+	outline: 2px solid white;
+	cursor: default;
+}
+.button:active {
+	outline: 2px solid #666666;
+} 
+.fadeButton{
+	position: absolute;
+	width:32px;
+	height: 32px;
+	line-height: 32px;
+	opacity: 0.2;
+	z-index:1;
+	transition: opacity 2s 0.5s;
+	
+}
+.fadeButton:hover{
+	opacity: 0.6;
+	transition: opacity 0.5s;
+	cursor: default;
+}
+.fadeButton:active{
+	opacity: 1.0;
+}
+.fadebutton{
+	float: right;
+	color: white;
+	background: #333333;
+	text-align: center;
+	width:36px;
+	height: 24px;
+	margin-right: 3px;
+	margin-top: 3px;
+	opacity: 0.2;
+	z-index:1;
+	transition: opacity 0.5s;
+}
+.fadebutton:hover{
+	opacity: 0.6;
+	transition: opacity 0.5s;
+	cursor: default;
+}
+.fadebutton:active{
+	opacity: 1.0;
+}
+#button1{
+	background-color: #3399ff;
+	text-align: center;
+	line-height: 30px;
+	z-index: 1;
+}
+#button2{
+	background-color: #3399ff;
+	text-align: center;
+	line-height: 30px;
+	z-index: 1;
+}
+#button3{
+	background-color: #3399ff;
+	text-align: center;
+	line-height: 30px;
+	z-index: 1;
+}
+#button4{
+	background-color: #7F00FF;
+	text-align: center;
+	line-height: 30px;
+	z-index: 1;
+}
+#button5{
+	background-color: #7F00FF;
+	text-align: center;
+	line-height: 30px;
+	z-index: 1;
+}
+#lab{
+	position: absolute;
+	height: 30px;
+	width:360px;
+	z-index: 5;
+	display: none;
+	background-color: #cccccc;
+}
+#hideLab{
+	right: 0%;
+}
+#glcanvas2{
+	position: absolute; 
+	right: 0px;
+	z-index: 5;
+	display: block;
+	margin-top: 30px;
+	clear: both;
+	border: 2px solid #cccccc;
+}
+#labcanvas{
+	position: absolute; 
+	left: 500px;
+	z-index: 5;
+	display: block;
+	margin-top: 30px;
+	clear: both;
+	border: 2px solid #cccccc;
+}
+#coloriconcanvas{
+	position: absolute; 
+	left: 50px;
+	top: 50px;
+	z-index: 1;
+	display: block;
+	margin-top: 0px;
+	clear: both;
+	border: 2px solid #cccccc;
+}
+#button6{
+	position: absolute; 
+	background-color: #7F00FF;
+	top:650px;
+	left:900px;
+	text-align: center;
+	line-height: 30px;
+	z-index: 1;
+}
+
+#button7{
+	position: absolute; 
+	background-color: #7F00FF;
+	top:650px;
+	left:900px;
+	text-align: center;
+	line-height: 30px;
+	z-index: 1;
+}
+
+.lab-el{
+	float: right;
+	text-align: center;
+	width: 33%;
+	background-color: #cccccc;
+}
+
+#LabList{
+	width: 20%;
+}
