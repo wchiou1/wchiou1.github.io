@@ -2845,11 +2845,11 @@ function handleLabButton(evt){
 function handleInvertButton(id){
 	var button = document.getElementById("invert"+(id+1));
 	if(inverseColorHeight[id]===false){
-		button.src="icon/invert2.png";
+		button.src="../icon/invert2.png";
 		inverseColorHeight[id]=true;
 	}
 	else{
-		button.src="icon/invert1.png";
+		button.src="../icon/invert1.png";
 		inverseColorHeight[id]=false;
 	}
 	drawScene();
