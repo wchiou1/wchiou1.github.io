@@ -13,7 +13,7 @@ html, body
     padding: 0px;
     margin: 0px;
 	overflow: visible;
-	background-color:gray;
+	background-color: gray;
 }
 
 .container{
@@ -24,10 +24,9 @@ html, body
 	width: 100%;
 	height: 100%;
 	display: block;
-	border: 0;
 	min-width: 1200px;
 	min-height:700px;
-	margin: 30px;
+	padding: 30px;
 }
 
 #glcanvas{
@@ -193,15 +192,6 @@ select{
 #hideLab{
 	right: 0%;
 }
-#glcanvas2{
-	position: absolute; 
-	right: 0px;
-	z-index: 5;
-	display: block;
-	margin-top: 30px;
-	clear: both;
-	border: 2px solid #cccccc;
-}
 #labcanvas{
 	float: left;
 	z-index: 5;
@@ -209,7 +199,6 @@ select{
 	border: 2px solid #cccccc;
 }
 #coloriconcanvas{
-
 	float: left;
 	z-index: 1;
 	display: block;
@@ -238,11 +227,24 @@ select{
 .lab-el{
 	float: right;
 	text-align: center;
-	width: 33%;
+	width: 29%;
 	background-color: #cccccc;
 }
-
-#LabList{
-	width: 20%;
+#list_of_ctrl_points{
+	clear: both;
+}
+#list_of_ctrl_points li{
+	width: 100%;
+}
+#list_of_ctrl_points li div{
+	width: 33%;
 	float: left;
+	text-align: center;
+}
+#LabList{
+	float: left;
+	width: 20%;
+	height: 50%;
+	overflow: auto;	
+	border: 2px solid #cccccc;
 }
