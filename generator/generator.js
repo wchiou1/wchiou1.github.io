@@ -1160,6 +1160,9 @@ function update_ctrl_points_from_javascript(rgb_arr){
 	for(var i=0;i<rgb_arr.length;i++){
 		var rgb=rgb_arr[i];
 		var lab=rgb_to_lab({R:rgb.r*255,G:rgb.g*255,B:rgb.b*255});
+		lab.L=lab.L.toPrecision(7);
+		lab.a=lab.a.toPrecision(7);
+		lab.b=lab.b.toPrecision(7);
 		addPointToList(lab);
 	}
 	update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));
