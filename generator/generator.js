@@ -285,7 +285,10 @@ function initElements(){
 	resetbutton.style.left = 200-offset30+"px";
 	resetbutton.style.top = 200+iconViewHeight+110*screenscale+"px";
 	
-
+	var colordrop=document.getElementById("colordrop");
+	
+	colordrop.style.width=canvas.width;
+	colordrop.style.height=canvas.height;
 }
 
 function initBuffers(){
