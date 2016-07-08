@@ -11,7 +11,6 @@ var imageCanvas;
 var ctx;
 var lastShader=null;
 
-var colorMaps = [];//2d array of objects which stores the colors
 var color_panels=[];
 var iconViewWidth = 70;
 var iconViewHeight = 400;
@@ -269,7 +268,7 @@ function start() {
 
 $("#list_of_ctrl_points").sortable({
         stop : function(event, ui){
-          update_ctrl_points($(this).sortable('toArray'));
+          update_ctrl_points_from_html($(this).sortable('toArray'));
         }
 	}).disableSelection();
 
@@ -1123,17 +1122,26 @@ function generateColormap(constraint){
 	download(outputText, "generated_colormap", 'text/plain');
 }
 var how_many_points_has_been_added=0;
-function addPointToList(){
-	var labspan="<div>"+0+"</div><div>"+0+"</div><div>"+0+"</div>"
+function addPointToList(lab){
+	if(!lab){
+		var l=0;
+		var a=0;
+		var b=0;
+	}else{
+		var l=lab.L;
+		var a=lab.a;
+		var b=lab.b;
+	}
+	var labspan="<div>"+l+"</div><div>"+a+"</div><div>"+b+"</div>"
 	$("#list_of_ctrl_points").append("<li id='ctrl"+how_many_points_has_been_added+"' class='ui-state-default'>"+labspan+"</li>");
-	update_ctrl_points($("#list_of_ctrl_points").sortable('toArray'));
+	if(!lab) update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));
 	how_many_points_has_been_added++;
 }
 function removePointFromList(id){
 	$("#"+id).remove();
-	update_ctrl_points($("#list_of_ctrl_points").sortable('toArray'));
+	update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));
 }
-function update_ctrl_points(idarray){
+function update_ctrl_points_from_html(idarray){
 	var a_points=[];
 	for(var i=0;i<idarray.length;i++){
 		var li=document.getElementById(idarray[i]);
@@ -1145,6 +1153,19 @@ function update_ctrl_points(idarray){
 	}
 	constraint.ctrl_points=a_points;
 	
+}
+function update_ctrl_points_from_javascript(rgb_arr){
+	$("#list_of_ctrl_points").empty();
+	how_many_points_has_been_added=0;
+	for(var i=0;i<rgb_arr.length;i++){
+		var rgb=rgb_arr[i];
+		var lab=rgb_to_lab({R:rgb.r*255,G:rgb.g*255,B:rgb.b*255});
+		lab.L=lab.L.toPrecision(7);
+		lab.a=lab.a.toPrecision(7);
+		lab.b=lab.b.toPrecision(7);
+		addPointToList(lab);
+	}
+	update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));
 }
 function Lab_add(Lab,arr){
 	return {L:Lab.L+arr[0] , a:Lab.a+arr[1] , b:Lab.b+arr[2] };
