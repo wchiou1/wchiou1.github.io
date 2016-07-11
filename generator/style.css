@@ -198,6 +198,12 @@ select{
 	display: block;
 	border: 2px solid #cccccc;
 }
+#colormapcanvas{
+	float: left;
+	z-index: 1;
+	display: block;
+	border: 2px solid #cccccc;
+}
 #button6{
 	position: absolute; 
 	background-color: #7F00FF;
@@ -273,7 +279,12 @@ select{
 #LabList{
 	float: left;
 	width: 20%;
+<<<<<<< HEAD
 	height: 50%;	
+=======
+	height: 554px;
+	overflow: auto;	
+>>>>>>> refs/remotes/origin/Wesley
 	border: 2px solid #cccccc;
 	position: relative;
 }
