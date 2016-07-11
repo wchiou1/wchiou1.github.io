@@ -2,8 +2,10 @@ var version="Testing init2"
 
 var canvas = document.getElementById("coloriconcanvas");
 var canvas2;
+var colormapcanvas = document.getElementById("colormapcanvas");
 var gl;
 var gl2;
+var colormapgl;
 shaderProgram={};
 attributes={};
 uniforms={};
@@ -12,12 +14,14 @@ var ctx;
 var lastShader=null;
 
 var color_panels=[];
+var generated_panel;
 var iconViewWidth = 70;
-var iconViewHeight = 400;
+var iconViewHeight = 550;
 var iconHeight = 50;
 var iconWidth = 50;
 var iconViewOffset = 0;
 var scales=[];
+var generated_scale;
 var Shape={};
 var colormapFileNames=[];
 var colorIconsData=[];
@@ -49,12 +53,13 @@ var orthogonal={
 };
 var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
 
-var ColorPanel= function(x,y,w,h,cID){
+var ColorPanel= function(x,y,w,h,cID,webgl){
 	this.x=x;
 	this.y=y;
 	this.z=0;
 	this.w=w;
 	this.h=h;
+	this.webgl=webgl;
 	this.cindex=cID;
 	this.verticesBuffer=Shape.rectangle.verticesBuffer;
 	this.verticesTexCoordBuffer=Shape.rectangle.verticesTexCoordBuffer;
@@ -73,9 +78,10 @@ var ColorPanel= function(x,y,w,h,cID){
 	function flatten(scale){
 		var array=[];
 		for(var i=0;i<scale.length;i++){
-			array.push(Math.round(scale[i].r*255));
-			array.push(Math.round(scale[i].g*255));
-			array.push(Math.round(scale[i].b*255));
+			var rgb=lab_to_rgb(scale[i]);
+			array.push(Math.round(rgb.R));
+			array.push(Math.round(rgb.G));
+			array.push(Math.round(rgb.B));
 			array.push(255);
 		}
 		return new Uint8Array(array);
@@ -83,30 +89,37 @@ var ColorPanel= function(x,y,w,h,cID){
 	
 	this.create= 
 	function(id){
-		gl.bindTexture(gl.TEXTURE_2D, self.texture);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, scales[id].length, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,flatten(scales[id]));
+		if(id<0)
+			return;
+		self.cindex=id;
+		var webgl=self.webgl;
+		webgl.bindTexture(webgl.TEXTURE_2D, self.texture);
+		webgl.texImage2D(webgl.TEXTURE_2D, 0, gl.RGBA, scales[id].length, 1, 0, webgl.RGBA, webgl.UNSIGNED_BYTE,flatten(scales[id]));
 		setTexParameter();
 	};
 	this.create(cID);
 	this.draw=function(inverted){
+		if(this.cindex<0)
+			return;
+		var webgl=self.webgl;
 		if(lastShader!=="colormapShader"){
 			lastShader="colormapShader";
-			gl.useProgram(shaderProgram.colormapShader);
-			gl.enableVertexAttribArray(attributes.colormapShader.vertexPositionAttribute);
-			gl.enableVertexAttribArray(attributes.colormapShader.vertexTexCoordAttribute);
+			webgl.useProgram(shaderProgram.colormapShader);
+			webgl.enableVertexAttribArray(attributes.colormapShader.vertexPositionAttribute);
+			webgl.enableVertexAttribArray(attributes.colormapShader.vertexTexCoordAttribute);
 		}
 			
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
-		gl.vertexAttribPointer(attributes.colormapShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+		webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesBuffer);
+		webgl.vertexAttribPointer(attributes.colormapShader.vertexPositionAttribute, 3, webgl.FLOAT, false, 0, 0);
 		if(inverted)
-			gl.bindBuffer(gl.ARRAY_BUFFER, Shape.rectangle.invertedTexCoordBuffer);
+			webgl.bindBuffer(webgl.ARRAY_BUFFER, Shape.rectangle.invertedTexCoordBuffer);
 		else
-			gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
-		gl.vertexAttribPointer(attributes.colormapShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+			webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+		webgl.vertexAttribPointer(attributes.colormapShader.vertexTexCoordAttribute, 2, webgl.FLOAT, false, 0, 0);
 		
-		gl.uniform1i(uniforms.colormapShader.uColormapLoc, 0);  
-		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, self.texture);
+		webgl.uniform1i(uniforms.colormapShader.uColormapLoc, 0);  
+		webgl.activeTexture(webgl.TEXTURE0);
+		webgl.bindTexture(webgl.TEXTURE_2D, self.texture);
 		
 		perspectiveMatrix = orthoMatrix;
 
@@ -117,11 +130,10 @@ var ColorPanel= function(x,y,w,h,cID){
 
 		setMatrixUniforms(uniforms.colormapShader);
 
-		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		webgl.drawArrays(webgl.TRIANGLE_STRIP, 0, 4);
 		
 		mvPopMatrix();
 	};
-	
 };
 
 var Rectangle= function(){
@@ -227,8 +239,10 @@ function start() {
 	canvas2 = document.getElementById("labcanvas");
 	
 	addEventHandler(window,"resize",on_resize(resize));
-	initWebGL(canvas);
-	  if (gl) {
+	gl=initWebGL(canvas);
+	gl2=initWebGL(canvas2);
+	colormapgl=initWebGL(colormapcanvas);
+	if (gl) {
 		document.onmousedown = handleMouseDown;
 		document.onmouseup = handleMouseUp;
 		document.onmousemove = 	handleMouseMove;
@@ -248,6 +262,12 @@ function start() {
 				gl2.enable(gl.DEPTH_TEST);
 				gl2.depthFunc(gl.LEQUAL);
 		}
+		if(colormapgl){
+				gl2.clearColor(0.0, 0.0, 0.0, 1.0);
+				gl2.clearDepth(1.0);
+				gl2.enable(gl.DEPTH_TEST);
+				gl2.depthFunc(gl.LEQUAL);
+		}
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		//initTextureFramebuffer(); //#not ready
@@ -258,10 +278,11 @@ function start() {
 		readFilesOnLoad()
 		initShape();
 		resize();
+		generated_colormap=new ColorPanel(0,0,480,66,-1,colormapgl);
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
 		drawScene();
-	  }
+	}
 	  
 	
 }
@@ -331,30 +352,18 @@ function initShape(){
 	Shape.rectangle= new Rectangle();
 }
 
-function initWebGL() {
-  gl = null;
+function initWebGL(glcanvas) {
+  var gl = null;
 
   try {
-    gl = canvas.getContext("experimental-webgl",{preserveDrawingBuffer: true});
+    gl = glcanvas.getContext("experimental-webgl");
   }
   catch(e) {
   }
   if (!gl) {
     alert("Unable to initialize WebGL. Your browser may not support it.");
   }
-  
-  //second gl canvas
-   gl2 = null;
-
-  try {
-    gl2 = canvas2.getContext("experimental-webgl");
-	
-  }
-  catch(e) {
-  }
-  if (!gl2) {
-    alert("Unable to initialize WebGL. Your browser may not support it.");
-  }
+  return gl;
 }
 function initBuffer(){
 	verticesBuffer=gl.createBuffer();
@@ -450,8 +459,6 @@ function getShader(gl, id) {
   // based on its MIME type.
 
   var shader;
-
-  console.log(gl);
   if (shaderScript.type == "x-shader/x-fragment") {
     shader = gl.createShader(gl.FRAGMENT_SHADER);
   } else if (shaderScript.type == "x-shader/x-vertex") {
@@ -713,6 +720,7 @@ function drawColorThumbnails(){
 	//this draw colormap as thumbnails;
 	for(var i=0;i<color_panels.length;i++){
 		if((iconHeight+10)*i+10-iconViewOffset+iconHeight<0||(iconHeight+10)*i+10-iconViewOffset>iconViewHeight){
+		console.log(((iconHeight+10)*i+10-iconViewOffset)+"|"+iconViewHeight);
 			continue;
 		}
 		drawThumbnail(iconX+10,iconY+(iconHeight+10)*i+10-iconViewOffset,i);
@@ -773,17 +781,6 @@ function resize(){
 	var iconDim=50//*scaleSquare;
     iconHeight = iconDim;
     iconWidth = iconDim;
-    iconX = 0//*scaleSquare;
-    iconY = 0//*scaleY;
-    receiveX = 200//*scaleX;
-    receiveY = 150//*scaleY;
-    receiveDelta = 325//*scaleY;
-    iconViewWidth = 70//*scaleSquare;
-    iconViewHeight = 400//*scaleY;
-    resetIconX = 630//*scaleX;
-    resetIconY = 10//*scaleY;
-    scaleWidth = 400//*scaleSquare;
-    scaleHeight = 100//*scaleSquare;
 	setView(0,canvas.width,-canvas.height,0);
 	orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
     drawScene();
@@ -864,11 +861,12 @@ function readTextToScale(text,filename){
 		};
 		if(isNaN(rgb.r)||isNaN(rgb.g)||isNaN(rgb.b))
 			throw("error reading at line "+(i+1));
-		scale.push(rgb);
+		var lab=rgb_to_lab({'R':rgb.r*255, 'G':rgb.g*255, 'B':rgb.b*255});
+		scale.push(lab);
 	}
 	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
 	scales.push(scale);
-	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1));
+	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1,gl));
 	colormapFileNames.push(filename);
 	addNewColorIconData(scales.length-1);
 	}catch(e){
@@ -965,15 +963,16 @@ function drawLabSpace(cid,bufid){
 		var list_rgba=[];
 		var list_pos=[];
 		for(var i=0;i<len;i++){
-			var rgb=scale[i];
-			list_rgba.push(rgb.r);
-			list_rgba.push(rgb.g);
-			list_rgba.push(rgb.b);
-			list_rgba.push(1);
-			var lab=rgb_to_lab({'R':rgb.r*255, 'G':rgb.g*255, 'B':rgb.b*255});
+			var lab=scale[i];
 			list_pos.push(lab.a);
 			list_pos.push(lab.L-50);
 			list_pos.push(lab.b);
+			
+			var rgb=lab_to_rgb(lab);
+			list_rgba.push(rgb.R/255);
+			list_rgba.push(rgb.G/255);
+			list_rgba.push(rgb.B/255);
+			list_rgba.push(1);
 		}
 
 		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[bufid]);
@@ -992,13 +991,11 @@ function drawLabSpace(cid,bufid){
 
 function handleLabCanvasClick(evt){
 	var mouse=getMousePos(canvas2,evt);
-	console.log("Mouse click on canvas2("+mouse.x+","+mouse.y+")");
 	clickedElement=document.getElementById("labcanvas");
 }
 
 function handleIconCanvasClick(evt){
 	var mouse=getMousePos(canvas2,evt);
-	console.log("Mouse click on canvas("+mouse.x+","+mouse.y+")");
 	clickedElement=document.getElementById("coloriconcanvas");
 }
 
