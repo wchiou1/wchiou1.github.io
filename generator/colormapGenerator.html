@@ -27,6 +27,7 @@
 	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
     <script src="../lib/jquery.base64.js"></script>
 	<link rel="stylesheet" href="../jquery-ui-1.11.4.custom/jquery-ui.css">
+	<link rel="stylesheet" href="../jquery-ui-1.11.4.custom/jquery-ui.theme.css">
 	<script src="../jquery-ui-1.11.4.custom/jquery-ui.js"></script>
 	
 
@@ -96,13 +97,21 @@
 			<!--Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element. -->
 		</canvas>
 		<div id="LabList">
-			<div class="lab-el">b</div>
-			<div class="lab-el">a</div>
 			<div class="lab-el">L</div>
-			<ol id="list_of_ctrl_points" >
-			</ol>
+			<div class="lab-el">a</div>
+			<div class="lab-el">b</div>
+			<div id="labpoints">
+				<ol id="list_of_ctrl_points" >
+				</ol>
+			</div>
+			<div class="button-holder">
+				<button class="ctrl-button" id="delete">delete</button>
+				<button class="ctrl-button" id="insert">insert</button>
+				<button class="ctrl-button" id="edit">edit</button>
+				<button class="ctrl-button" id="generate">generate</button>
+				<button class="ctrl-button" id="option">option</button>
+			</div>
 		</div>
-		
 		<canvas id="labcanvas" width="480" height="480" class="webgl">	</canvas>
 		<canvas id="imageCanvas"></canvas>
 		<DIV class=drop id="colordrop">	</DIV>

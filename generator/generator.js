@@ -10,6 +10,7 @@ uniforms={};
 var imageCanvas;
 var ctx;
 var lastShader=null;
+var labinput;
 
 var color_panels=[];
 var iconViewWidth = 70;
@@ -37,6 +38,7 @@ var lastMouseX;
 var lastMouseY;
 var clickedElement=null;
 var mouseDown=false;
+var editCtrlPoints=false;
 
 
 var min_width=iconViewWidth;
@@ -267,10 +269,15 @@ function start() {
 }
 
 $("#list_of_ctrl_points").sortable({
+		handle: ".handle",
         stop : function(event, ui){
-          update_ctrl_points_from_html($(this).sortable('toArray'));
-        }
-	}).disableSelection();
+          update_ctrl_points_from_html();
+        },
+		containment: "parent",
+		placeholder: "sortable-placeholder"
+	}).selectable({
+		cancel: ".handle"
+	});
 
 function initElements(){
 	canvas.width = iconViewWidth;
@@ -356,10 +363,7 @@ function initWebGL() {
     alert("Unable to initialize WebGL. Your browser may not support it.");
   }
 }
-function initBuffer(){
-	verticesBuffer=gl.createBuffer();
-	verticesColorBuffer=gl.createBuffer();
-}
+
 function initShaders() {
 	var simple_vertexShader = getShader(gl, "simple-shader-vs");
 	var simple_fragmentShader = getShader(gl, "simple-shader-fs");
@@ -559,6 +563,7 @@ function handleMouseDown(event){
 		if(temp!=-1)
 			selectedColor=temp;
 		drawLabSpace(selectedColor,0);
+		update_ctrl_points_from_javascript(scales[selectedColor]);
 	}
 	
 }
@@ -1032,20 +1037,39 @@ function FileListenerInit(){
 				var files = e.dataTransfer.files; // Array of all files
 				readFiles(files,type);
 			}
-			
+			labinput=$("#lab-inputs");
+			labinput.hide();
 			addEventHandler(drop2, 'dragover', cancel);
 			addEventHandler(drop2, 'dragenter', cancel);
 			addEventHandler(drop2,'drop', function(e){readDroppedFiles(e,'color');});
 			addEventHandler(button4,'click', handleResetButton);
 			addEventHandler(canvas2,'mousedown', handleLabCanvasClick);
 			addEventHandler(canvas2,'wheel', handleLabCanvasWheel);
+			$("#delete").on("click",function(){$('.ui-selected').remove(); update_ctrl_points_from_html();});
+			$("#insert").on("click",function(){addPointToList(); update_ctrl_points_from_html();});
+			$("#edit").on("click",handleEdit);
 			
+
 			
 			//Icon canvas cannot use eventhandler because all events are blocked by drop
 			//addEventHandler(canvas,'mousedown', handleIconCanvasClick);
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
+	}
+}
+function handleEdit(){
+	editCtrlPoints=!editCtrlPoints;
+	if(editCtrlPoints){
+		$("#edit").text('update');
+		$("#list_of_ctrl_points").selectable("disable")
+		.on("click","div",function(e){$(this).attr("tabindex","1").attr("contenteditable","true").css("background-color","white").css("color","black")
+		.blur(function(e){$(this).attr("contenteditable","false").attr("tabindex","-1").css("background-color","").css("color","").off("blur");}).get(0).focus();
+		});
+	}
+	else{
+		$("#edit").text('edit');
+		$("#list_of_ctrl_points").selectable("enable").off("click");
 	}
 }
 var constraint={
@@ -1132,16 +1156,30 @@ function addPointToList(lab){
 		var a=lab.a;
 		var b=lab.b;
 	}
+	var postpend="<div class='handle'><span class='ui-icon ui-icon-carat-2-n-s'></span></div>";
 	var labspan="<div>"+l+"</div><div>"+a+"</div><div>"+b+"</div>"
-	$("#list_of_ctrl_points").append("<li id='ctrl"+how_many_points_has_been_added+"' class='ui-state-default'>"+labspan+"</li>");
-	if(!lab) update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));
+	$("#list_of_ctrl_points").append("<li id='ctrl"+how_many_points_has_been_added+"' class='ui-state-default'>"+labspan+postpend+"</li>");
 	how_many_points_has_been_added++;
 }
-function removePointFromList(id){
-	$("#"+id).remove();
-	update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));
+
+function makePointEditable(point){
+	point.children("div")
+	.click(function(e){$(this).attr("contenteditable","true").css("background-color","white").css("color","black").focus()
+	.blur(function(e){$(this).attr("contenteditable","false").css("background-color","").css("color","white");
+	});
+	})
+	.on("blur",function(){makePointUneditable(point)});;
+	$("#list_of_ctrl_points").selectable("disable");
+	
 }
-function update_ctrl_points_from_html(idarray){
+function makePointUneditable(point){
+	point.children("div").attr("contenteditable","false");
+	console.log("called");
+	point.off("blur");
+	$("#list_of_ctrl_points").selectable("enable");
+}
+function update_ctrl_points_from_html(){
+	var idarray=$("#list_of_ctrl_points").sortable('toArray');
 	var a_points=[];
 	for(var i=0;i<idarray.length;i++){
 		var li=document.getElementById(idarray[i]);
@@ -1160,12 +1198,12 @@ function update_ctrl_points_from_javascript(rgb_arr){
 	for(var i=0;i<rgb_arr.length;i++){
 		var rgb=rgb_arr[i];
 		var lab=rgb_to_lab({R:rgb.r*255,G:rgb.g*255,B:rgb.b*255});
-		lab.L=lab.L.toPrecision(7);
-		lab.a=lab.a.toPrecision(7);
-		lab.b=lab.b.toPrecision(7);
+		lab.L=lab.L.toFixed(5);
+		lab.a=lab.a.toFixed(5);
+		lab.b=lab.b.toFixed(5);
 		addPointToList(lab);
 	}
-	update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));
+	update_ctrl_points_from_html();
 }
 function Lab_add(Lab,arr){
 	return {L:Lab.L+arr[0] , a:Lab.a+arr[1] , b:Lab.b+arr[2] };
