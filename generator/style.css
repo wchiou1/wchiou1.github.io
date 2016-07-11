@@ -279,12 +279,8 @@ select{
 #LabList{
 	float: left;
 	width: 20%;
-<<<<<<< HEAD
-	height: 50%;	
-=======
 	height: 554px;
 	overflow: auto;	
->>>>>>> refs/remotes/origin/Wesley
 	border: 2px solid #cccccc;
 	position: relative;
 }
