@@ -43,6 +43,7 @@ var lastMouseY;
 var clickedElement=null;
 var mouseDown=false;
 var editCtrlPoints=false;
+var L_plane=50;
 
 
 var min_width=iconViewWidth;
@@ -289,7 +290,8 @@ function start() {
 	
 }
 
-$("#list_of_ctrl_points").sortable({
+ $( function() {
+	 $("#list_of_ctrl_points").sortable({
 		handle: ".handle",
         stop : function(event, ui){
           update_ctrl_points_from_html();
@@ -299,6 +301,24 @@ $("#list_of_ctrl_points").sortable({
 	}).selectable({
 		cancel: ".handle"
 	});
+	 
+    $( "#slider-vertical" ).slider({
+      orientation: "vertical",
+      range: "min",
+      min: 0,
+      max: 100,
+      value: L_plane,
+      slide: function( event, ui ) {
+        L_plane= ui.value;
+		drawLabSpace(selectedColor,0);
+		var gray=(255*ui.value/100)|0;
+		sliderColor="rgb("+gray+","+gray+","+gray+")";
+		$( "#slider-vertical .ui-slider-range" ).css( "background-color", sliderColor );
+		$( "#slider-vertical .ui-state-default, .ui-widget-content .ui-state-default" ).css( "background-color", sliderColor );
+
+      }
+    });
+  } );
 
 function initElements(){
 	canvas.width = iconViewWidth;
@@ -433,6 +453,22 @@ function initShaders() {
 	uniforms.simpleShader2={
 		pUniform : gl2.getUniformLocation(shaderProgram.simpleShader2, "uPMatrix"),
 		mvUniform : gl2.getUniformLocation(shaderProgram.simpleShader2, "uMVMatrix")
+	};
+	var lab_vertexShader2 = getShader(gl2, "lab-shader-vs");
+	var lab_fragmentShader2 = getShader(gl2, "lab-shader-fs");
+	shaderProgram.labShader2 = gl2.createProgram();
+	gl2.attachShader(shaderProgram.labShader2, lab_vertexShader2);
+	gl2.attachShader(shaderProgram.labShader2, lab_fragmentShader2);
+	gl2.linkProgram(shaderProgram.labShader2);
+	if (!gl2.getProgramParameter(shaderProgram.labShader2, gl2.LINK_STATUS)) {
+		alert("Unable to initialize the shader program: " );
+	}
+	attributes.labShader2={
+		vertexPositionAttribute : gl2.getAttribLocation(shaderProgram.labShader2, "aVertexPosition")
+	};
+	uniforms.labShader2={
+		pUniform : gl2.getUniformLocation(shaderProgram.labShader2, "uPMatrix"),
+		mvUniform : gl2.getUniformLocation(shaderProgram.labShader2, "uMVMatrix")
 	};
 }
 
@@ -936,27 +972,25 @@ function drawLabSpace(cid,bufid){
 			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
 			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
 		}
-	gl2.lineWidth(3);
+	gl2.lineWidth(5);
 	
 	var radx = transform2.degx * Math.PI / 180.0;
 	var rady = transform2.degy * Math.PI / 180.0;
 	var s=transform2.scale;
 
-	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
+	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1])).x(Matrix.Translation($V([0,-50,0])));
 
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
 	
 	//draw axes
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,0,0,	128,0,0, 0,-50,0,	0,50,0, 0,0,-128, 0,0,128]), gl2.STATIC_DRAW);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,50,0,	128,50,0, 0,0,0,	0,100,0, 0,50,-128, 0,50,128]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 1,1,1,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl2.STATIC_DRAW);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 0,0,0,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
-	gl2.bindBuffer(gl2.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer2);
-	gl2.bufferData(gl2.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl2.STATIC_DRAW);
-	gl2.drawElements(gl2.LINES, 6, gl2.UNSIGNED_SHORT, 0);
+	gl2.drawArrays(gl2.LINES, 0, 6);
 	
 	//draw colors
 	if(scales[cid]==undefined)return;
@@ -970,7 +1004,7 @@ function drawLabSpace(cid,bufid){
 		for(var i=0;i<len;i++){
 			var lab=scale[i];
 			list_pos.push(lab.a);
-			list_pos.push(lab.L-50);
+			list_pos.push(lab.L);
 			list_pos.push(lab.b);
 			
 			var rgb=lab_to_rgb(lab);
@@ -985,13 +1019,26 @@ function drawLabSpace(cid,bufid){
 		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[bufid]);
 		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
 	}
-
+	
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[bufid]);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[bufid]);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	
 	gl2.drawArrays(gl2.POINTS, 0, len);
+	
+	//draw L-plane
+	if(lastShader2!=="lab"){
+		lastShader2="lab";
+		gl2.useProgram(shaderProgram.labShader2);
+		gl2.enableVertexAttribArray(attributes.labShader2.vertexPositionAttribute);
+	}
+	gl2.uniformMatrix4fv(uniforms.labShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
+	gl2.uniformMatrix4fv(uniforms.labShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,L_plane,-128,	128,L_plane,-128, -128,L_plane,128,	128,L_plane,128]), gl2.STATIC_DRAW);
+	gl2.vertexAttribPointer(attributes.labShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+	gl2.drawArrays(gl2.TRIANGLE_STRIP, 0, 4);
 }
 
 function handleLabCanvasClick(evt){

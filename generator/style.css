@@ -301,3 +301,7 @@ select{
 	height: 100%;
 	float: left;
 }
+#slider-vertical{
+	float: left;
+	height: 300px;
+}
