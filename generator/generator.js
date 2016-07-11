@@ -1189,15 +1189,14 @@ function update_ctrl_points_from_html(){
 	constraint.ctrl_points=a_points;
 	
 }
-function update_ctrl_points_from_javascript(rgb_arr){
+function update_ctrl_points_from_javascript(lab_arr){
 	$("#list_of_ctrl_points").empty();
 	how_many_points_has_been_added=0;
-	for(var i=0;i<rgb_arr.length;i++){
-		var rgb=rgb_arr[i];
-		var lab=rgb_to_lab({R:rgb.r*255,G:rgb.g*255,B:rgb.b*255});
-		lab.L=lab.L.toFixed(5);
-		lab.a=lab.a.toFixed(5);
-		lab.b=lab.b.toFixed(5);
+	for(var i=0;i<lab_arr.length;i++){
+		var lab=lab_arr[i];
+		lab.L=lab.L.toFixed(3);
+		lab.a=lab.a.toFixed(3);
+		lab.b=lab.b.toFixed(3);
 		addPointToList(lab);
 	}
 	update_ctrl_points_from_html();
