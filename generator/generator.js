@@ -1005,7 +1005,7 @@ function drawLabSpace(){
 	for(var i=0;i<len;i++){
 		var lab=scale[i];
 		list_pos.push(lab.a);
-		list_pos.push(lab.L-50);
+		list_pos.push(lab.L);
 		list_pos.push(lab.b);
 		
 		var rgb=lab_to_rgb(lab);
