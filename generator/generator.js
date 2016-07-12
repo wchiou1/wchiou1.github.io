@@ -12,16 +12,18 @@ uniforms={};
 var imageCanvas;
 var ctx;
 var lastShader=null;
+var labinput;
 
 var color_panels=[];
 var generated_panel;
+var generated_ctrl=[];
+var generated_scale=[];
 var iconViewWidth = 70;
 var iconViewHeight = 550;
 var iconHeight = 50;
 var iconWidth = 50;
 var iconViewOffset = 0;
 var scales=[];
-var generated_scale;
 var Shape={};
 var colormapFileNames=[];
 var colorIconsData=[];
@@ -41,7 +43,9 @@ var lastMouseX;
 var lastMouseY;
 var clickedElement=null;
 var mouseDown=false;
-
+var editCtrlPoints=false;
+var L_plane=50;
+var highlightPoint=-1;
 
 var min_width=iconViewWidth;
 var min_height=iconViewHeight;
@@ -53,17 +57,17 @@ var orthogonal={
 };
 var orthoMatrix = makeOrtho(orthogonal.l, orthogonal.r, orthogonal.b, orthogonal.t, 0.1, 100.0);
 
-var ColorPanel= function(x,y,w,h,cID,webgl){
+var ColorPanel= function(x,y,w,h,lab_scale,webgl){
 	this.x=x;
 	this.y=y;
 	this.z=0;
 	this.w=w;
 	this.h=h;
 	this.webgl=webgl;
-	this.cindex=cID;
+	this.lab_scale=lab_scale;
 	this.verticesBuffer=Shape.rectangle.verticesBuffer;
 	this.verticesTexCoordBuffer=Shape.rectangle.verticesTexCoordBuffer;
-	this.texture=gl.createTexture();
+	this.texture=webgl.createTexture();
 	var self=this;
 	this.move=function(x,y,z){
 		self.x=x;
@@ -88,18 +92,18 @@ var ColorPanel= function(x,y,w,h,cID,webgl){
 	}
 	
 	this.create= 
-	function(id){
-		if(id<0)
+	function(scale){
+		self.lab_scale=scale;
+		if(scale==null||scale.length==0)
 			return;
-		self.cindex=id;
 		var webgl=self.webgl;
 		webgl.bindTexture(webgl.TEXTURE_2D, self.texture);
-		webgl.texImage2D(webgl.TEXTURE_2D, 0, gl.RGBA, scales[id].length, 1, 0, webgl.RGBA, webgl.UNSIGNED_BYTE,flatten(scales[id]));
+		webgl.texImage2D(webgl.TEXTURE_2D, 0, gl.RGBA, scale.length, 1, 0, webgl.RGBA, webgl.UNSIGNED_BYTE,flatten(scale));
 		setTexParameter();
 	};
-	this.create(cID);
+	this.create(lab_scale);
 	this.draw=function(inverted){
-		if(this.cindex<0)
+		if(self.lab_scale==null||self.lab_scale==0)
 			return;
 		var webgl=self.webgl;
 		if(lastShader!=="colormapShader"){
@@ -278,7 +282,7 @@ function start() {
 		readFilesOnLoad()
 		initShape();
 		resize();
-		generated_colormap=new ColorPanel(0,0,480,66,-1,colormapgl);
+		generated_panel=new ColorPanel(0,0,480,66,generated_scale,colormapgl);
 		imageCanvas=document.getElementById("imageCanvas");
 		ctx=imageCanvas.getContext("2d");
 		drawScene();
@@ -287,11 +291,35 @@ function start() {
 	
 }
 
-$("#list_of_ctrl_points").sortable({
+ $( function() {
+	 $("#list_of_ctrl_points").sortable({
+		handle: ".handle",
         stop : function(event, ui){
-          update_ctrl_points_from_html($(this).sortable('toArray'));
-        }
-	}).disableSelection();
+          update_ctrl_points_from_html();
+        },
+		containment: "parent",
+		placeholder: "sortable-placeholder"
+	}).selectable({
+		cancel: ".handle"
+	});
+	 
+    $( "#slider-vertical" ).slider({
+      orientation: "vertical",
+      range: "min",
+      min: 0,
+      max: 100,
+      value: L_plane,
+      slide: function( event, ui ) {
+        L_plane= ui.value;
+		drawLabSpace(selectedColor,0);
+		var gray=(255*ui.value/100)|0;
+		sliderColor="rgb("+gray+","+gray+","+gray+")";
+		$( "#slider-vertical .ui-slider-range" ).css( "background-color", sliderColor );
+		$( "#slider-vertical .ui-state-default, .ui-widget-content .ui-state-default" ).css( "background-color", sliderColor );
+
+      }
+    });
+  } );
 
 function initElements(){
 	canvas.width = iconViewWidth;
@@ -365,10 +393,7 @@ function initWebGL(glcanvas) {
   }
   return gl;
 }
-function initBuffer(){
-	verticesBuffer=gl.createBuffer();
-	verticesColorBuffer=gl.createBuffer();
-}
+
 function initShaders() {
 	var simple_vertexShader = getShader(gl, "simple-shader-vs");
 	var simple_fragmentShader = getShader(gl, "simple-shader-fs");
@@ -429,6 +454,22 @@ function initShaders() {
 	uniforms.simpleShader2={
 		pUniform : gl2.getUniformLocation(shaderProgram.simpleShader2, "uPMatrix"),
 		mvUniform : gl2.getUniformLocation(shaderProgram.simpleShader2, "uMVMatrix")
+	};
+	var lab_vertexShader2 = getShader(gl2, "lab-shader-vs");
+	var lab_fragmentShader2 = getShader(gl2, "lab-shader-fs");
+	shaderProgram.labShader2 = gl2.createProgram();
+	gl2.attachShader(shaderProgram.labShader2, lab_vertexShader2);
+	gl2.attachShader(shaderProgram.labShader2, lab_fragmentShader2);
+	gl2.linkProgram(shaderProgram.labShader2);
+	if (!gl2.getProgramParameter(shaderProgram.labShader2, gl2.LINK_STATUS)) {
+		alert("Unable to initialize the shader program: " );
+	}
+	attributes.labShader2={
+		vertexPositionAttribute : gl2.getAttribLocation(shaderProgram.labShader2, "aVertexPosition")
+	};
+	uniforms.labShader2={
+		pUniform : gl2.getUniformLocation(shaderProgram.labShader2, "uPMatrix"),
+		mvUniform : gl2.getUniformLocation(shaderProgram.labShader2, "uMVMatrix")
 	};
 }
 
@@ -563,9 +604,13 @@ function handleMouseDown(event){
 	if(clickedElement==null&&testIconViewHit(event)){
 		clickedElement=canvas;
 		var temp=testIconHit(event);
-		if(temp!=-1)
+		if(temp!=-1){
 			selectedColor=temp;
+			generated_scale=scales[selectedColor].slice(0);
+			generated_panel.create(generated_scale);
+		}
 		drawLabSpace(selectedColor,0);
+		update_ctrl_points_from_javascript(scales[selectedColor]);
 	}
 	
 }
@@ -866,7 +911,7 @@ function readTextToScale(text,filename){
 	}
 	if(filename[filename.length-1]=="\r") filename=filename.slice(0,-1);
 	scales.push(scale);
-	color_panels.push(new ColorPanel(0,0,50,50,scales.length-1,gl));
+	color_panels.push(new ColorPanel(0,0,50,50,scale,gl));
 	colormapFileNames.push(filename);
 	addNewColorIconData(scales.length-1);
 	}catch(e){
@@ -907,8 +952,10 @@ function addNewColorIconData(cindex){
 	selectedColor=colorIconsData.length-1;
 }
 var lastShader2;
-var tempid=[null,null];
-function drawLabSpace(cid,bufid){
+function drawLabSpace(){
+	if(generated_scale==null||generated_scale.length==0)
+		return;
+
 	var w=canvas2.width;
 	var h=canvas2.height;
 	//|
@@ -920,10 +967,6 @@ function drawLabSpace(cid,bufid){
 	gl2.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	gl2.viewport(x1,y1,w,h);
-	if(cid==-1)
-		return;
-	if(cid==null) cid=LabSpaceColor;
-	if(bufid==null) bufid=0;
 	
 	if(lastShader2!=="simple"){
 			lastShader2="simple";
@@ -931,62 +974,71 @@ function drawLabSpace(cid,bufid){
 			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
 			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
 		}
-	gl2.lineWidth(3);
+	gl2.lineWidth(5);
 	
 	var radx = transform2.degx * Math.PI / 180.0;
 	var rady = transform2.degy * Math.PI / 180.0;
 	var s=transform2.scale;
 
-	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
+	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1])).x(Matrix.Translation($V([0,-50,0])));
 
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
 	
 	//draw axes
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,0,0,	128,0,0, 0,-50,0,	0,50,0, 0,0,-128, 0,0,128]), gl2.STATIC_DRAW);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,50,0,	128,50,0, 0,0,0,	0,100,0, 0,50,-128, 0,50,128]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 1,1,1,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl2.STATIC_DRAW);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 0,0,0,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
-	gl2.bindBuffer(gl2.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer2);
-	gl2.bufferData(gl2.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl2.STATIC_DRAW);
-	gl2.drawElements(gl2.LINES, 6, gl2.UNSIGNED_SHORT, 0);
+	gl2.drawArrays(gl2.LINES, 0, 6);
 	
 	//draw colors
-	if(scales[cid]==undefined)return;
-	var len=scales[cid].length;
+	if(generated_scale==undefined)return;
+	var len=generated_scale.length;
 	
-	if(tempid[bufid]!=cid){
-		tempid[bufid]=cid;
-		var scale=scales[cid];
-		var list_rgba=[];
-		var list_pos=[];
-		for(var i=0;i<len;i++){
-			var lab=scale[i];
-			list_pos.push(lab.a);
-			list_pos.push(lab.L-50);
-			list_pos.push(lab.b);
-			
-			var rgb=lab_to_rgb(lab);
-			list_rgba.push(rgb.R/255);
-			list_rgba.push(rgb.G/255);
-			list_rgba.push(rgb.B/255);
-			list_rgba.push(1);
-		}
-
-		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[bufid]);
-		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
-		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[bufid]);
-		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
+	var scale=generated_scale;
+	var list_rgba=[];
+	var list_pos=[];
+	var temprgb=lab_to_rgb(scale[0]);
+	for(var i=0;i<len;i++){
+		var lab=scale[i];
+		list_pos.push(lab.a);
+		list_pos.push(lab.L);
+		list_pos.push(lab.b);
+		
+		var rgb=lab_to_rgb(lab);
+		list_rgba.push(rgb.R/255);
+		list_rgba.push(rgb.G/255);
+		list_rgba.push(rgb.B/255);
+		list_rgba.push(1);
 	}
 
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[bufid]);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[0]);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[0]);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
+
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[0]);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[bufid]);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[0]);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	
 	gl2.drawArrays(gl2.POINTS, 0, len);
+	
+	//draw L-plane
+	if(lastShader2!=="lab"){
+		lastShader2="lab";
+		gl2.useProgram(shaderProgram.labShader2);
+		gl2.enableVertexAttribArray(attributes.labShader2.vertexPositionAttribute);
+	}
+	gl2.uniformMatrix4fv(uniforms.labShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
+	gl2.uniformMatrix4fv(uniforms.labShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,L_plane,-128,	128,L_plane,-128, -128,L_plane,128,	128,L_plane,128]), gl2.STATIC_DRAW);
+	gl2.vertexAttribPointer(attributes.labShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+	gl2.drawArrays(gl2.TRIANGLE_STRIP, 0, 4);
 }
 
 function handleLabCanvasClick(evt){
@@ -1029,20 +1081,39 @@ function FileListenerInit(){
 				var files = e.dataTransfer.files; // Array of all files
 				readFiles(files,type);
 			}
-			
+			labinput=$("#lab-inputs");
+			labinput.hide();
 			addEventHandler(drop2, 'dragover', cancel);
 			addEventHandler(drop2, 'dragenter', cancel);
 			addEventHandler(drop2,'drop', function(e){readDroppedFiles(e,'color');});
 			addEventHandler(button4,'click', handleResetButton);
 			addEventHandler(canvas2,'mousedown', handleLabCanvasClick);
 			addEventHandler(canvas2,'wheel', handleLabCanvasWheel);
+			$("#delete").on("click",function(){$('.ui-selected').remove(); update_ctrl_points_from_html();});
+			$("#insert").on("click",function(){addPointToList(); update_ctrl_points_from_html();});
+			$("#edit").on("click",handleEdit);
 			
+
 			
 			//Icon canvas cannot use eventhandler because all events are blocked by drop
 			//addEventHandler(canvas,'mousedown', handleIconCanvasClick);
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
+	}
+}
+function handleEdit(){
+	editCtrlPoints=!editCtrlPoints;
+	if(editCtrlPoints){
+		$("#edit").text('update');
+		$("#list_of_ctrl_points").selectable("disable")
+		.on("click","div",function(e){$(this).attr("tabindex","1").attr("contenteditable","true").css("background-color","white").css("color","black")
+		.blur(function(e){$(this).attr("contenteditable","false").attr("tabindex","-1").css("background-color","").css("color","").off("blur");}).get(0).focus();
+		});
+	}
+	else{
+		$("#edit").text('edit');
+		$("#list_of_ctrl_points").selectable("enable").off("click");
 	}
 }
 var constraint={
@@ -1129,16 +1200,30 @@ function addPointToList(lab){
 		var a=lab.a;
 		var b=lab.b;
 	}
+	var postpend="<div class='handle'><span class='ui-icon ui-icon-carat-2-n-s'></span></div>";
 	var labspan="<div>"+l+"</div><div>"+a+"</div><div>"+b+"</div>"
-	$("#list_of_ctrl_points").append("<li id='ctrl"+how_many_points_has_been_added+"' class='ui-state-default'>"+labspan+"</li>");
-	if(!lab) update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));
+	$("#list_of_ctrl_points").append("<li id='ctrl"+how_many_points_has_been_added+"' class='ui-state-default'>"+labspan+postpend+"</li>");
 	how_many_points_has_been_added++;
 }
-function removePointFromList(id){
-	$("#"+id).remove();
-	update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));
+
+function makePointEditable(point){
+	point.children("div")
+	.click(function(e){$(this).attr("contenteditable","true").css("background-color","white").css("color","black").focus()
+	.blur(function(e){$(this).attr("contenteditable","false").css("background-color","").css("color","white");
+	});
+	})
+	.on("blur",function(){makePointUneditable(point)});;
+	$("#list_of_ctrl_points").selectable("disable");
+	
 }
-function update_ctrl_points_from_html(idarray){
+function makePointUneditable(point){
+	point.children("div").attr("contenteditable","false");
+	console.log("called");
+	point.off("blur");
+	$("#list_of_ctrl_points").selectable("enable");
+}
+function update_ctrl_points_from_html(){
+	var idarray=$("#list_of_ctrl_points").sortable('toArray');
 	var a_points=[];
 	for(var i=0;i<idarray.length;i++){
 		var li=document.getElementById(idarray[i]);
@@ -1151,18 +1236,17 @@ function update_ctrl_points_from_html(idarray){
 	constraint.ctrl_points=a_points;
 	
 }
-function update_ctrl_points_from_javascript(rgb_arr){
+function update_ctrl_points_from_javascript(lab_arr){
 	$("#list_of_ctrl_points").empty();
 	how_many_points_has_been_added=0;
-	for(var i=0;i<rgb_arr.length;i++){
-		var rgb=rgb_arr[i];
-		var lab=rgb_to_lab({R:rgb.r*255,G:rgb.g*255,B:rgb.b*255});
-		lab.L=lab.L.toPrecision(7);
-		lab.a=lab.a.toPrecision(7);
-		lab.b=lab.b.toPrecision(7);
+	for(var i=0;i<lab_arr.length;i++){
+		var lab=lab_arr[i];
+		lab.L=Math.floor(lab.L*1000)/1000;
+		lab.a=Math.floor(lab.a*1000)/1000;
+		lab.b=Math.floor(lab.b*1000)/1000;
 		addPointToList(lab);
 	}
-	update_ctrl_points_from_html($("#list_of_ctrl_points").sortable('toArray'));
+	update_ctrl_points_from_html();
 }
 function Lab_add(Lab,arr){
 	return {L:Lab.L+arr[0] , a:Lab.a+arr[1] , b:Lab.b+arr[2] };
