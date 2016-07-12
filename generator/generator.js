@@ -45,6 +45,7 @@ var clickedElement=null;
 var mouseDown=false;
 var editCtrlPoints=false;
 var L_plane=50;
+var highlightPoint=-1;
 
 
 var min_width=iconViewWidth;

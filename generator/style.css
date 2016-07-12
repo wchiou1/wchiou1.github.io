@@ -203,6 +203,10 @@ select{
 	z-index: 1;
 	display: block;
 	border: 2px solid #cccccc;
+	clear: left;
+}
+.canvas-holder{
+	float:left;
 }
 #button6{
 	position: absolute; 
@@ -280,7 +284,7 @@ select{
 	float: left;
 	width: 20%;
 	height: 554px;
-	overflow: auto;	
+	overflow: visible;	
 	border: 2px solid #cccccc;
 	position: relative;
 }
