@@ -47,7 +47,6 @@ var editCtrlPoints=false;
 var L_plane=50;
 var highlightPoint=-1;
 
-
 var min_width=iconViewWidth;
 var min_height=iconViewHeight;
 var orthogonal={
@@ -1002,6 +1001,7 @@ function drawLabSpace(){
 	var scale=generated_scale;
 	var list_rgba=[];
 	var list_pos=[];
+	var temprgb=lab_to_rgb(scale[0]);
 	for(var i=0;i<len;i++){
 		var lab=scale[i];
 		list_pos.push(lab.a);
@@ -1241,9 +1241,9 @@ function update_ctrl_points_from_javascript(lab_arr){
 	how_many_points_has_been_added=0;
 	for(var i=0;i<lab_arr.length;i++){
 		var lab=lab_arr[i];
-		lab.L=lab.L.toFixed(3);
-		lab.a=lab.a.toFixed(3);
-		lab.b=lab.b.toFixed(3);
+		lab.L=Math.floor(lab.L*1000)/1000;
+		lab.a=Math.floor(lab.a*1000)/1000;
+		lab.b=Math.floor(lab.b*1000)/1000;
 		addPointToList(lab);
 	}
 	update_ctrl_points_from_html();
