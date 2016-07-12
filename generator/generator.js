@@ -598,6 +598,28 @@ function testIconHit(event){
 	return -1;
 }
 
+function testLPlaneIntersect(event){
+	var mouse=getMousePos(canvas2,event);
+	var x=mouse.x - canvas2.width/2;
+	var y=canvas2.width/2 - mouse.y;
+
+	var radx = transform2.degx * Math.PI / 180.0;
+	var rady = transform2.degy * Math.PI / 180.0;
+	var s=transform2.scale;
+
+	var inv_rot2=(Matrix.RotationY(-rady))
+		.x(Matrix.RotationX(-radx)).ensure4x4();
+	var inv_mvMatrix2 = 
+		(Matrix.Translation($V([0,50,0])))
+		.x(Matrix.Diagonal([1/s,1/s,1/s,1]))
+		.x(inv_rot2);
+		
+	var dir=inv_rot2.x($V([0,0,-1,0]));
+	var origin=inv_mvMatrix2.x($V([x,y,0,0]));
+	var t=(L_plane-origin.e(2)-50)/dir.e(2);
+	return origin.add(dir.x(t));
+}
+
 function handleMouseDown(event){
 	if(mouseDown)
 		return;
@@ -991,7 +1013,7 @@ function drawLabSpace(){
 	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,50,0,	128,50,0, 0,0,0,	0,100,0, 0,50,-128, 0,50,128]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 0,0,0,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl2.STATIC_DRAW);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 0,0,0,1,	148.6/255,116/255,0,1,	0,138.4/255,1,1]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	gl2.drawArrays(gl2.LINES, 0, 6);
 	
@@ -1006,7 +1028,7 @@ function drawLabSpace(){
 		var lab=scale[i];
 		list_pos.push(lab.a);
 		list_pos.push(lab.L);
-		list_pos.push(lab.b);
+		list_pos.push(-lab.b);
 		
 		var rgb=lab_to_rgb(lab);
 		list_rgba.push(rgb.R/255);
@@ -1042,8 +1064,18 @@ function drawLabSpace(){
 }
 
 function handleLabCanvasClick(evt){
-	var mouse=getMousePos(canvas2,evt);
-	clickedElement=document.getElementById("labcanvas");
+	//var mouse=getMousePos(canvas2,evt);
+	var intersection=testLPlaneIntersect(evt);
+	console.log(intersection.elements);
+	var rgb=lab_to_rgb({L:intersection.e(2)+50,a:intersection.e(1),b:-intersection.e(3)});
+	console.log(rgb);
+	if(rgb.R<0||rgb.R>255||rgb.G<0||rgb.G>255||rgb.B<0||rgb.B>255){
+		clickedElement=document.getElementById("labcanvas");
+	}
+	else{
+		//clicked in colored zone
+		clickedElement=null;
+	}
 }
 
 function handleIconCanvasClick(evt){
@@ -1241,9 +1273,9 @@ function update_ctrl_points_from_javascript(lab_arr){
 	how_many_points_has_been_added=0;
 	for(var i=0;i<lab_arr.length;i++){
 		var lab=lab_arr[i];
-		lab.L=lab.L.toFixed(3);
-		lab.a=lab.a.toFixed(3);
-		lab.b=lab.b.toFixed(3);
+		lab.L=((lab.L*1000)|0)/1000;
+		lab.a=((lab.a*1000)|0)/1000;
+		lab.b=((lab.b*1000)|0)/1000;
 		addPointToList(lab);
 	}
 	update_ctrl_points_from_html();
