@@ -114,20 +114,20 @@ var ColorPanel= function(x,y,w,h,lab_scale,webgl){
 		var webgl=self.webgl;
 		
 		if(webgl==colormapgl){
-			if(lastShader!=="colormapShader"){
-				lastShader="colormapShader";
+			if(lastShader!=="colormapShader3"){
+				lastShader="colormapShader3";
 				webgl.useProgram(shaderProgram.colormapShader3);
-				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexPositionAttribute3);
-				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexTexCoordAttribute3);
+				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexPositionAttribute);
+				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexTexCoordAttribute);
 			}
 			
 			webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesBuffer);
-			webgl.vertexAttribPointer(attributes.colormapShader3.vertexPositionAttribute3, 3, webgl.FLOAT, false, 0, 0);
+			webgl.vertexAttribPointer(attributes.colormapShader3.vertexPositionAttribute, 3, webgl.FLOAT, false, 0, 0);
 			if(inverted)
 				webgl.bindBuffer(webgl.ARRAY_BUFFER, Shape.rectangle2.invertedTexCoordBuffer);
 			else
 				webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
-			webgl.vertexAttribPointer(attributes.colormapShader3.vertexTexCoordAttribute3, 2, webgl.FLOAT, false, 0, 0);
+			webgl.vertexAttribPointer(attributes.colormapShader3.vertexTexCoordAttribute, 2, webgl.FLOAT, false, 0, 0);
 			
 			webgl.uniform1i(uniforms.colormapShader3.uColormapLoc, 0);  
 			webgl.activeTexture(webgl.TEXTURE0);
@@ -205,7 +205,7 @@ var Rectangle= function(webgl){
 	
 	webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesBuffer);
 	webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0,	1,0,0, 1,-1,0]), webgl.STATIC_DRAW);
-		
+	
 	webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesColorBuffer);
 	webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array([1,1,1,1,	1,1,1,1, 1,1,1,1,	1,1,1,1]), webgl.STATIC_DRAW);
 	
@@ -214,7 +214,7 @@ var Rectangle= function(webgl){
 	
 	webgl.bindBuffer(webgl.ARRAY_BUFFER, self.invertedTexCoordBuffer);
 	webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array([1,1, 1,0, 0,1, 0,0]), webgl.STATIC_DRAW);
-
+	
 	this.changeColor= function(r,g,b,a){
 		if(a==undefined) a=1;
 		var webgl=self.webgl;
@@ -225,17 +225,17 @@ var Rectangle= function(webgl){
 	
 		var webgl=self.webgl;
 		if(webgl==colormapgl){
-			if(lastShader!=="simple"){
-				lastShader="simple";
+			if(lastShader!=="simple3"){
+				lastShader="simple3";
 				webgl.useProgram(shaderProgram.simpleShader3);
-				webgl.enableVertexAttribArray(attributes.simpleShader3.vertexPositionAttribute3);
-				webgl.enableVertexAttribArray(attributes.simpleShader3.vertexColorAttribute3);
+				webgl.enableVertexAttribArray(attributes.simpleShader3.vertexPositionAttribute);
+				webgl.enableVertexAttribArray(attributes.simpleShader3.vertexColorAttribute);
 			}
 
 			webgl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
-			webgl.vertexAttribPointer(attributes.simpleShader3.vertexPositionAttribute3, 3, webgl.FLOAT, false, 0, 0);
+			webgl.vertexAttribPointer(attributes.simpleShader3.vertexPositionAttribute, 3, webgl.FLOAT, false, 0, 0);
 			webgl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
-			webgl.vertexAttribPointer(attributes.simpleShader3.vertexColorAttribute3, 4, webgl.FLOAT, false, 0, 0);
+			webgl.vertexAttribPointer(attributes.simpleShader3.vertexColorAttribute, 4, webgl.FLOAT, false, 0, 0);
 			
 			perspectiveMatrix = orthoMatrix;
 			
@@ -280,18 +280,18 @@ var Rectangle= function(webgl){
 	this.drawWithTexture=function(texture){
 		var webgl=self.webgl;
 		if(webgl==colormapcanvas){
-			if(lastShader!=="colormapShader"){
-				lastShader="colormapShader";
+			if(lastShader!=="colormapShader3"){
+				lastShader="colormapShader3";
 				webgl.useProgram(shaderProgram.colormapShader3);
-				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexPositionAttribute3);
-				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexTexCoordAttribute3);
+				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexPositionAttribute);
+				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexTexCoordAttribute);
 			}
 				
 			webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesBuffer);
-			webgl.vertexAttribPointer(attributes.colormapShader3.vertexPositionAttribute3, 3, webgl.FLOAT, false, 0, 0);
+			webgl.vertexAttribPointer(attributes.colormapShader3.vertexPositionAttribute, 3, webgl.FLOAT, false, 0, 0);
 
 			webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
-			webgl.vertexAttribPointer(attributes.colormapShader3.vertexTexCoordAttribute3, 2, webgl.FLOAT, false, 0, 0);
+			webgl.vertexAttribPointer(attributes.colormapShader3.vertexTexCoordAttribute, 2, webgl.FLOAT, false, 0, 0);
 			
 			webgl.uniform1i(uniforms.colormapShader3.uColormapLoc, 0);  
 			webgl.activeTexture(webgl.TEXTURE0);
@@ -1119,21 +1119,22 @@ function addNewColorIconData(cindex){
 }
 //Draws the colormap in the the colormapcanvas
 function updateMainColormap(){
-	console.log("Drawing main color map"+generated_panel.webgl);
+	console.log("Drawing main color map");
+	generated_scale=generateColormap(constraint);
 	//var debug="";
 	//for(var i=0;i<generated_scale.length;i++)
 		//debug+=""+generated_scale+",";
 	//console.log(debug);
-	colormapgl.clearColor(.8, 0, 0, 1);
+	colormapgl.clearColor(.5, 0, 0, 1);
 	colormapgl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	generated_panel.create(generated_scale);
+	generated_panel.scale(70,550);
 	generated_panel.draw();
-	var rectangle=Shape.rectangle2;
-	rectangle.scale(1000,1000);
-	rectangle.move(-500,-500,-.5);
-	rectangle.changeColor(.0,.0,.5);
-	rectangle.draw();
-	
+	//var rectangle=Shape.rectangle2;
+	//rectangle.scale(2000,2000);
+	//rectangle.move(-500,-500,-.5);
+	//rectangle.changeColor(.0,.0,.5);
+	//rectangle.draw();
 }
 
 var lastShader2;
@@ -1348,6 +1349,7 @@ function generateColormap(constraint){
 			bound.min=test;//console.log(d_e+" min="+test);
 		}
 		else{
+			console.log(newLab.L+","+newLab.a+","+newLab.b);
 			colors.push(newLab);//console.log(newLab);
 			lastLab=newLab;
 			if(ciede2000(lastLab, constraint.ctrl_points[last_ctrl_point+1])<constraint.delta_e){
