@@ -46,9 +46,9 @@ var mouseDown=false;
 var editCtrlPoints=false;
 var L_plane=50;
 var highlightPoint=-1;
-
 var min_width=iconViewWidth;
 var min_height=iconViewHeight;
+var pMatrix2;
 var orthogonal={
 	l: 0,
 	r: iconViewWidth,
@@ -347,7 +347,7 @@ $(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
 	canvas2 = document.getElementById("labcanvas");
-	
+	pMatrix2=makeOrtho(-canvas2.width/2,canvas2.width/2,-canvas2.height/2,canvas2.height/2,-99999,99999);
 	addEventHandler(window,"resize",on_resize(resize));
 	gl=initWebGL(canvas);
 	gl2=initWebGL(canvas2);
@@ -837,7 +837,6 @@ function scrollIconView(delta){
 	}
 }
 
-var pMatrix2=makeOrtho(-256,256,-256,256,-10000,10000);
 var transform2={
 	degx: 0,
 	degy: 0,
@@ -1225,14 +1224,15 @@ function drawLabSpace(){
 	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,L_plane,-128,	128,L_plane,-128, -128,L_plane,128,	128,L_plane,128]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.labShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.drawArrays(gl2.TRIANGLE_STRIP, 0, 4);
+
 }
 
 function handleLabCanvasClick(evt){
 	//var mouse=getMousePos(canvas2,evt);
 	var intersection=testLPlaneIntersect(evt);
-	console.log(intersection.elements);
+
 	var rgb=lab_to_rgb({L:intersection.e(2)+50,a:intersection.e(1),b:-intersection.e(3)});
-	console.log(rgb);
+	
 	if(rgb.R<0||rgb.R>255||rgb.G<0||rgb.G>255||rgb.B<0||rgb.B>255){
 		clickedElement=document.getElementById("labcanvas");
 	}
