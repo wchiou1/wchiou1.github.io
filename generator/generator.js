@@ -1333,15 +1333,26 @@ function generateColormap(constraint){
 	colors.push(lastLab); //first Lab color
 	var i=1;
 	var bound={min:0, max:1, mid:function(){return (this.min+this.max)/2}};
-	
+	if(last_ctrl_point.length==1)
+		return colors;
 	var dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
 	while(i<constraint.steps){
+		//Start of Wesley's fix
+		//if(last_ctrl_point+1<constraint.ctrl_points.length)
+		if(ciede2000(constraint.ctrl_points[last_ctrl_point],constraint.ctrl_points[last_ctrl_point+1])<=constraint.delta_e){
+			colors.push(constraint.ctrl_points[last_ctrl_point+1]);
+			last_ctrl_point++;
+			i++;
+			break;
+		}
+		//End of Wesley's fix
 		
 		var test=bound.mid()
 		var newLab=Lab_add(lastLab,timesLen(dirr,test));
 		var d_e=ciede2000(lastLab,newLab);
 		//console.log(lastLab);
 		//console.log(newLab);
+		
 		if(d_e>constraint.delta_e+constraint.tolerance){
 			bound.max=test;//console.log(d_e+" max="+test);
 		}
