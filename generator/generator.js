@@ -1365,6 +1365,9 @@ function generateColormap(constraint){
 			lastLab=newLab;
 			if(ciede2000(lastLab, constraint.ctrl_points[last_ctrl_point+1])<constraint.delta_e){
 				last_ctrl_point++;
+				colors.pop();
+				colors.push(constraint.ctrl_points[last_ctrl_point]);
+				lastLab=constraint.ctrl_points[last_ctrl_point];
 				if(last_ctrl_point>=constraint.ctrl_points.length-1){
 					alert("cannot generate enough points, path is too short or deltaE is too large");
 					break;
