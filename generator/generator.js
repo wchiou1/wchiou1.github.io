@@ -65,8 +65,14 @@ var ColorPanel= function(x,y,w,h,lab_scale,webgl){
 	this.h=h;
 	this.webgl=webgl;
 	this.lab_scale=lab_scale;
-	this.verticesBuffer=Shape.rectangle.verticesBuffer;
-	this.verticesTexCoordBuffer=Shape.rectangle.verticesTexCoordBuffer;
+	if(webgl==colormapgl){
+		this.verticesBuffer=Shape.rectangle2.verticesBuffer;
+		this.verticesTexCoordBuffer=Shape.rectangle2.verticesTexCoordBuffer;
+	}
+	else{
+		this.verticesBuffer=Shape.rectangle.verticesBuffer;
+		this.verticesTexCoordBuffer=Shape.rectangle.verticesTexCoordBuffer;
+	}
 	this.texture=webgl.createTexture();
 	var self=this;
 	this.move=function(x,y,z){
@@ -99,13 +105,49 @@ var ColorPanel= function(x,y,w,h,lab_scale,webgl){
 		var webgl=self.webgl;
 		webgl.bindTexture(webgl.TEXTURE_2D, self.texture);
 		webgl.texImage2D(webgl.TEXTURE_2D, 0, gl.RGBA, scale.length, 1, 0, webgl.RGBA, webgl.UNSIGNED_BYTE,flatten(scale));
-		setTexParameter();
+		setTexParameter(webgl);
 	};
 	this.create(lab_scale);
 	this.draw=function(inverted){
 		if(self.lab_scale==null||self.lab_scale==0)
 			return;
 		var webgl=self.webgl;
+		
+		if(webgl==colormapgl){
+			if(lastShader!=="colormapShader"){
+				lastShader="colormapShader";
+				webgl.useProgram(shaderProgram.colormapShader3);
+				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexPositionAttribute3);
+				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexTexCoordAttribute3);
+			}
+			
+			webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesBuffer);
+			webgl.vertexAttribPointer(attributes.colormapShader3.vertexPositionAttribute3, 3, webgl.FLOAT, false, 0, 0);
+			if(inverted)
+				webgl.bindBuffer(webgl.ARRAY_BUFFER, Shape.rectangle2.invertedTexCoordBuffer);
+			else
+				webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+			webgl.vertexAttribPointer(attributes.colormapShader3.vertexTexCoordAttribute3, 2, webgl.FLOAT, false, 0, 0);
+			
+			webgl.uniform1i(uniforms.colormapShader3.uColormapLoc, 0);  
+			webgl.activeTexture(webgl.TEXTURE0);
+			webgl.bindTexture(webgl.TEXTURE_2D, self.texture);
+			
+			perspectiveMatrix = orthoMatrix;
+
+			loadIdentity();
+			mvPushMatrix();
+			mvTranslate([self.x, self.y, self.z-1.0]);
+			mvScale([self.w,self.h,1]);
+
+			setMatrixUniforms(uniforms.colormapShader3,webgl);
+
+			webgl.drawArrays(webgl.TRIANGLE_STRIP, 0, 4);
+			
+			mvPopMatrix();
+			return;
+		}
+		
 		if(lastShader!=="colormapShader"){
 			lastShader="colormapShader";
 			webgl.useProgram(shaderProgram.colormapShader);
@@ -132,7 +174,7 @@ var ColorPanel= function(x,y,w,h,lab_scale,webgl){
 		mvTranslate([self.x, self.y, self.z-1.0]);
 		mvScale([self.w,self.h,1]);
 
-		setMatrixUniforms(uniforms.colormapShader);
+		setMatrixUniforms(uniforms.colormapShader,webgl);
 
 		webgl.drawArrays(webgl.TRIANGLE_STRIP, 0, 4);
 		
@@ -140,15 +182,16 @@ var ColorPanel= function(x,y,w,h,lab_scale,webgl){
 	};
 };
 
-var Rectangle= function(){
+var Rectangle= function(webgl){
 	this.x = 0;
 	this.y = 0;
 	this.w = 0;
 	this.h = 0;
-	this.verticesBuffer = gl.createBuffer();
-	this.verticesColorBuffer = gl.createBuffer();
-	this.verticesTexCoordBuffer=gl.createBuffer();
-	this.invertedTexCoordBuffer=gl.createBuffer();
+	this.verticesBuffer = webgl.createBuffer();
+	this.verticesColorBuffer = webgl.createBuffer();
+	this.verticesTexCoordBuffer=webgl.createBuffer();
+	this.invertedTexCoordBuffer=webgl.createBuffer();
+	this.webgl=webgl;
 	var self=this;
 	this.scale=function(w,h){
 		self.w=w;
@@ -160,36 +203,66 @@ var Rectangle= function(){
 		self.z=-z||0;
 	};
 	
-	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0,	1,0,0, 1,-1,0]), gl.STATIC_DRAW);
+	webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesBuffer);
+	webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array([0,0,0,	0,-1,0,	1,0,0, 1,-1,0]), webgl.STATIC_DRAW);
 		
-	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1,1,1,1,	1,1,1,1, 1,1,1,1,	1,1,1,1]), gl.STATIC_DRAW);
+	webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesColorBuffer);
+	webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array([1,1,1,1,	1,1,1,1, 1,1,1,1,	1,1,1,1]), webgl.STATIC_DRAW);
 	
-	gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), gl.STATIC_DRAW);
+	webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+	webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array([0,1, 0,0, 1,1, 1,0]), webgl.STATIC_DRAW);
 	
-	gl.bindBuffer(gl.ARRAY_BUFFER, self.invertedTexCoordBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1,1, 1,0, 0,1, 0,0]), gl.STATIC_DRAW);
+	webgl.bindBuffer(webgl.ARRAY_BUFFER, self.invertedTexCoordBuffer);
+	webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array([1,1, 1,0, 0,1, 0,0]), webgl.STATIC_DRAW);
 
 	this.changeColor= function(r,g,b,a){
 		if(a==undefined) a=1;
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([r,g,b,a,	r,g,b,a, r,g,b,a,	r,g,b,a]), gl.STATIC_DRAW);
+		var webgl=self.webgl;
+		webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesColorBuffer);
+		webgl.bufferData(webgl.ARRAY_BUFFER, new Float32Array([r,g,b,a,	r,g,b,a, r,g,b,a,	r,g,b,a]), webgl.STATIC_DRAW);
 	};
 	this.draw= function(){
+	
+		var webgl=self.webgl;
+		if(webgl==colormapgl){
+			if(lastShader!=="simple"){
+				lastShader="simple";
+				webgl.useProgram(shaderProgram.simpleShader3);
+				webgl.enableVertexAttribArray(attributes.simpleShader3.vertexPositionAttribute3);
+				webgl.enableVertexAttribArray(attributes.simpleShader3.vertexColorAttribute3);
+			}
+
+			webgl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+			webgl.vertexAttribPointer(attributes.simpleShader3.vertexPositionAttribute3, 3, webgl.FLOAT, false, 0, 0);
+			webgl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
+			webgl.vertexAttribPointer(attributes.simpleShader3.vertexColorAttribute3, 4, webgl.FLOAT, false, 0, 0);
+			
+			perspectiveMatrix = orthoMatrix;
+			
+			loadIdentity();
+			mvPushMatrix();
+			mvTranslate([self.x, self.y, self.z-1.0]);
+			mvScale([self.w,self.h,1]);
+			
+			setMatrixUniforms(uniforms.simpleShader3,webgl);
+			
+			webgl.drawArrays(webgl.TRIANGLE_STRIP, 0, 4);
+			
+			mvPopMatrix();
+			return;
+		}
 		if(lastShader!=="simple"){
 			lastShader="simple";
-			gl.useProgram(shaderProgram.simpleShader);
-			gl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
-			gl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
+			webgl.useProgram(shaderProgram.simpleShader);
+			webgl.enableVertexAttribArray(attributes.simpleShader.vertexPositionAttribute);
+			webgl.enableVertexAttribArray(attributes.simpleShader.vertexColorAttribute);
 		}
 
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
-		gl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
-		gl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+		webgl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
+		webgl.vertexAttribPointer(attributes.simpleShader.vertexPositionAttribute, 3, webgl.FLOAT, false, 0, 0);
+		webgl.bindBuffer(gl.ARRAY_BUFFER, self.verticesColorBuffer);
+		webgl.vertexAttribPointer(attributes.simpleShader.vertexColorAttribute, 4, webgl.FLOAT, false, 0, 0);
 		
 		perspectiveMatrix = orthoMatrix;
 		
@@ -198,29 +271,62 @@ var Rectangle= function(){
 		mvTranslate([self.x, self.y, self.z-1.0]);
 		mvScale([self.w,self.h,1]);
 		
-		setMatrixUniforms();
+		setMatrixUniforms(null,webgl);
 		
-		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		webgl.drawArrays(webgl.TRIANGLE_STRIP, 0, 4);
 		
 		mvPopMatrix();
 	};
 	this.drawWithTexture=function(texture){
+		var webgl=self.webgl;
+		if(webgl==colormapcanvas){
+			if(lastShader!=="colormapShader"){
+				lastShader="colormapShader";
+				webgl.useProgram(shaderProgram.colormapShader3);
+				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexPositionAttribute3);
+				webgl.enableVertexAttribArray(attributes.colormapShader3.vertexTexCoordAttribute3);
+			}
+				
+			webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesBuffer);
+			webgl.vertexAttribPointer(attributes.colormapShader3.vertexPositionAttribute3, 3, webgl.FLOAT, false, 0, 0);
+
+			webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+			webgl.vertexAttribPointer(attributes.colormapShader3.vertexTexCoordAttribute3, 2, webgl.FLOAT, false, 0, 0);
+			
+			webgl.uniform1i(uniforms.colormapShader3.uColormapLoc, 0);  
+			webgl.activeTexture(webgl.TEXTURE0);
+			webgl.bindTexture(webgl.TEXTURE_2D, texture);
+			
+			perspectiveMatrix = orthoMatrix;
+
+			loadIdentity();
+			mvPushMatrix();
+			mvTranslate([self.x, self.y, self.z-1.0]);
+			mvScale([self.w,self.h,1]);
+
+			setMatrixUniforms(uniforms.colormapShader,webgl);
+
+			webgl.drawArrays(webgl.TRIANGLE_STRIP, 0, 4);
+			
+			mvPopMatrix();
+			return;
+		}
 		if(lastShader!=="colormapShader"){
 			lastShader="colormapShader";
-			gl.useProgram(shaderProgram.colormapShader);
-			gl.enableVertexAttribArray(attributes.colormapShader.vertexPositionAttribute);
-			gl.enableVertexAttribArray(attributes.colormapShader.vertexTexCoordAttribute);
+			webgl.useProgram(shaderProgram.colormapShader);
+			webgl.enableVertexAttribArray(attributes.colormapShader.vertexPositionAttribute);
+			webgl.enableVertexAttribArray(attributes.colormapShader.vertexTexCoordAttribute);
 		}
 			
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesBuffer);
-		gl.vertexAttribPointer(attributes.colormapShader.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+		webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesBuffer);
+		webgl.vertexAttribPointer(attributes.colormapShader.vertexPositionAttribute, 3, webgl.FLOAT, false, 0, 0);
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
-		gl.vertexAttribPointer(attributes.colormapShader.vertexTexCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+		webgl.bindBuffer(webgl.ARRAY_BUFFER, self.verticesTexCoordBuffer);
+		webgl.vertexAttribPointer(attributes.colormapShader.vertexTexCoordAttribute, 2, webgl.FLOAT, false, 0, 0);
 		
-		gl.uniform1i(uniforms.colormapShader.uColormapLoc, 0);  
-		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, texture);
+		webgl.uniform1i(uniforms.colormapShader.uColormapLoc, 0);  
+		webgl.activeTexture(webgl.TEXTURE0);
+		webgl.bindTexture(webgl.TEXTURE_2D, texture);
 		
 		perspectiveMatrix = orthoMatrix;
 
@@ -229,9 +335,9 @@ var Rectangle= function(){
 		mvTranslate([self.x, self.y, self.z-1.0]);
 		mvScale([self.w,self.h,1]);
 
-		setMatrixUniforms(uniforms.colormapShader);
+		setMatrixUniforms(uniforms.colormapShader,webgl);
 
-		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		webgl.drawArrays(webgl.TRIANGLE_STRIP, 0, 4);
 		
 		mvPopMatrix();
 	};
@@ -369,15 +475,16 @@ function clearRectangle(x,y,w,h){
 
 }
 
-function setTexParameter(){
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+function setTexParameter(webgl){
+	webgl.texParameteri(webgl.TEXTURE_2D, webgl.TEXTURE_WRAP_S, webgl.CLAMP_TO_EDGE);
+    webgl.texParameteri(webgl.TEXTURE_2D, webgl.TEXTURE_WRAP_T, webgl.CLAMP_TO_EDGE);
+	webgl.texParameteri(webgl.TEXTURE_2D, webgl.TEXTURE_MIN_FILTER, webgl.NEAREST);
+	webgl.texParameteri(webgl.TEXTURE_2D, webgl.TEXTURE_MAG_FILTER, webgl.NEAREST);
 }
 
 function initShape(){
-	Shape.rectangle= new Rectangle();
+	Shape.rectangle= new Rectangle(gl);
+	Shape.rectangle2= new Rectangle(colormapgl);
 }
 
 function initWebGL(glcanvas) {
@@ -430,6 +537,43 @@ function initShaders() {
 		pUniform : gl.getUniformLocation(shaderProgram.colormapShader, "uPMatrix"),
 		mvUniform : gl.getUniformLocation(shaderProgram.colormapShader, "uMVMatrix"),
 		uColormapLoc : gl.getUniformLocation(shaderProgram.colormapShader, "uColormap")
+	};
+	
+	//colormapgl
+	var colormap_vertexShader3 = getShader(colormapgl, "colormap-shader-vs");
+	var colormap_fragmentShader3 = getShader(colormapgl, "colormap-shader-fs");
+	shaderProgram.colormapShader3 = colormapgl.createProgram();
+	colormapgl.attachShader(shaderProgram.colormapShader3, colormap_vertexShader3);
+	colormapgl.attachShader(shaderProgram.colormapShader3, colormap_fragmentShader3);
+	colormapgl.linkProgram(shaderProgram.colormapShader3);
+	if (!colormapgl.getProgramParameter(shaderProgram.colormapShader3, colormapgl.LINK_STATUS)) {
+		alert("Unable to initialize the shader program: ");
+	}
+	attributes.colormapShader3={
+		vertexPositionAttribute : colormapgl.getAttribLocation(shaderProgram.colormapShader3, "aVertexPosition"),
+		vertexTexCoordAttribute : colormapgl.getAttribLocation(shaderProgram.colormapShader3, "aVertexTexCoord")
+	};
+	uniforms.colormapShader3={
+		pUniform : colormapgl.getUniformLocation(shaderProgram.colormapShader3, "uPMatrix"),
+		mvUniform : colormapgl.getUniformLocation(shaderProgram.colormapShader3, "uMVMatrix"),
+		uColormapLoc : colormapgl.getUniformLocation(shaderProgram.colormapShader3, "uColormap")
+	};
+	var simple_vertexShader3 = getShader(colormapgl, "simple-shader-vs");
+	var simple_fragmentShader3 = getShader(colormapgl, "simple-shader-fs");
+	shaderProgram.simpleShader3 = colormapgl.createProgram();
+	colormapgl.attachShader(shaderProgram.simpleShader3, simple_vertexShader3);
+	colormapgl.attachShader(shaderProgram.simpleShader3, simple_fragmentShader3);
+	colormapgl.linkProgram(shaderProgram.simpleShader3);
+	if (!colormapgl.getProgramParameter(shaderProgram.simpleShader3, colormapgl.LINK_STATUS)) {
+		alert("Unable to initialize the shader program: " );
+	}
+	attributes.simpleShader3={
+		vertexPositionAttribute : colormapgl.getAttribLocation(shaderProgram.simpleShader3, "aVertexPosition"),
+		vertexColorAttribute : colormapgl.getAttribLocation(shaderProgram.simpleShader3, "aVertexColor")
+	};
+	uniforms.simpleShader3={
+		pUniform : colormapgl.getUniformLocation(shaderProgram.simpleShader3, "uPMatrix"),
+		mvUniform : colormapgl.getUniformLocation(shaderProgram.simpleShader3, "uMVMatrix")
 	};
 	
 	gl.useProgram(shaderProgram.simpleShader);
@@ -597,6 +741,28 @@ function testIconHit(event){
 	return -1;
 }
 
+function testLPlaneIntersect(event){
+	var mouse=getMousePos(canvas2,event);
+	var x=mouse.x - canvas2.width/2;
+	var y=canvas2.width/2 - mouse.y;
+
+	var radx = transform2.degx * Math.PI / 180.0;
+	var rady = transform2.degy * Math.PI / 180.0;
+	var s=transform2.scale;
+
+	var inv_rot2=(Matrix.RotationY(-rady))
+		.x(Matrix.RotationX(-radx)).ensure4x4();
+	var inv_mvMatrix2 = 
+		(Matrix.Translation($V([0,50,0])))
+		.x(Matrix.Diagonal([1/s,1/s,1/s,1]))
+		.x(inv_rot2);
+		
+	var dir=inv_rot2.x($V([0,0,-1,0]));
+	var origin=inv_mvMatrix2.x($V([x,y,0,0]));
+	var t=(L_plane-origin.e(2)-50)/dir.e(2);
+	return origin.add(dir.x(t));
+}
+
 function handleMouseDown(event){
 	if(mouseDown)
 		return;
@@ -716,11 +882,11 @@ function mvPopMatrix() {
   return mvMatrix;
 }
 
-function setMatrixUniforms(shader) {
+function setMatrixUniforms(shader,webgl) {
 	if(!shader)
 		shader = uniforms.simpleShader;
-  gl.uniformMatrix4fv(shader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
-  gl.uniformMatrix4fv(shader.mvUniform, false, new Float32Array(mvMatrix.flatten()));
+	webgl.uniformMatrix4fv(shader.pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
+	webgl.uniformMatrix4fv(shader.mvUniform, false, new Float32Array(mvMatrix.flatten()));
 }
 
 function handleResetButton(evt){
@@ -951,6 +1117,25 @@ function addNewColorIconData(cindex){
 	createImageBitmap(pixelData).then(function(response) { colorIconsData.push(response);});
 	selectedColor=colorIconsData.length-1;
 }
+//Draws the colormap in the the colormapcanvas
+function updateMainColormap(){
+	console.log("Drawing main color map"+generated_panel.webgl);
+	//var debug="";
+	//for(var i=0;i<generated_scale.length;i++)
+		//debug+=""+generated_scale+",";
+	//console.log(debug);
+	colormapgl.clearColor(.8, 0, 0, 1);
+	colormapgl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	generated_panel.create(generated_scale);
+	generated_panel.draw();
+	var rectangle=Shape.rectangle2;
+	rectangle.scale(1000,1000);
+	rectangle.move(-500,-500,-.5);
+	rectangle.changeColor(.0,.0,.5);
+	rectangle.draw();
+	
+}
+
 var lastShader2;
 function drawLabSpace(){
 	if(generated_scale==null||generated_scale.length==0)
@@ -990,7 +1175,7 @@ function drawLabSpace(){
 	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,50,0,	128,50,0, 0,0,0,	0,100,0, 0,50,-128, 0,50,128]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 0,0,0,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl2.STATIC_DRAW);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 0,0,0,1,	148.6/255,116/255,0,1,	0,138.4/255,1,1]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	gl2.drawArrays(gl2.LINES, 0, 6);
 	
@@ -1006,7 +1191,7 @@ function drawLabSpace(){
 		var lab=scale[i];
 		list_pos.push(lab.a);
 		list_pos.push(lab.L);
-		list_pos.push(lab.b);
+		list_pos.push(-lab.b);
 		
 		var rgb=lab_to_rgb(lab);
 		list_rgba.push(rgb.R/255);
@@ -1042,8 +1227,18 @@ function drawLabSpace(){
 }
 
 function handleLabCanvasClick(evt){
-	var mouse=getMousePos(canvas2,evt);
-	clickedElement=document.getElementById("labcanvas");
+	//var mouse=getMousePos(canvas2,evt);
+	var intersection=testLPlaneIntersect(evt);
+	console.log(intersection.elements);
+	var rgb=lab_to_rgb({L:intersection.e(2)+50,a:intersection.e(1),b:-intersection.e(3)});
+	console.log(rgb);
+	if(rgb.R<0||rgb.R>255||rgb.G<0||rgb.G>255||rgb.B<0||rgb.B>255){
+		clickedElement=document.getElementById("labcanvas");
+	}
+	else{
+		//clicked in colored zone
+		clickedElement=null;
+	}
 }
 
 function handleIconCanvasClick(evt){
@@ -1130,13 +1325,6 @@ constraint.removePoint=function(i){
 	this.ctrl_points.splice(i,1);
 }
 
-var constraint2={
-	steps: 200,
-	delta_e:1.5,
-	tolerance: 0.01,
-	ctrl_points:[{L:39,a:39,b:-62},{L:60,a:24,b:-54},{L:76, a:10, b:-37},{L:86, a:1, b:-13},{L:86, a:6, b:11},{L:75, a:24, b:27},{L:58, a:44, b:34},{L:37, a:62, b:32}]
-}
-
 function generateColormap(constraint){
 	var colors=[];
 	var last_ctrl_point=0;
@@ -1168,7 +1356,6 @@ function generateColormap(constraint){
 					alert("cannot generate enough points, path is too short or deltaE is too large");
 					break;
 				}
-				
 			}
 			dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
 			bound.min=0;
@@ -1176,7 +1363,8 @@ function generateColormap(constraint){
 			i++;
 		}
 	}
-	//return colors;
+	return colors;
+	
 	var outputText="";
 	for(var ii=0;ii<colors.length;ii++){
 		var rgb=lab_to_rgb(colors[ii]);
@@ -1234,6 +1422,7 @@ function update_ctrl_points_from_html(){
 		a_points.push({'L':L,'a':a,'b':b});
 	}
 	constraint.ctrl_points=a_points;
+	updateMainColormap();
 	
 }
 function update_ctrl_points_from_javascript(lab_arr){
@@ -1241,9 +1430,11 @@ function update_ctrl_points_from_javascript(lab_arr){
 	how_many_points_has_been_added=0;
 	for(var i=0;i<lab_arr.length;i++){
 		var lab=lab_arr[i];
+
 		lab.L=Math.floor(lab.L*1000)/1000;
 		lab.a=Math.floor(lab.a*1000)/1000;
 		lab.b=Math.floor(lab.b*1000)/1000;
+
 		addPointToList(lab);
 	}
 	update_ctrl_points_from_html();
