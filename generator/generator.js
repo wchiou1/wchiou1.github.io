@@ -1,4 +1,4 @@
-var version="Testing init2"
+var version="Handle edit"
 
 var canvas = document.getElementById("coloriconcanvas");
 var canvas2;
@@ -14,6 +14,7 @@ var ctx;
 var lastShader=null;
 var labinput;
 
+var editIndex=-1;
 var color_panels=[];
 var generated_panel;
 var generated_ctrl=[];
@@ -1250,11 +1251,21 @@ function drawBox(position3f,mvMat,pMat){
 function handleLabCanvasClick(evt){
 	//var mouse=getMousePos(canvas2,evt);
 	var intersection=testLPlaneIntersect(evt);
-	if(isFinite(intersection.e(1))&&isFinite(intersection.e(2))&&isFinite(intersection.e(3)))
-		var rgb=lab_to_rgb({L:intersection.e(2)+50,a:intersection.e(1),b:-intersection.e(3)});
-	else
+	var lab={L:intersection.e(2)+50,a:intersection.e(1),b:-intersection.e(3)};
+	if(isFinite(intersection.e(1))&&isFinite(intersection.e(2))&&isFinite(intersection.e(3))){
+		var rgb=lab_to_rgb(lab);
+	}
+	else{
 		var rgb={R:-1,G:-1,B:-1};
+	}
+		
+
+	//console.log(intersection.elements);
 	
+
+
+	//console.log(rgb);
+
 	if(rgb.R<0||rgb.R>255||rgb.G<0||rgb.G>255||rgb.B<0||rgb.B>255){
 		clickedElement=document.getElementById("labcanvas");
 	}
@@ -1262,6 +1273,19 @@ function handleLabCanvasClick(evt){
 		//clicked in colored zone
 		clickedElement=null;
 	}
+	
+	//Check if it should overwrite the selected item in the ordered listStyleType
+	if(editIndex!=-1&&editCtrlPoints&&clickedElement==null){
+		var li=$("#list_of_ctrl_points").children("li").eq(editIndex);
+		var idarray=$("#list_of_ctrl_points").sortable('toArray');
+		var li=document.getElementById(idarray[editIndex]);
+		var Lab=li.children;
+		Lab[0].textContent=lab.L;
+		Lab[1].textContent=lab.a;
+		Lab[2].textContent=lab.b;
+		update_ctrl_points_from_html();
+	}
+	
 }
 
 function handleIconCanvasClick(evt){
@@ -1311,8 +1335,6 @@ function FileListenerInit(){
 			$("#insert").on("click",function(){addPointToList(); update_ctrl_points_from_html();});
 			$("#edit").on("click",handleEdit);
 			
-
-			
 			//Icon canvas cannot use eventhandler because all events are blocked by drop
 			//addEventHandler(canvas,'mousedown', handleIconCanvasClick);
 		});
@@ -1321,7 +1343,9 @@ function FileListenerInit(){
 	}
 }
 function handleEdit(){
+	editIndex=$('.ui-selected').first().index();
 	editCtrlPoints=!editCtrlPoints;
+	console.log("Index:"+editIndex+","+editCtrlPoints);
 	if(editCtrlPoints){
 		$("#edit").text('update');
 		$("#list_of_ctrl_points").selectable("disable")
