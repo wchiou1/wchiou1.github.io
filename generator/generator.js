@@ -1203,16 +1203,14 @@ function drawLabSpace(){
 
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[0]);
 	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[0]);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
-
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[0]);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[0]);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	
 	gl2.drawArrays(gl2.POINTS, 0, len);
 	
+	drawBox(list_pos.slice(0,3),mvMatrix2,pMatrix2);
 	//draw L-plane
 	if(lastShader2!=="lab"){
 		lastShader2="lab";
@@ -1228,13 +1226,44 @@ function drawLabSpace(){
 
 }
 
+function drawBox(position3f,mvMat,pMat){
+	if(lastShader2!=="simple"){
+		lastShader2="simple";
+		gl2.useProgram(shaderProgram.simpleShader2);
+		gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
+		gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
+	}
+	const size=10/canvas2.width;
+	var pos2d=pMat.x(mvMat).x($V(position3f.concat(1))).elements;
+	var vertices=[pos2d[0]-size,pos2d[1]-size,0,pos2d[0]+size,pos2d[1]-size,0,pos2d[0]+size,pos2d[1]+size,0,pos2d[0]-size,pos2d[1]+size,0];
+	var matI = new Float32Array(Matrix.I(4).flatten());
+	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, matI);
+	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, matI);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(vertices), gl2.STATIC_DRAW);
+	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,0,0,1,	0,0,0,1, 0,0,0,1,	0,0,0,1]), gl2.STATIC_DRAW);
+	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+	gl2.drawArrays(gl2.LINE_LOOP, 0, 4);
+}
+
 function handleLabCanvasClick(evt){
 	//var mouse=getMousePos(canvas2,evt);
 	var intersection=testLPlaneIntersect(evt);
-	//console.log(intersection.elements);
 	var lab={L:intersection.e(2)+50,a:intersection.e(1),b:-intersection.e(3)};
+	if(isFinite(intersection.e(1))&&isFinite(intersection.e(2))&&isFinite(intersection.e(3))){
+		var rgb=lab_to_rgb(lab);
+	}
+	else{
+		var rgb={R:-1,G:-1,B:-1};
+	}
+		
+
+	//console.log(intersection.elements);
 	
-	var rgb=lab_to_rgb(lab);
+
+
 	//console.log(rgb);
 
 	if(rgb.R<0||rgb.R>255||rgb.G<0||rgb.G>255||rgb.B<0||rgb.B>255){
@@ -1343,55 +1372,54 @@ constraint.addPoint=function(){
 constraint.removePoint=function(i){
 	this.ctrl_points.splice(i,1);
 }
-
 function generateColormap(constraint){
 	var colors=[];
 	var last_ctrl_point=0;
 	var lastLab=constraint.ctrl_points[0];
+	var orii=lastLab;
 	colors.push(lastLab); //first Lab color
 	var i=1;
 	var bound={min:0, max:1, mid:function(){return (this.min+this.max)/2}};
-	if(last_ctrl_point.length==1)
+	if(constraint.ctrl_points.length==1)
 		return colors;
-	var dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
+	
 	while(i<constraint.steps){
-		//Start of Wesley's fix
+		//Start of Wesley's fix 
 		//if(last_ctrl_point+1<constraint.ctrl_points.length)
-		if(ciede2000(constraint.ctrl_points[last_ctrl_point],constraint.ctrl_points[last_ctrl_point+1])<=constraint.delta_e){
-			colors.push(constraint.ctrl_points[last_ctrl_point+1]);
+		while(last_ctrl_point+1<constraint.ctrl_points.length&&ciede2000(lastLab,constraint.ctrl_points[last_ctrl_point+1])<=constraint.delta_e){
+			//colors.push(constraint.ctrl_points[last_ctrl_point+1]);
 			last_ctrl_point++;
-			i++;
-			break;
+			orii=constraint.ctrl_points[last_ctrl_point];
+			//i++;
+			if(last_ctrl_point>=constraint.ctrl_points.length-1){
+				alert("cannot generate enough points, path is too short or deltaE is too large");
+				return colors;
+			}
 		}
 		//End of Wesley's fix
+		var dirr=dir(constraint.ctrl_points[last_ctrl_point+1],constraint.ctrl_points[last_ctrl_point]);
 		
 		var test=bound.mid()
-		var newLab=Lab_add(lastLab,timesLen(dirr,test));
+		var newLab=Lab_add(orii,timesLen(dirr,test));
 		var d_e=ciede2000(lastLab,newLab);
-		//console.log(lastLab);
-		//console.log(newLab);
+
 		
 		if(d_e>constraint.delta_e+constraint.tolerance){
-			bound.max=test;//console.log(d_e+" max="+test);
+			bound.max=test;
 		}
 		else if(d_e<constraint.delta_e-constraint.tolerance){
-			bound.min=test;//console.log(d_e+" min="+test);
+			bound.min=test;
 		}
 		else{
-			console.log(newLab.L+","+newLab.a+","+newLab.b);
-			colors.push(newLab);//console.log(newLab);
+			colors.push(newLab);
 			lastLab=newLab;
-			if(ciede2000(lastLab, constraint.ctrl_points[last_ctrl_point+1])<constraint.delta_e){
-				last_ctrl_point++;
-				colors.pop();
-				colors.push(constraint.ctrl_points[last_ctrl_point]);
-				lastLab=constraint.ctrl_points[last_ctrl_point];
-				if(last_ctrl_point>=constraint.ctrl_points.length-1){
-					//alert("cannot generate enough points, path is too short or deltaE is too large");
-					console.log("cannot generate enough points, path is too short or deltaE is too large");
-					break;
-				}
-			}
+			orii=lastLab;
+			//if(ciede2000(lastLab, constraint.ctrl_points[last_ctrl_point+1])<constraint.delta_e){
+			//	last_ctrl_point++;
+				//colors.pop();
+				//colors.push(constraint.ctrl_points[last_ctrl_point]);
+				//lastLab=constraint.ctrl_points[last_ctrl_point];
+			//}
 			dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
 			bound.min=0;
 			bound.max=1;
