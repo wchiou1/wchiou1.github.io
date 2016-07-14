@@ -1255,6 +1255,7 @@ function handleLabCanvasClick(evt){
 		Lab[1].textContent=lab.a;
 		Lab[2].textContent=lab.b;
 		update_ctrl_points_from_html();
+		drawLabSpace();
 	}
 	
 }
@@ -1386,7 +1387,8 @@ function generateColormap(constraint){
 				colors.push(constraint.ctrl_points[last_ctrl_point]);
 				lastLab=constraint.ctrl_points[last_ctrl_point];
 				if(last_ctrl_point>=constraint.ctrl_points.length-1){
-					alert("cannot generate enough points, path is too short or deltaE is too large");
+					//alert("cannot generate enough points, path is too short or deltaE is too large");
+					console.log("cannot generate enough points, path is too short or deltaE is too large");
 					break;
 				}
 			}
