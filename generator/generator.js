@@ -50,6 +50,7 @@ var highlightPoint=-1;
 var min_width=iconViewWidth;
 var min_height=iconViewHeight;
 var pMatrix2;
+var selectedPoints=[];
 var orthogonal={
 	l: 0,
 	r: iconViewWidth,
@@ -407,7 +408,12 @@ function start() {
 		containment: "parent",
 		placeholder: "sortable-placeholder"
 	}).selectable({
-		cancel: ".handle"
+		cancel: ".handle",
+		stop: function(event, ui){
+			selectedPoints=[];
+			$(this).children(".ui-selected").each(function(){selectedPoints.push($(this).index())});
+			drawLabSpace();
+		}
 	});
 	 
     $( "#slider-vertical" ).slider({
@@ -418,7 +424,7 @@ function start() {
       value: L_plane,
       slide: function( event, ui ) {
         L_plane= ui.value;
-		drawLabSpace(selectedColor,0);
+		drawLabSpace();
 		var gray=(255*ui.value/100)|0;
 		sliderColor="rgb("+gray+","+gray+","+gray+")";
 		$( "#slider-vertical .ui-slider-range" ).css( "background-color", sliderColor );
@@ -776,7 +782,8 @@ function handleMouseDown(event){
 			generated_scale=scales[selectedColor].slice(0);
 			generated_panel.create(generated_scale);
 		}
-		drawLabSpace(selectedColor,0);
+		selectedPoints.length=0;
+		drawLabSpace();
 		update_ctrl_points_from_javascript(scales[selectedColor]);
 	}
 	
@@ -793,7 +800,7 @@ function handleMouseMove(event){
 	
 	if(clickedElement!=null&&clickedElement==document.getElementById("labcanvas")){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
-		drawLabSpace(selectedColor,0);
+		drawLabSpace();
 	}
 	
 	if(clickedElement!=null&&clickedElement==canvas&&iconViewHeight<scales.length*(iconHeight+10)+10){
@@ -891,7 +898,7 @@ function setMatrixUniforms(shader,webgl) {
 
 function handleResetButton(evt){
 	initT2();
-	drawLabSpace(selectedColor,0);
+	drawLabSpace();
 }
 
 function initT2(){
@@ -920,7 +927,7 @@ function drawScene() {
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	drawColorThumbnails();
-	drawLabSpace(selectedColor,0);
+	drawLabSpace();
 }
 
 function drawColorThumbnails(){
@@ -1187,7 +1194,6 @@ function drawLabSpace(){
 	var scale=generated_scale;
 	var list_rgba=[];
 	var list_pos=[];
-	var temprgb=lab_to_rgb(scale[0]);
 	for(var i=0;i<len;i++){
 		var lab=scale[i];
 		list_pos.push(lab.a);
@@ -1209,8 +1215,9 @@ function drawLabSpace(){
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	
 	gl2.drawArrays(gl2.POINTS, 0, len);
-	
-	drawBox(list_pos.slice(0,3),mvMatrix2,pMatrix2);
+
+	drawBox(mvMatrix2,pMatrix2);
+
 	//draw L-plane
 	if(lastShader2!=="lab"){
 		lastShader2="lab";
@@ -1226,26 +1233,34 @@ function drawLabSpace(){
 
 }
 
-function drawBox(position3f,mvMat,pMat){
+function drawBox(mvMat,pMat){
 	if(lastShader2!=="simple"){
 		lastShader2="simple";
 		gl2.useProgram(shaderProgram.simpleShader2);
 		gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
 		gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
 	}
-	const size=10/canvas2.width;
-	var pos2d=pMat.x(mvMat).x($V(position3f.concat(1))).elements;
-	var vertices=[pos2d[0]-size,pos2d[1]-size,0,pos2d[0]+size,pos2d[1]-size,0,pos2d[0]+size,pos2d[1]+size,0,pos2d[0]-size,pos2d[1]+size,0];
 	var matI = new Float32Array(Matrix.I(4).flatten());
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, matI);
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, matI);
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(vertices), gl2.STATIC_DRAW);
-	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,0,0,1,	0,0,0,1, 0,0,0,1,	0,0,0,1]), gl2.STATIC_DRAW);
-	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
-	gl2.drawArrays(gl2.LINE_LOOP, 0, 4);
+	const size=10/canvas2.width;
+	
+	for(var i=0;i<selectedPoints.length;i++){
+		var position3f=[];
+		var lab=constraint.ctrl_points[selectedPoints[i]];
+		position3f.push(lab.a);
+		position3f.push(lab.L);
+		position3f.push(-lab.b);
+		var pos2d=pMat.x(mvMat).x($V(position3f.concat(1))).elements;
+		var vertices=[pos2d[0]-size,pos2d[1]-size,0,pos2d[0]+size,pos2d[1]-size,0,pos2d[0]+size,pos2d[1]+size,0,pos2d[0]-size,pos2d[1]+size,0];
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(vertices), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,0,0,1,	0,0,0,1, 0,0,0,1,	0,0,0,1]), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+		gl2.drawArrays(gl2.LINE_LOOP, 0, 4);
+	}
 }
 
 function handleLabCanvasClick(evt){
@@ -1301,7 +1316,7 @@ function handleLabCanvasWheel(evt){
 		scaleT2(1.1);
 	else if(delta<0)
 		scaleT2(0.9);
-	drawLabSpace(selectedColor,0);
+	drawLabSpace();
 	e.preventDefault();
 	e.returnValue=false;
 	return false;
@@ -1360,9 +1375,8 @@ function handleEdit(){
 }
 var constraint={
 	steps: 1000,
-	delta_e:2,
+	delta_e:1,
 	tolerance: 0.01,
-	//ctrl_points:[{L:0,a:0,b:0},{L:39,a:55,b:36},{L:57, a:42, b:64},{L:83,a:-10,b:83},{L:100,a:0,b:0}]
 	ctrl_points:[]
 }
 constraint.addPoint=function(){
