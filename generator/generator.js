@@ -1273,9 +1273,9 @@ function handleLabCanvasClick(evt){
 		//clicked in colored zone
 		clickedElement=null;
 	}
-	
+	editIndex=$('.ui-selected').first().index();
 	//Check if it should overwrite the selected item in the ordered listStyleType
-	if(editIndex!=-1&&editCtrlPoints&&clickedElement==null){
+	if(editIndex!=-1&&!editCtrlPoints&&clickedElement==null){
 		var li=$("#list_of_ctrl_points").children("li").eq(editIndex);
 		var idarray=$("#list_of_ctrl_points").sortable('toArray');
 		var li=document.getElementById(idarray[editIndex]);
@@ -1344,7 +1344,6 @@ function FileListenerInit(){
 	}
 }
 function handleEdit(){
-	editIndex=$('.ui-selected').first().index();
 	editCtrlPoints=!editCtrlPoints;
 	console.log("Index:"+editIndex+","+editCtrlPoints);
 	if(editCtrlPoints){
@@ -1392,7 +1391,8 @@ function generateColormap(constraint){
 			orii=constraint.ctrl_points[last_ctrl_point];
 			//i++;
 			if(last_ctrl_point>=constraint.ctrl_points.length-1){
-				alert("cannot generate enough points, path is too short or deltaE is too large");
+				//alert("cannot generate enough points, path is too short or deltaE is too large");
+				console.log("cannot generate enough points, path is too short or deltaE is too large");
 				return colors;
 			}
 		}
