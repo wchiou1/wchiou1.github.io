@@ -96,7 +96,7 @@ select{
 	text-align: center;
 	color: white;
 	position: absolute;
-	width:100px;
+	width:70px;
 	height: 50px;
 }
 .button:hover{
@@ -282,7 +282,7 @@ select{
 }
 #LabList{
 	float: left;
-	width: 20%;
+	width: 250px;
 	height: 554px;
 	overflow: visible;	
 	border: 2px solid #cccccc;

@@ -445,8 +445,10 @@ function initElements(){
 	$(".button").width(iconViewWidth+offset60+"px").height(offset30+"px")
 	.css("font-size",((12*screenscale)|0)+"px").css("line-height",offset30+"px");
 	
-	resetbutton.style.left = 200-offset30+"px";
-	resetbutton.style.top = 200+iconViewHeight+110*screenscale+"px";
+	resetbutton.style.left = 28+"px";
+	resetbutton.style.top = 585+"px";
+	resetbutton.style.width = 70+"px";
+	resetbutton.style.height = 30+"px";
 	
 	var colordrop=document.getElementById("colordrop");
 	var iconstyle = window.getComputedStyle(canvas, null);
@@ -1350,6 +1352,7 @@ function FileListenerInit(){
 			$("#delete").on("click",function(){$('.ui-selected').remove(); update_ctrl_points_from_html();});
 			$("#insert").on("click",function(){addPointToList(); update_ctrl_points_from_html();});
 			$("#edit").on("click",handleEdit);
+			$("#save").on("click",handleSave);
 			
 			//Icon canvas cannot use eventhandler because all events are blocked by drop
 			//addEventHandler(canvas,'mousedown', handleIconCanvasClick);
@@ -1358,6 +1361,19 @@ function FileListenerInit(){
 	  alert('Your browser does not support the HTML5 FileReader.');
 	}
 }
+function handleSave(){
+	//Save the generated scale and add an icon
+	var filename = prompt("Please enter a filename", "generated scale");
+	if(filename==null){
+		alert("Invalid filename, unable to save");
+		return;
+	}
+	scales.push(generated_scale);
+	color_panels.push(new ColorPanel(0,0,50,50,generated_scale,gl));
+	colormapFileNames.push(filename);
+	addNewColorIconData(scales.length-1);
+}
+
 function handleEdit(){
 	editCtrlPoints=!editCtrlPoints;
 	console.log("Index:"+editIndex+","+editCtrlPoints);
