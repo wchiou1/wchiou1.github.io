@@ -783,8 +783,8 @@ function handleMouseDown(event){
 			generated_panel.create(generated_scale);
 		}
 		selectedPoints.length=0;
-		drawLabSpace();
 		update_ctrl_points_from_javascript(scales[selectedColor]);
+		drawLabSpace();
 	}
 	
 }
@@ -1252,7 +1252,7 @@ function drawBox(mvMat,pMat){
 		position3f.push(lab.L);
 		position3f.push(-lab.b);
 		var pos2d=pMat.x(mvMat).x($V(position3f.concat(1))).elements;
-		var vertices=[pos2d[0]-size,pos2d[1]-size,0,pos2d[0]+size,pos2d[1]-size,0,pos2d[0]+size,pos2d[1]+size,0,pos2d[0]-size,pos2d[1]+size,0];
+		var vertices=[pos2d[0]-size,pos2d[1]-size,pos2d[2],pos2d[0]+size,pos2d[1]-size,pos2d[2],pos2d[0]+size,pos2d[1]+size,pos2d[2],pos2d[0]-size,pos2d[1]+size,pos2d[2]];
 		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
 		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(vertices), gl2.STATIC_DRAW);
 		gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
