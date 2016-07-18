@@ -235,37 +235,37 @@ select{
 	height: 5%;
 	background-color: #cccccc;
 }
-#list_of_ctrl_points{
+.list_of_ctrl_points{
 	clear: both;
 	padding-left: 40px;
 }
-#list_of_ctrl_points .ui-selecting 
+.list_of_ctrl_points .ui-selecting 
 {
 	background: #D6EAF8; 
 }
-#list_of_ctrl_points .ui-selected 
+.list_of_ctrl_points .ui-selected 
 { 
 	background: #5DADE2; 
 	color: white; 
 }
-#list_of_ctrl_points li{
+.list_of_ctrl_points li{
 	width: 100%;
 }
 
-#list_of_ctrl_points li div{
+.list_of_ctrl_points li div{
 	width: 31%;
 	float: left;
 	text-align: center;
 	overflow: hidden;
 	display: inline-block;
 }
-#list_of_ctrl_points li .handle{
+.list_of_ctrl_points li .handle{
 	width: 7%;
 	height: 100%;
 	background-color: white;
 	text-align: center;
 }
-#list_of_ctrl_points li .handle span{
+.list_of_ctrl_points li .handle span{
 	margin: auto;
 }
 .sortable-placeholder {
@@ -280,7 +280,7 @@ select{
 	clear: both;
 	padding-right: 20px;
 }
-#LabList{
+.LabList{
 	float: left;
 	width: 250px;
 	height: 554px;
@@ -288,7 +288,7 @@ select{
 	border: 2px solid #cccccc;
 	position: relative;
 }
-#labpoints{
+.labpoints{
 	float: left;
 	clear: both;
 	width: 100%;
