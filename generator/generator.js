@@ -1316,12 +1316,14 @@ function handleLabCanvasClick(evt){
 		clickedElement=null;
 	}
 	editIndex=$("#list_of_ctrl_points2").children('.ui-selected').first().index();
+	console.log("Index of selected:"+editIndex);
 	//Check if it should overwrite the selected item in the ordered listStyleType
 	if(editIndex!=-1&&!editCtrlPoints&&clickedElement==null){
 		var li=$("#list_of_ctrl_points2").children("li").eq(editIndex);
 		var idarray=$("#list_of_ctrl_points2").sortable('toArray');
 		var li=document.getElementById(idarray[editIndex]);
 		var Lab=li.children;
+		console.log("Editing:("+Lab[0].textContent+","+Lab[1].textContent+","+Lab[2].textContent+")");
 		Lab[0].textContent=lab.L;
 		Lab[1].textContent=lab.a;
 		Lab[2].textContent=lab.b;
@@ -1410,7 +1412,7 @@ function handleMove(){
 	$.each(selected,function(i,v){
 		//console.log(i+" "+v);
 		var Lab=v.children;
-		console.log("("+Lab[0].textContent+","+Lab[1].textContent+","+Lab[2].textContent+")");
+		console.log("Moving to list2\n("+Lab[0].textContent+","+Lab[1].textContent+","+Lab[2].textContent+")");
 		var lab={
 			L:Number(Lab[0].textContent),
 			a:Number(Lab[1].textContent),
@@ -1435,7 +1437,7 @@ function addPointToList2(lab){
 	}
 	var postpend="<div class='handle'><span class='ui-icon ui-icon-carat-2-n-s'></span></div>";
 	var labspan="<div>"+l+"</div><div>"+a+"</div><div>"+b+"</div>"
-	$("#list_of_ctrl_points2").append("<li id='ctrl2"+pointCount2+"' class='ui-state-default'>"+labspan+postpend+"</li>");
+	$("#list_of_ctrl_points2").append("<li id='2ctrl"+pointCount2+"' class='ui-state-default'>"+labspan+postpend+"</li>");
 	pointCount2++;
 }
 
@@ -1483,7 +1485,7 @@ function generateColormap(constraint){
 	var colors=[];
 	var last_ctrl_point=0;
 	var lastLab=constraint.ctrl_points[0];
-	console.log(constraint.ctrl_points.length);
+	//console.log(constraint.ctrl_points.length);
 	var orii=lastLab;
 	colors.push(lastLab); //first Lab color
 	var i=1;
@@ -1585,13 +1587,14 @@ function update_ctrl_points_from_html(){
 	var idarray=$("#list_of_ctrl_points2").sortable('toArray');
 	var a_points=[];
 	for(var i=0;i<idarray.length;i++){
+		console.log("html id:"+idarray[i]);
 		var li=document.getElementById(idarray[i]);
 		var Lab=li.children;
 		var L=Number(Lab[0].textContent);
 		var a=Number(Lab[1].textContent);
 		var b=Number(Lab[2].textContent);
 		a_points.push({'L':L,'a':a,'b':b});
-		console.log('L'+L+'a'+a+'b'+b);
+		console.log("Update from html\nL:"+L+",a:"+a+",b:"+b);
 	}
 	constraint.ctrl_points=a_points;
 	updateMainColormap();
@@ -1606,7 +1609,7 @@ function update_ctrl_points_from_javascript(lab_arr){
 		lab.L=Math.floor(lab.L*1000)/1000;
 		lab.a=Math.floor(lab.a*1000)/1000;
 		lab.b=Math.floor(lab.b*1000)/1000;
-
+		console.log("Added color to list1\nL:"+lab.L+",a:"+lab.a+",b:"+lab.b);
 		addPointToList(lab);
 	}
 	update_ctrl_points_from_html();
