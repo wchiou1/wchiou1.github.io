@@ -208,6 +208,11 @@ select{
 .canvas-holder{
 	float:left;
 }
+.text-input{
+	position: absolute; 
+	top:0px;
+	left:620px;
+}
 #button6{
 	position: absolute; 
 	background-color: #7F00FF;
@@ -272,9 +277,13 @@ select{
 	height: 20px;
     display: block;
 }
-.ctrl-button{
+.ctrl-button2{
 	float: right;
 	width: 20%;
+}
+.ctrl-button1{
+	float: right;
+	width: 30%;
 }
 .button-holder{
 	clear: both;
