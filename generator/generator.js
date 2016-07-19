@@ -409,7 +409,7 @@ function start() {
 	 $("#list_of_ctrl_points1").sortable({
 		handle: ".handle",
         stop : function(event, ui){
-          update_ctrl_points_from_html();
+          update_ctrl_points_from_html(0);
         },
 		containment: "parent",
 		placeholder: "sortable-placeholder"
@@ -425,7 +425,7 @@ function start() {
 	 $("#list_of_ctrl_points2").sortable({
 		handle: ".handle",
         stop : function(event, ui){
-          update_ctrl_points_from_html();
+          update_ctrl_points_from_html(1);
         },
 		containment: "parent",
 		placeholder: "sortable-placeholder"
@@ -828,7 +828,7 @@ function handleMouseDown(event){
 		update_ctrl_points_from_javascript(scales[selectedColor]);
 		drawLabSpace();
 	}
-	selectByIndex(testCtrlPointHit(event));
+	console.log(testCtrlPointHit(event));
 }
 //Called when the mouse is released
 function handleMouseUp(event){
@@ -869,26 +869,6 @@ function MouseWheelHandler(e) {
 		e.returnValue=false;
 	}
 	return false;
-}
-
-//Sets the index to selected
-function selectByIndex(index){
-	if(index==undefined)
-		return;
-	console.log("selectedByIndex:"+index);
-	idarray=$("#list_of_ctrl_points1").sortable('toArray');
-	var a_points=[];
-	$(document.getElementById(idarray[index])).addClass('ui-selected');
-	var found=false;
-	for(var i=0;i<selectedPoints.length;i++){
-		console.log("test:"+selectedPoints[i])
-		if(selectedPoints[i]==index){
-			found=true;
-			break;
-		}
-	}
-	if(!found)
-		selectedPoints.push(index);
 }
 
 function updateIconViewOffset(mouseX,mouseY){
@@ -1359,7 +1339,6 @@ function drawBox(mvMat,pMat){
 	for(var i=0;i<temp.length;i++){
 		var position3f=[];
 		var lab=constraint.ctrl_points[temp[i]];
-		//console.log(i+" "+temp[i]);
 		position3f.push(lab.a);
 		position3f.push(lab.L);
 		position3f.push(-lab.b);
@@ -1481,16 +1460,14 @@ function FileListenerInit(){
 
 function list1click(){
 	displayMode=1; 
-	activeList=0;
-	update_ctrl_points_from_html();
+	update_ctrl_points_from_html(0);
 	updateMainColormap();
 	drawLabSpace();
 }
 
 function list2click(){
 	displayMode=0; 
-	activeList=1;
-	update_ctrl_points_from_html();
+	update_ctrl_points_from_html(1);
 	updateMainColormap();
 	drawLabSpace();
 }
@@ -1700,8 +1677,11 @@ function makePointUneditable(point){
 	$("#list_of_ctrl_points1").selectable("enable");
 }
 var activeList=1;
-function update_ctrl_points_from_html(){
+function update_ctrl_points_from_html(listIndex){
 	var idarray;
+	if(!listIndex)
+		listIndex=0;
+	activeList=listIndex;
 	if(activeList==1)
 		idarray=$("#list_of_ctrl_points2").sortable('toArray');
 	else
