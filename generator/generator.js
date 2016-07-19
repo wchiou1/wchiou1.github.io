@@ -1446,8 +1446,9 @@ function FileListenerInit(){
 			$("#save").on("click",handleSave);
 			$("#move").on("click",handleMove);
 			$("#download").on("click",function(){download_colormap(selectedColor)});
-			$("#LabList1").on("click",list1click);
-			$("#LabList2").on("click",list2click);
+			$("#LabList1").on("mousedown",list1click);
+			$("#LabList2").on("mousedown",list2click);
+			$("#de_input, #steps_input").on("keyup",function(){updateMainColormap(); drawLabSpace();});
 			
 			//Icon canvas cannot use eventhandler because all events are blocked by drop
 			//addEventHandler(canvas,'mousedown', handleIconCanvasClick);
