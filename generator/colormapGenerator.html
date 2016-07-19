@@ -159,6 +159,10 @@
 
   <body onload="start()">
 	<div class="container" id="container2" >
+		<div class="text-input">
+			Delta-E: <input type="text" name="deltae" value="1.0">
+			Steps: <input type="text" name="steps" value="100">
+		</div>
 		<canvas id="coloriconcanvas"  class="webgl" >
 			<!--Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element. -->
 		</canvas>
@@ -171,8 +175,9 @@
 				</ol>
 			</div>
 			<div class="button-holder">
-				<button class="ctrl-button" id="move">>></button>
-				<button class="ctrl-button" id="option">option</button>
+				<button class="ctrl-button1" id="move">>></button>
+				<button class="ctrl-button1" id="download">download</button>
+				<button class="ctrl-button1" id="option">option</button>
 			</div>
 		</div>
 		<div id="LabList2" class="LabList">
@@ -184,11 +189,11 @@
 				</ol>
 			</div>
 			<div class="button-holder">
-				<button class="ctrl-button" id="save">save</button>
-				<button class="ctrl-button" id="delete">delete</button>
-				<button class="ctrl-button" id="insert">insert</button>
-				<button class="ctrl-button" id="edit">edit</button>
-				<button class="ctrl-button" id="option">option</button>
+				<button class="ctrl-button2" id="save">save</button>
+				<button class="ctrl-button2" id="delete">delete</button>
+				<button class="ctrl-button2" id="insert">insert</button>
+				<button class="ctrl-button2" id="edit">edit</button>
+				<button class="ctrl-button2" id="option">option</button>
 			</div>
 		</div>
 		<div class="canvas-holder">
