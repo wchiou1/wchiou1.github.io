@@ -1182,7 +1182,7 @@ function addNewColorIconData(cindex){
 function updateMainColormap(){
 	if(constraint.ctrl_points.length<=0)
 		return;
-	console.log("Drawing main color map");
+	//console.log("Drawing main color map");
 	constraint.steps=Number(document.getElementById("steps_input").value);
 	constraint.delta_e=Number(document.getElementById("de_input").value);
 	generated_scale=generateColormap(constraint);
@@ -1331,10 +1331,14 @@ function drawBox(mvMat,pMat){
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, matI);
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, matI);
 	const size=10/canvas2.width;
-	
-	for(var i=0;i<selectedPoints2.length;i++){
+	var temp;
+	if(activeList==0)
+		temp=selectedPoints;
+	else
+		temp=selectedPoints2;
+	for(var i=0;i<temp.length;i++){
 		var position3f=[];
-		var lab=constraint.ctrl_points[selectedPoints2[i]];
+		var lab=constraint.ctrl_points[temp[i]];
 		position3f.push(lab.a);
 		position3f.push(lab.L);
 		position3f.push(-lab.b);
@@ -1442,8 +1446,8 @@ function FileListenerInit(){
 			$("#save").on("click",handleSave);
 			$("#move").on("click",handleMove);
 			$("#download").on("click",function(){download_colormap(selectedColor)});
-			$("#LabList1").on("click",function(){displayMode=0; drawLabSpace();});
-			$("#LabList2").on("click",function(){displayMode=1; drawLabSpace();});
+			$("#LabList1").on("click",list1click);
+			$("#LabList2").on("click",list2click);
 			
 			//Icon canvas cannot use eventhandler because all events are blocked by drop
 			//addEventHandler(canvas,'mousedown', handleIconCanvasClick);
@@ -1452,6 +1456,21 @@ function FileListenerInit(){
 	  alert('Your browser does not support the HTML5 FileReader.');
 	}
 }
+
+function list1click(){
+	displayMode=1; 
+	update_ctrl_points_from_html(0);
+	updateMainColormap();
+	drawLabSpace();
+}
+
+function list2click(){
+	displayMode=0; 
+	update_ctrl_points_from_html(1);
+	updateMainColormap();
+	drawLabSpace();
+}
+
 function handleMove(){
 	//Get the selected items
 	//$('.ui-selected')
@@ -1568,7 +1587,7 @@ function generateColormap(constraint){
 			//i++;
 			if(last_ctrl_point>=constraint.ctrl_points.length-1){
 				//alert("cannot generate enough points, path is too short or deltaE is too large");
-				console.log("cannot generate enough points, path is too short or deltaE is too large");
+				//console.log("cannot generate enough points, path is too short or deltaE is too large");
 				return colors;
 			}
 		}
@@ -1656,8 +1675,16 @@ function makePointUneditable(point){
 	point.off("blur");
 	$("#list_of_ctrl_points1").selectable("enable");
 }
-function update_ctrl_points_from_html(){
-	var idarray=$("#list_of_ctrl_points2").sortable('toArray');
+var activeList=1;
+function update_ctrl_points_from_html(listIndex){
+	var idarray;
+	if(!listIndex)
+		listIndex=0;
+	activeList=listIndex;
+	if(activeList==1)
+		idarray=$("#list_of_ctrl_points2").sortable('toArray');
+	else
+		idarray=$("#list_of_ctrl_points1").sortable('toArray');
 	var a_points=[];
 	for(var i=0;i<idarray.length;i++){
 		//console.log("html id:"+idarray[i]);
