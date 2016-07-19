@@ -1382,7 +1382,7 @@ function handleLabCanvasClick(evt){
 	editIndex=$("#list_of_ctrl_points2").children('.ui-selected').first().index();
 	//console.log("Index of selected:"+editIndex);
 	//Check if it should overwrite the selected item in the ordered listStyleType
-	if(editIndex!=-1&&!editCtrlPoints&&clickedElement==null){
+	if(editIndex!=-1&&!editCtrlPoints&&clickedElement==null&&activeList==1){
 		var li=$("#list_of_ctrl_points2").children("li").eq(editIndex);
 		var idarray=$("#list_of_ctrl_points2").sortable('toArray');
 		var li=document.getElementById(idarray[editIndex]);
@@ -1440,7 +1440,7 @@ function FileListenerInit(){
 			addEventHandler(button4,'click', handleResetButton);
 			addEventHandler(canvas2,'mousedown', handleLabCanvasClick);
 			addEventHandler(canvas2,'wheel', handleLabCanvasWheel);
-			$("#delete").on("click",function(){$('.ui-selected').remove(); selectedPoints.length=0; update_ctrl_points_from_html();});
+			$("#delete").on("click",function(){$("#list_of_ctrl_points2").children('.ui-selected').remove(); selectedPoints.length=0; update_ctrl_points_from_html();});
 			$("#insert").on("click",function(){addPointToList2(); update_ctrl_points_from_html();drawLabSpace();});
 			$("#edit").on("click",handleEdit);
 			$("#save").on("click",handleSave);
