@@ -921,6 +921,7 @@ function setMatrixUniforms(shader,webgl) {
 
 function handleResetButton(evt){
 	initT2();
+	update_ctrl_points_from_html();
 	drawLabSpace();
 }
 
@@ -1152,6 +1153,8 @@ function updateMainColormap(){
 	if(constraint.ctrl_points.length<=0)
 		return;
 	console.log("Drawing main color map");
+	constraint.steps=Number(document.getElementById("steps_input").value);
+	constraint.delta_e=Number(document.getElementById("de_input").value);
 	generated_scale=generateColormap(constraint);
 	//var debug="";
 	//for(var i=0;i<generated_scale.length;i++)
