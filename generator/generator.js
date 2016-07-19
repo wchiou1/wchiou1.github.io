@@ -1373,14 +1373,14 @@ function handleLabCanvasClick(evt){
 		clickedElement=null;
 	}
 	editIndex=$("#list_of_ctrl_points2").children('.ui-selected').first().index();
-	console.log("Index of selected:"+editIndex);
+	//console.log("Index of selected:"+editIndex);
 	//Check if it should overwrite the selected item in the ordered listStyleType
 	if(editIndex!=-1&&!editCtrlPoints&&clickedElement==null){
 		var li=$("#list_of_ctrl_points2").children("li").eq(editIndex);
 		var idarray=$("#list_of_ctrl_points2").sortable('toArray');
 		var li=document.getElementById(idarray[editIndex]);
 		var Lab=li.children;
-		console.log("Editing:("+Lab[0].textContent+","+Lab[1].textContent+","+Lab[2].textContent+")");
+		//console.log("Editing:("+Lab[0].textContent+","+Lab[1].textContent+","+Lab[2].textContent+")");
 		Lab[0].textContent=lab.L;
 		Lab[1].textContent=lab.a;
 		Lab[2].textContent=lab.b;
@@ -1434,7 +1434,7 @@ function FileListenerInit(){
 			addEventHandler(canvas2,'mousedown', handleLabCanvasClick);
 			addEventHandler(canvas2,'wheel', handleLabCanvasWheel);
 			$("#delete").on("click",function(){$('.ui-selected').remove(); selectedPoints.length=0; update_ctrl_points_from_html();});
-			$("#insert").on("click",function(){addPointToList(); update_ctrl_points_from_html();});
+			$("#insert").on("click",function(){addPointToList2(); update_ctrl_points_from_html();drawLabSpace();});
 			$("#edit").on("click",handleEdit);
 			$("#save").on("click",handleSave);
 			$("#move").on("click",handleMove);
@@ -1469,7 +1469,7 @@ function handleMove(){
 	$.each(selected,function(i,v){
 		//console.log(i+" "+v);
 		var Lab=v.children;
-		console.log("Moving to list2\n("+Lab[0].textContent+","+Lab[1].textContent+","+Lab[2].textContent+")");
+		//console.log("Moving to list2\n("+Lab[0].textContent+","+Lab[1].textContent+","+Lab[2].textContent+")");
 		var lab={
 			L:Number(Lab[0].textContent),
 			a:Number(Lab[1].textContent),
@@ -1513,17 +1513,19 @@ function handleSave(){
 
 function handleEdit(){
 	editCtrlPoints=!editCtrlPoints;
-	console.log("Index:"+editIndex+","+editCtrlPoints);
+	//console.log("Index:"+editIndex+","+editCtrlPoints);
 	if(editCtrlPoints){
 		$("#edit").text('update');
-		$("#list_of_ctrl_points1").selectable("disable")
+		$("#list_of_ctrl_points2").selectable("disable")
 		.on("click","div",function(e){$(this).attr("tabindex","1").attr("contenteditable","true").css("background-color","white").css("color","black")
 		.blur(function(e){$(this).attr("contenteditable","false").attr("tabindex","-1").css("background-color","").css("color","").off("blur");}).get(0).focus();
 		});
 	}
 	else{
 		$("#edit").text('edit');
-		$("#list_of_ctrl_points1").selectable("enable").off("click");
+		$("#list_of_ctrl_points2").selectable("enable").off("click");
+		update_ctrl_points_from_html();
+		drawLabSpace();
 	}
 }
 var constraint={
@@ -1651,14 +1653,14 @@ function update_ctrl_points_from_html(){
 	var idarray=$("#list_of_ctrl_points2").sortable('toArray');
 	var a_points=[];
 	for(var i=0;i<idarray.length;i++){
-		console.log("html id:"+idarray[i]);
+		//console.log("html id:"+idarray[i]);
 		var li=document.getElementById(idarray[i]);
 		var Lab=li.children;
 		var L=Number(Lab[0].textContent);
 		var a=Number(Lab[1].textContent);
 		var b=Number(Lab[2].textContent);
 		a_points.push({'L':L,'a':a,'b':b});
-		console.log("Update from html\nL:"+L+",a:"+a+",b:"+b);
+		//console.log("Update from html\nL:"+L+",a:"+a+",b:"+b);
 	}
 	constraint.ctrl_points=a_points;
 	updateMainColormap();
@@ -1673,7 +1675,7 @@ function update_ctrl_points_from_javascript(lab_arr){
 		lab.L=Math.floor(lab.L*1000)/1000;
 		lab.a=Math.floor(lab.a*1000)/1000;
 		lab.b=Math.floor(lab.b*1000)/1000;
-		console.log("Added color to list1\nL:"+lab.L+",a:"+lab.a+",b:"+lab.b);
+		//console.log("Added color to list1\nL:"+lab.L+",a:"+lab.a+",b:"+lab.b);
 		addPointToList(lab);
 	}
 	update_ctrl_points_from_html();
