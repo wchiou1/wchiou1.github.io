@@ -1441,6 +1441,7 @@ function FileListenerInit(){
 			$("#edit").on("click",handleEdit);
 			$("#save").on("click",handleSave);
 			$("#move").on("click",handleMove);
+			$("#download").on("click",function(){download_colormap(selectedColor)});
 			
 			//Icon canvas cannot use eventhandler because all events are blocked by drop
 			//addEventHandler(canvas,'mousedown', handleIconCanvasClick);
@@ -1601,16 +1602,17 @@ function generateColormap(constraint){
 	return colors;
 	
 }
-function download_generated_scale(){
+function download_colormap(cid){
 	var outputText="";
-	for(var ii=0;ii<generated_scale.length;ii++){
-		var rgb=lab_to_rgb(generated_scale[ii]);
+	var cmap=scales[cid];
+	for(var ii=0;ii<cmap.length;ii++){
+		var rgb=lab_to_rgb(cmap[ii]);
 		var r=rgb.R/255;
 		var g=rgb.G/255;
 		var b=rgb.B/255;
 		outputText+=r+" "+g+" "+b+"\n";
 	}
-	download(outputText, "generated_colormap", 'text/plain');
+	download(outputText, colormapFileNames[cid], 'text/plain');
 }
 function download(text, name, type) {
     var a = document.createElement("a");
