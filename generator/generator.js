@@ -51,6 +51,7 @@ var min_width=iconViewWidth;
 var min_height=iconViewHeight;
 var pMatrix2;
 var selectedPoints=[];
+var displayMode=0; // 0=generated points 1=ctrl points
 var orthogonal={
 	l: 0,
 	r: iconViewWidth,
@@ -770,6 +771,24 @@ function testLPlaneIntersect(event){
 	return origin.add(dir.x(t));
 }
 
+function testCtrlPointHit(event){
+	var mouse=getMousePos(canvas2,event);
+	var x=mouse.x - canvas2.width/2;
+	var y=canvas2.width/2 - mouse.y;
+	var mvMat=transform2.mvMatrix;
+	var points=constraint.ctrl_points.map(function(lab){return mvMat.x($V([lab.a,lab.L,-lab.b,1]))});
+	var size=5;
+	var hit;
+	for(var i=0;i<points.length;i++){
+		var px=points[i].e(1);
+		var py=points[i].e(2);
+		if(x<px+size&&x>px-size&&y<py+size&&y>py-size&&(hit==undefined||points[hit].e(3)<points[i].e(3))){
+			hit=i;
+		}
+	}
+	return hit;
+}
+
 function handleMouseDown(event){
 	if(mouseDown)
 		return;
@@ -786,7 +805,7 @@ function handleMouseDown(event){
 		update_ctrl_points_from_javascript(scales[selectedColor]);
 		drawLabSpace();
 	}
-	
+	console.log(testCtrlPointHit(event));
 }
 //Called when the mouse is released
 function handleMouseUp(event){
@@ -848,7 +867,15 @@ function scrollIconView(delta){
 var transform2={
 	degx: 0,
 	degy: 0,
-	scale: 1
+	scale: 1,
+	mvMatrix: Matrix.I(4),
+	updateMatrix: function(){
+		var radx = transform2.degx * Math.PI / 180.0;
+		var rady = transform2.degy * Math.PI / 180.0;
+		var s=transform2.scale;
+		var translate=$V([0,-50,0]);
+		this.mvMatrix = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1])).x(Matrix.Translation(translate));
+	}
 };
 
 //
@@ -905,6 +932,7 @@ function initT2(){
 	transform2.degx=45;
 	transform2.degy=45;
 	transform2.scale=1;
+	transform2.updateMatrix();
 }
 
 function rotateT2(x,y){
@@ -918,9 +946,11 @@ function rotateT2(x,y){
 		transform2.degx=-90;
 	else if(transform2.degx>90)
 		transform2.degx=90;
+	transform2.updateMatrix();
 }
 function scaleT2(scalar){
 	transform2.scale*=scalar;
+	transform2.updateMatrix();
 }
 
 function drawScene() {
@@ -1169,12 +1199,13 @@ function drawLabSpace(){
 		}
 	gl2.lineWidth(5);
 	
-	var radx = transform2.degx * Math.PI / 180.0;
+	/**var radx = transform2.degx * Math.PI / 180.0;
 	var rady = transform2.degy * Math.PI / 180.0;
 	var s=transform2.scale;
-
+	
 	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1])).x(Matrix.Translation($V([0,-50,0])));
-
+	**/
+	var mvMatrix2=transform2.mvMatrix;
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
 	
@@ -1187,35 +1218,64 @@ function drawLabSpace(){
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	gl2.drawArrays(gl2.LINES, 0, 6);
 	
-	//draw colors
-	if(generated_scale==undefined)return;
-	var len=generated_scale.length;
-	
-	var scale=generated_scale;
-	var list_rgba=[];
-	var list_pos=[];
-	for(var i=0;i<len;i++){
-		var lab=scale[i];
-		list_pos.push(lab.a);
-		list_pos.push(lab.L);
-		list_pos.push(-lab.b);
+	if(displayMode==0){
+		//draw colors
+		if(generated_scale==undefined)return;
+		var len=generated_scale.length;
 		
-		var rgb=lab_to_rgb(lab);
-		list_rgba.push(rgb.R/255);
-		list_rgba.push(rgb.G/255);
-		list_rgba.push(rgb.B/255);
-		list_rgba.push(1);
+		var scale=generated_scale;
+		var list_rgba=[];
+		var list_pos=[];
+		for(var i=0;i<len;i++){
+			var lab=scale[i];
+			list_pos.push(lab.a);
+			list_pos.push(lab.L);
+			list_pos.push(-lab.b);
+			
+			var rgb=lab_to_rgb(lab);
+			list_rgba.push(rgb.R/255);
+			list_rgba.push(rgb.G/255);
+			list_rgba.push(rgb.B/255);
+			list_rgba.push(1);
+		}
+
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[0]);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[0]);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+		
+		gl2.drawArrays(gl2.POINTS, 0, len);
 	}
+	else if(displayMode==1){
+		var len=constraint.ctrl_points.length;
+		
+		var scale=constraint.ctrl_points;
+		var list_rgba=[];
+		var list_pos=[];
+		for(var i=0;i<len;i++){
+			var lab=scale[i];
+			list_pos.push(lab.a);
+			list_pos.push(lab.L);
+			list_pos.push(-lab.b);
+			
+			var rgb=lab_to_rgb(lab);
+			list_rgba.push(rgb.R/255);
+			list_rgba.push(rgb.G/255);
+			list_rgba.push(rgb.B/255);
+			list_rgba.push(1);
+		}
 
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[0]);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
-	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[0]);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
-	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
-	
-	gl2.drawArrays(gl2.POINTS, 0, len);
-
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[0]);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[0]);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+		
+		gl2.drawArrays(gl2.POINTS, 0, len);
+	}
 	drawBox(mvMatrix2,pMatrix2);
 
 	//draw L-plane
@@ -1347,7 +1407,7 @@ function FileListenerInit(){
 			addEventHandler(button4,'click', handleResetButton);
 			addEventHandler(canvas2,'mousedown', handleLabCanvasClick);
 			addEventHandler(canvas2,'wheel', handleLabCanvasWheel);
-			$("#delete").on("click",function(){$('.ui-selected').remove(); update_ctrl_points_from_html();});
+			$("#delete").on("click",function(){$('.ui-selected').remove(); selectedPoints.length=0; update_ctrl_points_from_html();});
 			$("#insert").on("click",function(){addPointToList(); update_ctrl_points_from_html();});
 			$("#edit").on("click",handleEdit);
 			
@@ -1442,17 +1502,24 @@ function generateColormap(constraint){
 	}
 	return colors;
 	
+}
+function download_generated_scale(){
 	var outputText="";
-	for(var ii=0;ii<colors.length;ii++){
-		var rgb=lab_to_rgb(colors[ii]);
+	for(var ii=0;ii<generated_scale.length;ii++){
+		var rgb=lab_to_rgb(generated_scale[ii]);
 		var r=rgb.R/255;
 		var g=rgb.G/255;
 		var b=rgb.B/255;
-		if(r>1||r<0||g>1||g<0||b>1||b<0)
-			console.log("non-displayable color on line "+ii);
 		outputText+=r+" "+g+" "+b+"\n";
 	}
 	download(outputText, "generated_colormap", 'text/plain');
+}
+function download(text, name, type) {
+    var a = document.createElement("a");
+    var file = new Blob([text], {type: type});
+    a.href = URL.createObjectURL(file);
+    a.download = name;
+    a.click();
 }
 var how_many_points_has_been_added=0;
 function addPointToList(lab){
