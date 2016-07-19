@@ -467,10 +467,10 @@ function initElements(){
 	$(".button").width(iconViewWidth+offset60+"px").height(offset30+"px")
 	.css("font-size",((12*screenscale)|0)+"px").css("line-height",offset30+"px");
 	
-	resetbutton.style.left = 28+"px";
+	resetbutton.style.left = 30+"px";
 	resetbutton.style.top = 585+"px";
-	resetbutton.style.width = 70+"px";
-	resetbutton.style.height = 30+"px";
+	resetbutton.style.width = 74+"px";
+	resetbutton.style.height = 27+"px";
 	
 	var colordrop=document.getElementById("colordrop");
 	var iconstyle = window.getComputedStyle(canvas, null);
