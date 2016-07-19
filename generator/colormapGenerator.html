@@ -153,6 +153,7 @@
 			gl_FragColor=vec4(color,alpha);
 		}
     </script>
+	
 
   </head>
 
@@ -161,19 +162,32 @@
 		<canvas id="coloriconcanvas"  class="webgl" >
 			<!--Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element. -->
 		</canvas>
-		<div id="LabList">
+		<div id="LabList1" class="LabList">
 			<div class="lab-el">L</div>
 			<div class="lab-el">a</div>
 			<div class="lab-el">b</div>
-			<div id="labpoints">
-				<ol id="list_of_ctrl_points" >
+			<div id="labpoints1" class="labpoints">
+				<ol id="list_of_ctrl_points1" class="list_of_ctrl_points" >
 				</ol>
 			</div>
 			<div class="button-holder">
+				<button class="ctrl-button" id="move">>></button>
+				<button class="ctrl-button" id="option">option</button>
+			</div>
+		</div>
+		<div id="LabList2" class="LabList">
+			<div class="lab-el">L</div>
+			<div class="lab-el">a</div>
+			<div class="lab-el">b</div>
+			<div id="labpoints2" class="labpoints">
+				<ol id="list_of_ctrl_points2" class="list_of_ctrl_points">
+				</ol>
+			</div>
+			<div class="button-holder">
+				<button class="ctrl-button" id="save">save</button>
 				<button class="ctrl-button" id="delete">delete</button>
 				<button class="ctrl-button" id="insert">insert</button>
 				<button class="ctrl-button" id="edit">edit</button>
-				<button class="ctrl-button" id="generate">generate</button>
 				<button class="ctrl-button" id="option">option</button>
 			</div>
 		</div>

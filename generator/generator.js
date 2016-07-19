@@ -1,4 +1,7 @@
-var version="Testing init2"
+//Error! Getting a div element in the $('.ui-selected') array call. How is that happening?
+
+
+var version="Handle edit"
 
 var canvas = document.getElementById("coloriconcanvas");
 var canvas2;
@@ -14,10 +17,12 @@ var ctx;
 var lastShader=null;
 var labinput;
 
+var editIndex=-1;
 var color_panels=[];
 var generated_panel;
 var generated_ctrl=[];
 var generated_scale=[];
+var holding_scale=[];
 var iconViewWidth = 70;
 var iconViewHeight = 550;
 var iconHeight = 50;
@@ -46,9 +51,11 @@ var mouseDown=false;
 var editCtrlPoints=false;
 var L_plane=50;
 var highlightPoint=-1;
-
 var min_width=iconViewWidth;
 var min_height=iconViewHeight;
+var pMatrix2;
+var selectedPoints=[];
+var selectedPoints2=[];
 var orthogonal={
 	l: 0,
 	r: iconViewWidth,
@@ -347,7 +354,7 @@ $(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
 	canvas2 = document.getElementById("labcanvas");
-	
+	pMatrix2=makeOrtho(-canvas2.width/2,canvas2.width/2,-canvas2.height/2,canvas2.height/2,-99999,99999);
 	addEventHandler(window,"resize",on_resize(resize));
 	gl=initWebGL(canvas);
 	gl2=initWebGL(canvas2);
@@ -398,7 +405,7 @@ function start() {
 }
 
  $( function() {
-	 $("#list_of_ctrl_points").sortable({
+	 $("#list_of_ctrl_points1").sortable({
 		handle: ".handle",
         stop : function(event, ui){
           update_ctrl_points_from_html();
@@ -406,7 +413,28 @@ function start() {
 		containment: "parent",
 		placeholder: "sortable-placeholder"
 	}).selectable({
-		cancel: ".handle"
+		cancel: ".handle",
+		stop: function(event, ui){
+			selectedPoints=[];
+			$(this).children(".ui-selected").each(function(){selectedPoints.push($(this).index())});
+			drawLabSpace();
+		}
+	});
+	
+	 $("#list_of_ctrl_points2").sortable({
+		handle: ".handle",
+        stop : function(event, ui){
+          update_ctrl_points_from_html();
+        },
+		containment: "parent",
+		placeholder: "sortable-placeholder"
+	}).selectable({
+		cancel: ".handle",
+		stop: function(event, ui){
+			selectedPoints2=[];
+			$(this).children(".ui-selected").each(function(){selectedPoints2.push($(this).index())});
+			drawLabSpace();
+		}
 	});
 	 
     $( "#slider-vertical" ).slider({
@@ -417,7 +445,7 @@ function start() {
       value: L_plane,
       slide: function( event, ui ) {
         L_plane= ui.value;
-		drawLabSpace(selectedColor,0);
+		drawLabSpace();
 		var gray=(255*ui.value/100)|0;
 		sliderColor="rgb("+gray+","+gray+","+gray+")";
 		$( "#slider-vertical .ui-slider-range" ).css( "background-color", sliderColor );
@@ -438,8 +466,10 @@ function initElements(){
 	$(".button").width(iconViewWidth+offset60+"px").height(offset30+"px")
 	.css("font-size",((12*screenscale)|0)+"px").css("line-height",offset30+"px");
 	
-	resetbutton.style.left = 200-offset30+"px";
-	resetbutton.style.top = 200+iconViewHeight+110*screenscale+"px";
+	resetbutton.style.left = 28+"px";
+	resetbutton.style.top = 585+"px";
+	resetbutton.style.width = 70+"px";
+	resetbutton.style.height = 30+"px";
 	
 	var colordrop=document.getElementById("colordrop");
 	var iconstyle = window.getComputedStyle(canvas, null);
@@ -772,11 +802,12 @@ function handleMouseDown(event){
 		var temp=testIconHit(event);
 		if(temp!=-1){
 			selectedColor=temp;
-			generated_scale=scales[selectedColor].slice(0);
-			generated_panel.create(generated_scale);
+			//holding_scale=scales[selectedColor].slice(0);
+			//generated_panel.create(generated_scale);
 		}
-		drawLabSpace(selectedColor,0);
+		selectedPoints.length=0;
 		update_ctrl_points_from_javascript(scales[selectedColor]);
+		drawLabSpace();
 	}
 	
 }
@@ -792,7 +823,7 @@ function handleMouseMove(event){
 	
 	if(clickedElement!=null&&clickedElement==document.getElementById("labcanvas")){
 		rotateT2(mouse.x-lastMouseX,lastMouseY-mouse.y);
-		drawLabSpace(selectedColor,0);
+		drawLabSpace();
 	}
 	
 	if(clickedElement!=null&&clickedElement==canvas&&iconViewHeight<scales.length*(iconHeight+10)+10){
@@ -837,7 +868,6 @@ function scrollIconView(delta){
 	}
 }
 
-var pMatrix2=makeOrtho(-256,256,-256,256,-10000,10000);
 var transform2={
 	degx: 0,
 	degy: 0,
@@ -891,7 +921,7 @@ function setMatrixUniforms(shader,webgl) {
 
 function handleResetButton(evt){
 	initT2();
-	drawLabSpace(selectedColor,0);
+	drawLabSpace();
 }
 
 function initT2(){
@@ -920,7 +950,7 @@ function drawScene() {
 	gl.clearColor(.5, .5, .5, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	drawColorThumbnails();
-	drawLabSpace(selectedColor,0);
+	drawLabSpace();
 }
 
 function drawColorThumbnails(){
@@ -1119,6 +1149,8 @@ function addNewColorIconData(cindex){
 }
 //Draws the colormap in the the colormapcanvas
 function updateMainColormap(){
+	if(constraint.ctrl_points.length<=0)
+		return;
 	console.log("Drawing main color map");
 	generated_scale=generateColormap(constraint);
 	//var debug="";
@@ -1184,10 +1216,11 @@ function drawLabSpace(){
 	if(generated_scale==undefined)return;
 	var len=generated_scale.length;
 	
+	//console.log(len);
+	
 	var scale=generated_scale;
 	var list_rgba=[];
 	var list_pos=[];
-	var temprgb=lab_to_rgb(scale[0]);
 	for(var i=0;i<len;i++){
 		var lab=scale[i];
 		list_pos.push(lab.a);
@@ -1203,16 +1236,15 @@ function drawLabSpace(){
 
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[0]);
 	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[0]);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
-
-	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[0]);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, pointColorBuffer2[0]);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 	
 	gl2.drawArrays(gl2.POINTS, 0, len);
-	
+
+	drawBox(mvMatrix2,pMatrix2);
+
 	//draw L-plane
 	if(lastShader2!=="lab"){
 		lastShader2="lab";
@@ -1225,14 +1257,57 @@ function drawLabSpace(){
 	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,L_plane,-128,	128,L_plane,-128, -128,L_plane,128,	128,L_plane,128]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.labShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.drawArrays(gl2.TRIANGLE_STRIP, 0, 4);
+
+}
+
+function drawBox(mvMat,pMat){
+	if(lastShader2!=="simple"){
+		lastShader2="simple";
+		gl2.useProgram(shaderProgram.simpleShader2);
+		gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
+		gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
+	}
+	var matI = new Float32Array(Matrix.I(4).flatten());
+	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, matI);
+	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, matI);
+	const size=10/canvas2.width;
+	
+	for(var i=0;i<selectedPoints2.length;i++){
+		var position3f=[];
+		var lab=constraint.ctrl_points[selectedPoints2[i]];
+		position3f.push(lab.a);
+		position3f.push(lab.L);
+		position3f.push(-lab.b);
+		var pos2d=pMat.x(mvMat).x($V(position3f.concat(1))).elements;
+		var vertices=[pos2d[0]-size,pos2d[1]-size,pos2d[2],pos2d[0]+size,pos2d[1]-size,pos2d[2],pos2d[0]+size,pos2d[1]+size,pos2d[2],pos2d[0]-size,pos2d[1]+size,pos2d[2]];
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(vertices), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
+		gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
+		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,0,0,1,	0,0,0,1, 0,0,0,1,	0,0,0,1]), gl2.STATIC_DRAW);
+		gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
+		gl2.drawArrays(gl2.LINE_LOOP, 0, 4);
+	}
 }
 
 function handleLabCanvasClick(evt){
 	//var mouse=getMousePos(canvas2,evt);
 	var intersection=testLPlaneIntersect(evt);
-	console.log(intersection.elements);
-	var rgb=lab_to_rgb({L:intersection.e(2)+50,a:intersection.e(1),b:-intersection.e(3)});
-	console.log(rgb);
+	var lab={L:intersection.e(2)+50,a:intersection.e(1),b:-intersection.e(3)};
+	if(isFinite(intersection.e(1))&&isFinite(intersection.e(2))&&isFinite(intersection.e(3))){
+		var rgb=lab_to_rgb(lab);
+	}
+	else{
+		var rgb={R:-1,G:-1,B:-1};
+	}
+		
+
+	//console.log(intersection.elements);
+	
+
+
+	//console.log(rgb);
+
 	if(rgb.R<0||rgb.R>255||rgb.G<0||rgb.G>255||rgb.B<0||rgb.B>255){
 		clickedElement=document.getElementById("labcanvas");
 	}
@@ -1240,6 +1315,22 @@ function handleLabCanvasClick(evt){
 		//clicked in colored zone
 		clickedElement=null;
 	}
+	editIndex=$("#list_of_ctrl_points2").children('.ui-selected').first().index();
+	console.log("Index of selected:"+editIndex);
+	//Check if it should overwrite the selected item in the ordered listStyleType
+	if(editIndex!=-1&&!editCtrlPoints&&clickedElement==null){
+		var li=$("#list_of_ctrl_points2").children("li").eq(editIndex);
+		var idarray=$("#list_of_ctrl_points2").sortable('toArray');
+		var li=document.getElementById(idarray[editIndex]);
+		var Lab=li.children;
+		console.log("Editing:("+Lab[0].textContent+","+Lab[1].textContent+","+Lab[2].textContent+")");
+		Lab[0].textContent=lab.L;
+		Lab[1].textContent=lab.a;
+		Lab[2].textContent=lab.b;
+		update_ctrl_points_from_html();
+		drawLabSpace();
+	}
+	
 }
 
 function handleIconCanvasClick(evt){
@@ -1254,7 +1345,7 @@ function handleLabCanvasWheel(evt){
 		scaleT2(1.1);
 	else if(delta<0)
 		scaleT2(0.9);
-	drawLabSpace(selectedColor,0);
+	drawLabSpace();
 	e.preventDefault();
 	e.returnValue=false;
 	return false;
@@ -1288,8 +1379,8 @@ function FileListenerInit(){
 			$("#delete").on("click",function(){$('.ui-selected').remove(); update_ctrl_points_from_html();});
 			$("#insert").on("click",function(){addPointToList(); update_ctrl_points_from_html();});
 			$("#edit").on("click",handleEdit);
-			
-
+			$("#save").on("click",handleSave);
+			$("#move").on("click",handleMove);
 			
 			//Icon canvas cannot use eventhandler because all events are blocked by drop
 			//addEventHandler(canvas,'mousedown', handleIconCanvasClick);
@@ -1298,25 +1389,90 @@ function FileListenerInit(){
 	  alert('Your browser does not support the HTML5 FileReader.');
 	}
 }
+function handleMove(){
+	//Get the selected items
+	//$('.ui-selected')
+	var selected=$("#list_of_ctrl_points1").children('.ui-selected');
+	//editIndex=selected.first().index();
+	//while(editIndex!=-1){
+	//	console.log(editIndex);
+	//	editIndex=selected.next().index()
+		//var idarray=$("#list_of_ctrl_points1").sortable('toArray');
+		//var li=document.getElementById(idarray[editIndex]);
+	//}
+	//Check if it should overwrite the selected item in the ordered listStyleType
+	//	var li=$("#list_of_ctrl_points1").children("li").eq(editIndex);
+	//	var idarray=$("#list_of_ctrl_points1").sortable('toArray');
+	//	var li=document.getElementById(idarray[editIndex]);
+	//	var Lab=li.children;
+	//	Lab[0].textContent=lab.L;
+	//	Lab[1].textContent=lab.a;
+	//	Lab[2].textContent=lab.b;
+	//var debug="";
+	$.each(selected,function(i,v){
+		//console.log(i+" "+v);
+		var Lab=v.children;
+		console.log("Moving to list2\n("+Lab[0].textContent+","+Lab[1].textContent+","+Lab[2].textContent+")");
+		var lab={
+			L:Number(Lab[0].textContent),
+			a:Number(Lab[1].textContent),
+			b:Number(Lab[2].textContent)
+		};
+		addPointToList2(lab);
+    });
+	//console.log("Debug:"+debug);
+	update_ctrl_points_from_html();
+	drawLabSpace();
+}
+var pointCount2=0;
+function addPointToList2(lab){
+	if(!lab){
+		var l=0;
+		var a=0;
+		var b=0;
+	}else{
+		var l=lab.L;
+		var a=lab.a;
+		var b=lab.b;
+	}
+	var postpend="<div class='handle'><span class='ui-icon ui-icon-carat-2-n-s'></span></div>";
+	var labspan="<div>"+l+"</div><div>"+a+"</div><div>"+b+"</div>"
+	$("#list_of_ctrl_points2").append("<li id='2ctrl"+pointCount2+"' class='ui-state-default'>"+labspan+postpend+"</li>");
+	pointCount2++;
+}
+
+function handleSave(){
+	//Save the generated scale and add an icon
+	var filename = prompt("Please enter a filename", "generated scale");
+	if(filename==null){
+		alert("Invalid filename, unable to save");
+		return;
+	}
+	scales.push(generated_scale);
+	color_panels.push(new ColorPanel(0,0,50,50,generated_scale,gl));
+	colormapFileNames.push(filename);
+	addNewColorIconData(scales.length-1);
+}
+
 function handleEdit(){
 	editCtrlPoints=!editCtrlPoints;
+	console.log("Index:"+editIndex+","+editCtrlPoints);
 	if(editCtrlPoints){
 		$("#edit").text('update');
-		$("#list_of_ctrl_points").selectable("disable")
+		$("#list_of_ctrl_points1").selectable("disable")
 		.on("click","div",function(e){$(this).attr("tabindex","1").attr("contenteditable","true").css("background-color","white").css("color","black")
 		.blur(function(e){$(this).attr("contenteditable","false").attr("tabindex","-1").css("background-color","").css("color","").off("blur");}).get(0).focus();
 		});
 	}
 	else{
 		$("#edit").text('edit');
-		$("#list_of_ctrl_points").selectable("enable").off("click");
+		$("#list_of_ctrl_points1").selectable("enable").off("click");
 	}
 }
 var constraint={
 	steps: 1000,
-	delta_e:2,
+	delta_e:1,
 	tolerance: 0.01,
-	//ctrl_points:[{L:0,a:0,b:0},{L:39,a:55,b:36},{L:57, a:42, b:64},{L:83,a:-10,b:83},{L:100,a:0,b:0}]
 	ctrl_points:[]
 }
 constraint.addPoint=function(){
@@ -1325,51 +1481,55 @@ constraint.addPoint=function(){
 constraint.removePoint=function(i){
 	this.ctrl_points.splice(i,1);
 }
-
 function generateColormap(constraint){
 	var colors=[];
 	var last_ctrl_point=0;
 	var lastLab=constraint.ctrl_points[0];
+	//console.log(constraint.ctrl_points.length);
+	var orii=lastLab;
 	colors.push(lastLab); //first Lab color
 	var i=1;
 	var bound={min:0, max:1, mid:function(){return (this.min+this.max)/2}};
-	if(last_ctrl_point.length==1)
+	if(constraint.ctrl_points.length<=1)
 		return colors;
-	var dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
+	
 	while(i<constraint.steps){
-		//Start of Wesley's fix
+		//Start of Wesley's fix 
 		//if(last_ctrl_point+1<constraint.ctrl_points.length)
-		if(ciede2000(constraint.ctrl_points[last_ctrl_point],constraint.ctrl_points[last_ctrl_point+1])<=constraint.delta_e){
-			colors.push(constraint.ctrl_points[last_ctrl_point+1]);
+		while(last_ctrl_point+1<constraint.ctrl_points.length&&ciede2000(lastLab,constraint.ctrl_points[last_ctrl_point+1])<=constraint.delta_e){
+			//colors.push(constraint.ctrl_points[last_ctrl_point+1]);
 			last_ctrl_point++;
-			i++;
-			break;
+			orii=constraint.ctrl_points[last_ctrl_point];
+			//i++;
+			if(last_ctrl_point>=constraint.ctrl_points.length-1){
+				//alert("cannot generate enough points, path is too short or deltaE is too large");
+				console.log("cannot generate enough points, path is too short or deltaE is too large");
+				return colors;
+			}
 		}
-		//End of Wesley's fix
+		var dirr=dir(constraint.ctrl_points[last_ctrl_point+1],constraint.ctrl_points[last_ctrl_point]);
 		
 		var test=bound.mid()
-		var newLab=Lab_add(lastLab,timesLen(dirr,test));
+		var newLab=Lab_add(orii,timesLen(dirr,test));
 		var d_e=ciede2000(lastLab,newLab);
-		//console.log(lastLab);
-		//console.log(newLab);
+
 		
 		if(d_e>constraint.delta_e+constraint.tolerance){
-			bound.max=test;//console.log(d_e+" max="+test);
+			bound.max=test;
 		}
 		else if(d_e<constraint.delta_e-constraint.tolerance){
-			bound.min=test;//console.log(d_e+" min="+test);
+			bound.min=test;
 		}
 		else{
-			console.log(newLab.L+","+newLab.a+","+newLab.b);
-			colors.push(newLab);//console.log(newLab);
+			colors.push(newLab);
 			lastLab=newLab;
-			if(ciede2000(lastLab, constraint.ctrl_points[last_ctrl_point+1])<constraint.delta_e){
-				last_ctrl_point++;
-				if(last_ctrl_point>=constraint.ctrl_points.length-1){
-					alert("cannot generate enough points, path is too short or deltaE is too large");
-					break;
-				}
-			}
+			orii=lastLab;
+			//if(ciede2000(lastLab, constraint.ctrl_points[last_ctrl_point+1])<constraint.delta_e){
+			//	last_ctrl_point++;
+				//colors.pop();
+				//colors.push(constraint.ctrl_points[last_ctrl_point]);
+				//lastLab=constraint.ctrl_points[last_ctrl_point];
+			//}
 			dirr=dir(constraint.ctrl_points[last_ctrl_point+1],lastLab);
 			bound.min=0;
 			bound.max=1;
@@ -1403,7 +1563,7 @@ function addPointToList(lab){
 	}
 	var postpend="<div class='handle'><span class='ui-icon ui-icon-carat-2-n-s'></span></div>";
 	var labspan="<div>"+l+"</div><div>"+a+"</div><div>"+b+"</div>"
-	$("#list_of_ctrl_points").append("<li id='ctrl"+how_many_points_has_been_added+"' class='ui-state-default'>"+labspan+postpend+"</li>");
+	$("#list_of_ctrl_points1").append("<li id='ctrl"+how_many_points_has_been_added+"' class='ui-state-default'>"+labspan+postpend+"</li>");
 	how_many_points_has_been_added++;
 }
 
@@ -1414,32 +1574,34 @@ function makePointEditable(point){
 	});
 	})
 	.on("blur",function(){makePointUneditable(point)});;
-	$("#list_of_ctrl_points").selectable("disable");
+	$("#list_of_ctrl_points1").selectable("disable");
 	
 }
 function makePointUneditable(point){
 	point.children("div").attr("contenteditable","false");
 	console.log("called");
 	point.off("blur");
-	$("#list_of_ctrl_points").selectable("enable");
+	$("#list_of_ctrl_points1").selectable("enable");
 }
 function update_ctrl_points_from_html(){
-	var idarray=$("#list_of_ctrl_points").sortable('toArray');
+	var idarray=$("#list_of_ctrl_points2").sortable('toArray');
 	var a_points=[];
 	for(var i=0;i<idarray.length;i++){
+		console.log("html id:"+idarray[i]);
 		var li=document.getElementById(idarray[i]);
 		var Lab=li.children;
 		var L=Number(Lab[0].textContent);
 		var a=Number(Lab[1].textContent);
 		var b=Number(Lab[2].textContent);
 		a_points.push({'L':L,'a':a,'b':b});
+		console.log("Update from html\nL:"+L+",a:"+a+",b:"+b);
 	}
 	constraint.ctrl_points=a_points;
 	updateMainColormap();
 	
 }
 function update_ctrl_points_from_javascript(lab_arr){
-	$("#list_of_ctrl_points").empty();
+	$("#list_of_ctrl_points1").empty();
 	how_many_points_has_been_added=0;
 	for(var i=0;i<lab_arr.length;i++){
 		var lab=lab_arr[i];
@@ -1447,7 +1609,7 @@ function update_ctrl_points_from_javascript(lab_arr){
 		lab.L=Math.floor(lab.L*1000)/1000;
 		lab.a=Math.floor(lab.a*1000)/1000;
 		lab.b=Math.floor(lab.b*1000)/1000;
-
+		console.log("Added color to list1\nL:"+lab.L+",a:"+lab.a+",b:"+lab.b);
 		addPointToList(lab);
 	}
 	update_ctrl_points_from_html();
