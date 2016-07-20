@@ -875,13 +875,13 @@ function MouseWheelHandler(e) {
 function selectByIndex(index){
 	if(index==undefined)
 		return;
-	console.log("selectedByIndex:"+index);
+	//console.log("selectedByIndex:"+index);
 	idarray=$("#list_of_ctrl_points1").sortable('toArray');
 	var a_points=[];
 	$(document.getElementById(idarray[index])).addClass('ui-selected');
 	var found=false;
 	for(var i=0;i<selectedPoints.length;i++){
-		console.log("test:"+selectedPoints[i])
+		//console.log("test:"+selectedPoints[i])
 		if(selectedPoints[i]==index){
 			found=true;
 			break;
@@ -1577,6 +1577,22 @@ function handleEdit(){
 		drawLabSpace();
 	}
 }
+
+function readFiles(files,type){
+	for (var i=0; i<files.length;  i++) {
+		var file=files[i];
+		//if (!file.type.match('plain')) continue;
+		var reader = new FileReader();
+		reader.file=file;
+		reader.onload = function(e2) { // finished reading file data.
+			if(type=='color'){
+				readTextToScale(e2.target.result,this.file.name);
+			}
+		}
+		reader.readAsText(file); // start reading the file data.
+	}
+}
+
 var constraint={
 	steps: 1000,
 	delta_e:1,
