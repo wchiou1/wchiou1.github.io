@@ -102,7 +102,7 @@ select{
 	height: 30px;
 }
 .button:hover{
-	outline: 2px solid white;
+	outline: 2px solid black;
 	cursor: default;
 }
 .button:active {
@@ -214,6 +214,16 @@ select{
 	position: absolute; 
 	top:0px;
 	left:620px;
+}
+#list1label{
+	position: absolute; 
+	top:4px;
+	left:170px;
+}
+#list2label{
+	position: absolute; 
+	top:4px;
+	left:410px;
 }
 #button6{
 	position: absolute; 

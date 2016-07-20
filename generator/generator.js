@@ -467,11 +467,12 @@ function initElements(){
 	$(".button").width(iconViewWidth+offset60+"px").height(offset30+"px")
 	.css("font-size",((12*screenscale)|0)+"px").css("line-height",offset30+"px");
 	
-	resetbutton.style.left = 600+"px";
-	resetbutton.style.top = 585+"px";
+	resetbutton.style.left = 604+"px";
+	resetbutton.style.top = 583+"px";
 	resetbutton.style.width = 74+"px";
-	resetbutton.style.height = 27+"px";
+	resetbutton.style.height = 29+"px";
 	$("#button2").width("74px").height("27px").css("top","585px");
+
 	
 	var colordrop=document.getElementById("colordrop");
 	var iconstyle = window.getComputedStyle(canvas, null);
@@ -825,11 +826,12 @@ function handleMouseDown(event){
 			//holding_scale=scales[selectedColor].slice(0);
 			//generated_panel.create(generated_scale);
 		}
-		selectedPoints.length=0;
+		//selectedPoints.length=0;
 		update_ctrl_points_from_javascript(scales[selectedColor]);
 		drawLabSpace();
 	}
 	selectByIndex(testCtrlPointHit(event));
+	drawLabSpace();
 }
 //Called when the mouse is released
 function handleMouseUp(event){
