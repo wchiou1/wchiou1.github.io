@@ -471,6 +471,7 @@ function initElements(){
 	resetbutton.style.top = 585+"px";
 	resetbutton.style.width = 74+"px";
 	resetbutton.style.height = 27+"px";
+	$("#button2").width("74px").height("27px").css("top","585px");
 	
 	var colordrop=document.getElementById("colordrop");
 	var iconstyle = window.getComputedStyle(canvas, null);
@@ -1459,6 +1460,8 @@ function FileListenerInit(){
 			addEventHandler(drop2, 'dragenter', cancel);
 			addEventHandler(drop2,'drop', function(e){readDroppedFiles(e,'color');});
 			addEventHandler(button4,'click', handleResetButton);
+			$("#button2").on("click",function(){$("#selector2").click();});
+			$("#selector2").on("change",function(evt){readFiles(evt.target.files,"color");});
 			addEventHandler(canvas2,'mousedown', handleLabCanvasClick);
 			addEventHandler(canvas2,'wheel', handleLabCanvasWheel);
 			$("#delete").on("click",function(){$("#list_of_ctrl_points2").children('.ui-selected').remove(); selectedPoints.length=0; update_ctrl_points_from_html();});
