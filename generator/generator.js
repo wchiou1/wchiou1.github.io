@@ -827,7 +827,8 @@ function handleMouseDown(event){
 		update_ctrl_points_from_javascript(scales[selectedColor]);
 		drawLabSpace();
 	}
-	selectByIndex(testCtrlPointHit(event));
+	if(activeList==0)
+		selectByIndex(testCtrlPointHit(event));
 	drawLabSpace();
 }
 //Called when the mouse is released
