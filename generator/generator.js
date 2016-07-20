@@ -1466,7 +1466,7 @@ function FileListenerInit(){
 			$("#selector2").on("change",function(evt){readFiles(evt.target.files,"color");});
 			addEventHandler(canvas2,'mousedown', handleLabCanvasClick);
 			addEventHandler(canvas2,'wheel', handleLabCanvasWheel);
-			$("#delete").on("click",function(){$("#list_of_ctrl_points2").children('.ui-selected').remove(); selectedPoints.length=0; update_ctrl_points_from_html();});
+			$("#delete").on("click",function(){$("#list_of_ctrl_points2").children('.ui-selected').remove(); selectedPoints2.length=0; update_ctrl_points_from_html();drawLabSpace()});
 			$("#insert").on("click",function(){addPointToList2(); update_ctrl_points_from_html();drawLabSpace();});
 			$("#edit").on("click",handleEdit);
 			$("#save").on("click",handleSave);
