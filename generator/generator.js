@@ -1,6 +1,3 @@
-//Error! Getting a div element in the $('.ui-selected') array call. How is that happening?
-
-
 var version="Handle edit"
 
 var canvas = document.getElementById("coloriconcanvas");
@@ -1201,14 +1198,29 @@ function addNewColorIconData(cindex){
 	createImageBitmap(pixelData).then(function(response) { colorIconsData.push(response);});
 	selectedColor=colorIconsData.length-1;
 }
+var temp=[];
+var remainder=[];
 //Draws the colormap in the the colormapcanvas
 function updateMainColormap(){
+	remainder=[];
+	generated_scale=[];
 	if(constraint.ctrl_points.length<=0)
 		return;
 	//console.log("Drawing main color map");
 	constraint.steps=Number(document.getElementById("steps_input").value);
 	constraint.delta_e=Number(document.getElementById("de_input").value);
-	generated_scale=generateColormap(constraint);
+	var temp=generateColormap(constraint);
+	document.getElementById("stepCount").textContent="Steps:"+temp.length+"/";
+	//Fill the first color values in generated_scale 
+	for(var i=0;i<constraint.steps&&i<temp.length;i++)
+		generated_scale[i]=temp[i];
+	//console.log(constraint.steps+"|"+temp.length);
+	if(constraint.steps<temp.length){
+		for(var i=0;i<temp.length-constraint.steps;i++){
+			remainder[i]=temp[i+constraint.steps];
+			//console.log("Ts:"+remainder.length);
+		}
+	}
 	//var debug="";
 	//for(var i=0;i<generated_scale.length;i++)
 		//debug+=""+generated_scale+",";
@@ -1243,11 +1255,11 @@ function drawLabSpace(){
 	gl2.viewport(x1,y1,w,h);
 	
 	if(lastShader2!=="simple"){
-			lastShader2="simple";
-			gl2.useProgram(shaderProgram.simpleShader2);
-			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
-			gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
-		}
+		lastShader2="simple";
+		gl2.useProgram(shaderProgram.simpleShader2);
+		gl2.enableVertexAttribArray(attributes.simpleShader2.vertexPositionAttribute);
+		gl2.enableVertexAttribArray(attributes.simpleShader2.vertexColorAttribute);
+	}
 	gl2.lineWidth(5);
 	
 	/**var radx = transform2.degx * Math.PI / 180.0;
@@ -1276,6 +1288,7 @@ function drawLabSpace(){
 		var scale=generated_scale;
 		var list_rgba=[];
 		var list_pos=[];
+		//Display all colors on the generated_scale
 		for(var i=0;i<len;i++){
 			var lab=scale[i];
 			list_pos.push(lab.a);
@@ -1288,6 +1301,21 @@ function drawLabSpace(){
 			list_rgba.push(rgb.B/255);
 			list_rgba.push(1);
 		}
+		//Display all points on the remainder scale
+		//console.log(remainder.length);
+		for(var i=0;i<remainder.length;i++){
+			var lab=remainder[i];
+			//console.log("Reminder:\nL-"+lab.L+",a-"+lab.a+",b-"+lab.b);
+			list_pos.push(lab.a);
+			list_pos.push(lab.L);
+			list_pos.push(-lab.b);
+			
+			var rgb=lab_to_rgb(lab);
+			list_rgba.push(0/255);
+			list_rgba.push(0/255);
+			list_rgba.push(0/255);
+			list_rgba.push(1);
+		}
 
 		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[0]);
 		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_pos), gl2.STATIC_DRAW);
@@ -1296,7 +1324,7 @@ function drawLabSpace(){
 		gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array(list_rgba), gl2.STATIC_DRAW);
 		gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
 		
-		gl2.drawArrays(gl2.POINTS, 0, len);
+		gl2.drawArrays(gl2.POINTS, 0, len+remainder.length);
 	}
 	else if(displayMode==1){
 		var len=constraint.ctrl_points.length;
@@ -1487,6 +1515,7 @@ function FileListenerInit(){
 function list1click(){
 	displayMode=1; 
 	activeList=0;
+	clearSelected(1);
 	update_ctrl_points_from_html();
 	updateMainColormap();
 	drawLabSpace();
@@ -1495,31 +1524,50 @@ function list1click(){
 function list2click(){
 	displayMode=0; 
 	activeList=1;
+	clearSelected(0);
 	update_ctrl_points_from_html();
 	updateMainColormap();
 	drawLabSpace();
+}
+
+function clearSelected(listIndex){
+	var selected;
+	if(listIndex==null||listIndex==undefined)
+		listIndex=-1;
+	if(listIndex==1){
+		selected=$("#list_of_ctrl_points2").children('.ui-selected');
+		selectedPoints2.length=0;
+	}
+	else{
+		selected=$("#list_of_ctrl_points1").children('.ui-selected');
+		selectedPoints.length=0;
+	}
+
+	$.each(selected,function(i,v){
+		var vchildren=v.children;
+		$(vchildren[0]).removeClass("ui-selected");
+		$(vchildren[1]).removeClass("ui-selected");
+		$(vchildren[2]).removeClass("ui-selected");
+		$(v).removeClass("ui-selected");
+	});
+	
+	if(listIndex==-1){
+		selected=$("#list_of_ctrl_points2").children('.ui-selected');
+		selectedPoints2.length=0;
+		$.each(selected,function(i,v){
+			var vchildren=v.children;
+			$(vchildren[0]).removeClass("ui-selected");
+			$(vchildren[1]).removeClass("ui-selected");
+			$(vchildren[2]).removeClass("ui-selected");
+			$(v).removeClass("ui-selected");
+		});
+	}
 }
 
 function handleMove(){
 	//Get the selected items
 	//$('.ui-selected')
 	var selected=$("#list_of_ctrl_points1").children('.ui-selected');
-	//editIndex=selected.first().index();
-	//while(editIndex!=-1){
-	//	console.log(editIndex);
-	//	editIndex=selected.next().index()
-		//var idarray=$("#list_of_ctrl_points1").sortable('toArray');
-		//var li=document.getElementById(idarray[editIndex]);
-	//}
-	//Check if it should overwrite the selected item in the ordered listStyleType
-	//	var li=$("#list_of_ctrl_points1").children("li").eq(editIndex);
-	//	var idarray=$("#list_of_ctrl_points1").sortable('toArray');
-	//	var li=document.getElementById(idarray[editIndex]);
-	//	var Lab=li.children;
-	//	Lab[0].textContent=lab.L;
-	//	Lab[1].textContent=lab.a;
-	//	Lab[2].textContent=lab.b;
-	//var debug="";
 	$.each(selected,function(i,v){
 		//console.log(i+" "+v);
 		var Lab=v.children;
@@ -1619,11 +1667,10 @@ function generateColormap(constraint){
 	colors.push(lastLab); //first Lab color
 	var i=1;
 	var bound={min:0, max:1, mid:function(){return (this.min+this.max)/2}};
-	if(constraint.ctrl_points.length<=1)
+	if(constraint.ctrl_points.length<=1||constraint.delta_e<=0.01)
 		return colors;
 	
-	while(i<constraint.steps){
-		//Start of Wesley's fix 
+	while(last_ctrl_point<constraint.ctrl_points.length){
 		//if(last_ctrl_point+1<constraint.ctrl_points.length)
 		while(last_ctrl_point+1<constraint.ctrl_points.length&&ciede2000(lastLab,constraint.ctrl_points[last_ctrl_point+1])<=constraint.delta_e){
 			//colors.push(constraint.ctrl_points[last_ctrl_point+1]);
