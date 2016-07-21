@@ -1,3 +1,7 @@
+//Add point clicking to list2
+//Add L constraint, add Rotation constraint
+//Add program "best guess" option for user
+//Add program "auto modify point" when user clicks on lab plane
 var version="Handle edit"
 
 var canvas = document.getElementById("coloriconcanvas");
@@ -825,10 +829,8 @@ function handleMouseDown(event){
 		}
 		//selectedPoints.length=0;
 		update_ctrl_points_from_javascript(scales[selectedColor]);
-		drawLabSpace();
 	}
-	if(activeList==0)
-		selectByIndex(testCtrlPointHit(event));
+	selectByIndex(testCtrlPointHit(event));
 	drawLabSpace();
 }
 //Called when the mouse is released
@@ -876,20 +878,31 @@ function MouseWheelHandler(e) {
 function selectByIndex(index){
 	if(index==undefined)
 		return;
+	var idarray;
+	var selected;
 	//console.log("selectedByIndex:"+index);
-	idarray=$("#list_of_ctrl_points1").sortable('toArray');
+	if(activeList==0){
+		idarray=$("#list_of_ctrl_points1").sortable('toArray');
+		selected=selectedPoints;
+	}
+	else{
+		idarray=$("#list_of_ctrl_points2").sortable('toArray');
+		selected=selectedPoints2;
+	}
 	var a_points=[];
 	$(document.getElementById(idarray[index])).addClass('ui-selected');
 	var found=false;
-	for(var i=0;i<selectedPoints.length;i++){
+	
+	
+	for(var i=0;i<selected.length;i++){
 		//console.log("test:"+selectedPoints[i])
-		if(selectedPoints[i]==index){
+		if(selected[i]==index){
 			found=true;
 			break;
 		}
 	}
 	if(!found)
-		selectedPoints.push(index);
+		selected.push(index);
 }
 
 function updateIconViewOffset(mouseX,mouseY){
@@ -1496,7 +1509,7 @@ function FileListenerInit(){
 			addEventHandler(canvas2,'mousedown', handleLabCanvasClick);
 			addEventHandler(canvas2,'wheel', handleLabCanvasWheel);
 			$("#delete").on("click",function(){$("#list_of_ctrl_points2").children('.ui-selected').remove(); selectedPoints2.length=0; update_ctrl_points_from_html();drawLabSpace()});
-			$("#insert").on("click",function(){addPointToList2(); update_ctrl_points_from_html();drawLabSpace();});
+			$("#insert").on("click",handleInsert);
 			$("#edit").on("click",handleEdit);
 			$("#save").on("click",handleSave);
 			$("#move").on("click",handleMove);
@@ -1511,6 +1524,13 @@ function FileListenerInit(){
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
 	}
+}
+
+function handleInsert(){
+	console.log("Insert called");
+	addPointToList2();
+	update_ctrl_points_from_html();
+	drawLabSpace();
 }
 
 function list1click(){
