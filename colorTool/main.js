@@ -816,7 +816,7 @@ var Tubes3D = function(text){
 				this.boundingBox.f=Math.max(this.boundingBox.f, -z);
 			}
 			point.position=[x,y,z];
-			point.magnitude=Number(lineData[4]);
+			point.magnitude=1.0-Number(lineData[4]); //flip FA value for tubes as Jian requested
 			points.push(point);
 			i++;
 		}
@@ -1822,7 +1822,7 @@ function updateImgFilenameIndicator(mouseX,mouseY){
 		return;
 	//Check what fileIcon the mouse is over
 	var hit=testImageIconHit(mouseX,mouseY);
-	console.log(hit);
+	//console.log(hit);
 	if(hit!=-1){
 		if(hit<imgFileNames.length)
 			drawText(imgFileNames[hit],imgIconX-20,imgIconY-10);
