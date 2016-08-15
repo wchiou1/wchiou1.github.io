@@ -1,6 +1,6 @@
 
 
-var version="Generating color maps"
+var version="Generating color maps 2"
 
 var canvas = document.getElementById("glcanvas");
 var gl;
@@ -25,7 +25,7 @@ var verticesColorBuffer;
 var verticesIndexBuffer;
 var verticesBuffer2;
 var verticesColorBuffer2;
-var verticesIndexBuffer2;
+//var verticesIndexBuffer2;
 var pointBuffer2=[];
 var pointColorBuffer2=[];
 var defaultColor;
@@ -1133,7 +1133,7 @@ function initBuffers(){
 	verticesIndexBuffer=gl.createBuffer();
 	verticesBuffer2=gl2.createBuffer();
 	verticesColorBuffer2=gl2.createBuffer();
-	verticesIndexBuffer2=gl2.createBuffer();
+	//verticesIndexBuffer2=gl2.createBuffer();
 	pointBuffer2[0]=gl2.createBuffer();
 	pointColorBuffer2[0]=gl2.createBuffer();
 	pointBuffer2[1]=gl2.createBuffer();
@@ -2287,14 +2287,12 @@ function drawLabSpace(cid,bufid){
 	
 	//draw axes
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,0,0,	128,0,0, 0,-50,0,	0,50,0, 0,0,-128, 0,0,128]), gl2.STATIC_DRAW);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-128,50,0,	128,50,0, 0,0,0,	0,100,0, 0,50,-128, 0,50,128]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexPositionAttribute, 3, gl2.FLOAT, false, 0, 0);
 	gl2.bindBuffer(gl2.ARRAY_BUFFER, verticesColorBuffer2);
-	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 1,1,1,1,	0,138.4/255,1,1,	148.6/255,116/255,0,1]), gl2.STATIC_DRAW);
+	gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([0,154.5/255,116.4/255,1,	1,0,124.7/255,1,	0,0,0,1, 0,0,0,1,	148.6/255,116/255,0,1,	0,138.4/255,1,1]), gl2.STATIC_DRAW);
 	gl2.vertexAttribPointer(attributes.simpleShader2.vertexColorAttribute, 4, gl2.FLOAT, false, 0, 0);
-	gl2.bindBuffer(gl2.ELEMENT_ARRAY_BUFFER, verticesIndexBuffer2);
-	gl2.bufferData(gl2.ELEMENT_ARRAY_BUFFER, new Uint16Array([0,1,2,3,4,5]), gl2.STATIC_DRAW);
-	gl2.drawElements(gl2.LINES, 6, gl2.UNSIGNED_SHORT, 0);
+	gl2.drawArrays(gl2.LINES, 0, 6);
 	
 	//draw colors
 	if(scales[cid]==undefined)return;
@@ -2313,8 +2311,8 @@ function drawLabSpace(cid,bufid){
 			list_rgba.push(1);
 			var lab=rgb_to_lab({'R':rgb.r*255, 'G':rgb.g*255, 'B':rgb.b*255});
 			list_pos.push(lab.a);
-			list_pos.push(lab.L-50);
-			list_pos.push(lab.b);
+			list_pos.push(lab.L);
+			list_pos.push(-lab.b);
 		}
 
 		gl2.bindBuffer(gl2.ARRAY_BUFFER, pointBuffer2[bufid]);
