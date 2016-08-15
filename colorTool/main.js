@@ -1,6 +1,6 @@
 
 
-var version="Generating color maps 2"
+var version="Generating color maps 3"
 
 var canvas = document.getElementById("glcanvas");
 var gl;
@@ -2280,7 +2280,7 @@ function drawLabSpace(cid,bufid){
 	var rady = transform2.degy * Math.PI / 180.0;
 	var s=transform2.scale;
 
-	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1]).ensure4x4());
+	var mvMatrix2 = Matrix.I(4).x(Matrix.RotationX(radx).ensure4x4()).x(Matrix.RotationY(rady).ensure4x4()).x(Matrix.Diagonal([s,s,s,1])).x(Matrix.Translation($V([0,-50,0])));
 
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.pUniform, false, new Float32Array(pMatrix2.flatten()));
 	gl2.uniformMatrix4fv(uniforms.simpleShader2.mvUniform, false, new Float32Array(mvMatrix2.flatten()));
