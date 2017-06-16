@@ -1,0 +1,26 @@
+Using hashlife renderer to render the brain. Need to find where the parser is for this thing.
+
+The key is fill_square.
+Seems the offset isn't working right... fix it.[DONE]
+
+Check if the brain is supposed to have holes, check other nifti files.[FIXED]
+
+So, we need a way to change the backgrounds of all the buttons
+We will need to store all the shapes of the buttons
+(Would it be easier to compute the shapes everytime they are changed?)
+(Will need to test that.)
+
+Let's first implement a single person then we will worry about how to change the buttons
+
+Okay, we need to figure out how to keep the buttons away from each other.
+Easy way would be a greedy approach.
+Buttons NEVER need to move once we give them their coordinates.
+We will be using a greedy approach. 
+The button coordinates need to be stored correctly
+We will have a 2d array scaled to 8x8/coordinate, we will fill the 2darray as we determine button coordinates
+
+Allow them to toggle chems and the age
+Purpose is to replace the numbers, we don't need to display numbers
+
+Need to be able to see where regions are at a glance.
+(Say I wanted to find the Anterior corona radiata left, how would I find that?)

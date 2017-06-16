@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Brain Prototype</title>
+	<script type="text/javascript" src="lib/keypress-2.1.4.min.js"></script>
+	<script type="text/javascript" src="lib/gol.js"></script>
+	<script type="text/javascript" src="lib/jquery-2.2.4.js"></script>
+	<script type="text/javascript" src="lib/voronoi.min.js"></script>
+	<script type="text/javascript" src="src/utils.js"></script>
+	<script type="text/javascript" src="src/file_drop.js"></script>
+	
+	<script src="src/life.js"></script>
+	<script src="src/formats.js"></script>
+	<script src="src/draw.js"></script>
+	<script type="text/javascript" src="src/magicmain.js"></script>
+	<script lang="javascript" src="src/xlsx.full.min.js"></script>
+	<script type="text/javascript" src="src/bundle.js"></script>
+	<link rel="stylesheet" href="style.css" type="text/css">
+	
+</head>
+<body>
+	<canvas id="lazyboard" style="border: 1px solid #000000;"></canvas>
+	<canvas id="iconcanvas"></canvas>
+	<canvas id="overlaycanvas"></canvas>
+	<div id="buttons"></div>
+	<div id="dropdown-menu" class="dropdown">
+		<button id="model-changer" class="dropbtn">Star</button>
+		<div id="myDropdown" class="dropdown-content">
+			<a id="star">Star</a>
+			<a id="bars">Bars</a>
+			<a id="spatial">Spatial</a>
+		</div>
+	</div>
+</body>
+</html>

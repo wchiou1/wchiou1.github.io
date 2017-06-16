@@ -2757,6 +2757,7 @@ function addNewColorIconData(cindex){
 			pixelData[i*iconHeight*4+j]=pixelData[j];
 		}
 	}*/
+	//The bitmap is the data that can be printed to the canvas using the context draw
 	createImageBitmap(pixelData).then(function(response) { colorIconsData.push(response);});
 	
 }
