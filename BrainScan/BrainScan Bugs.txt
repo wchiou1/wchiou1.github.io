@@ -24,3 +24,34 @@ Purpose is to replace the numbers, we don't need to display numbers
 
 Need to be able to see where regions are at a glance.
 (Say I wanted to find the Anterior corona radiata left, how would I find that?)
+
+Seems my notes are disappearing, this is a test.
+
+---
+We need to restructure our infrastructure to support adjusting the age range.[DONE, KINDA]
+Let's just start with a range setter which changes the icons.
+We CANNOT store the icons, there are too many possible ranges to store icons!
+The range setter function will need to change the ranges and change the icons.
+We need to store the ranges and the icons for each selection(For overlaying icon support)
+We will have support for just TWO overlayed icons for now.
+---
+Overlaying icons:
+Start by creating a second bar
+
+Idea: Normalize maximum based on the maximum average value.[DONE]
+ISSUE: This causes problems when we want to compare across age ranges.
+We need to make the scales constant or it will misrepresent the data.
+
+
+BUG: The dual sliders seem to change values once the mouseup event is fired.
+BUG: We need to handle resizing
+BUG: The bar only updates if the mouse is released on the bar
+SOLUTION: Maybe set a release event on the main canvas?
+
+
+
+
+
+
+I super super regret not using a database for this project...
+Not sure... a database query takes time too.

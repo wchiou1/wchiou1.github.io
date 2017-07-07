@@ -1311,17 +1311,7 @@ var chemdata = undefined
 class Main {
 	constructor() {//This is the same as onload
 	
-		var width = 800, height = 600;
-		var data = {
-		  children: [
-			{children: [ {value: 100}, {value: 200}, {value: 300} ]},
-			{children: [ {value: 100}, {value: 500}, {value: 900} ]}
-		  ]
-		};
-		var clip = Voronoi.Polygon.create(width, height, 20);
-		var treemap = new Voronoi.Treemap(data, clip, width, height);
-		treemap.compute();
-		console.log(treemap.getPolygons());
+		
 	
 	
 		var nifti = require('nifti-js')

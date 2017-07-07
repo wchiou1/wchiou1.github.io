@@ -33,6 +33,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		brain_regions,
 		
 		//Data
+		
 		node = arg_life,
 		brain_pattern=arg_brain_pattern,
 		regions=arg_regions,
@@ -47,6 +48,9 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
     this.background_color = "#cccccc";
 	this.chem_colors = ["#fb8072","#80b1d3","#fdb462","#ffed6f","#bc80bd"];
 	this.selected_region=1;
+	this.previous_range = [];
+	this.current_age_range = [];//This might be depreciated now
+	this.complete_age_range;//This is used to determine partial age ranges
 	this.region_averages = new Array(130);
 	this.corrected_coords = new Array(130);
 	this.chem_icons = new Array(130);//This contains the currently generated icons in DATAURL format(To be used when we want to change icons)
@@ -72,6 +76,8 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 	this.loadLookupTable=loadLookupTable;
 	this.set_overlay=set_overlay;
 	this.changeModel=changeModel;
+	this.performRangeChange=performRangeChange;
+	this.updateAgeRange=updateAgeRange;
 	
 	function readFile(directory){
 		$.ajax({
@@ -94,6 +100,69 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		}
 		});
 	}
+	//Updates JUST the HUD
+	function updateAgeRange(rangeId){
+		drawer.previous_range[rangeId] = getSliderRange(rangeId);
+		
+		drawer.current_age_range[rangeId] = convertToAgeRange(drawer.previous_range[rangeId]);
+		
+		//We only want to update the ages, don't update EVERYTHING
+		writeAgeRanges();
+		
+	}
+	//Checks if the slider has moved since the last update
+	//This function doesn't work quite right
+	function isRangeSame(rangeId){
+		if(!drawer.previous_range[rangeId]){
+			return false;
+		}
+		var sliderRange = getSliderRange(rangeId);
+		if(drawer.previous_range[rangeId].min == sliderRange.min && drawer.previous_range[rangeId].max == sliderRange.max)
+			return true;
+		return false;
+	}
+	
+	//It will check what the current range is for the rangeId and update all the icons accordingly
+	function performRangeChange(rangeId){
+		//if(isRangeSame(rangeId))		//We gotta check if the sliderRange is the same as the previous one
+			//return;
+		var sliderRange = getSliderRange(rangeId);
+		var ageRange = convertToAgeRange(sliderRange);
+		
+		console.log(""+rangeId+":("+ageRange.min+","+ageRange.max+")");
+		setupRegionShapes();
+	}
+	
+	//Returns an array of all indices 
+	function ageRangeToIndices(ageRange){
+		//We need to iterate through all the ages and mark down the indices we want.
+		//We will start at 2 so the indices match the row number so we don't go insane
+		var indices = [];
+		var sheet = chemdata.Sheets["Age"];//Let's get the age sheet
+		var min = ageRange.min;
+		var max = ageRange.max;
+		//There are only 2 columns, of which only one is needed... for now...
+		for(var row = 2;row<=80;row++){
+			var value = sheet["B"+row].w;
+			var num_value = parseFloat(value);
+			if(num_value<=max&&num_value>=min)
+				indices.push(row);
+		}
+		return indices;
+	}
+	
+	//Receives a range between 0-100 and uses the complete_age_range array to get the range in age values
+	function convertToAgeRange(sliderRange){
+		var cAgeRange = getCompleteAgeRange();
+		return {min:Math.floor(cAgeRange.min+sliderRange.min/100*(cAgeRange.max-cAgeRange.min)), 
+			max:Math.floor(cAgeRange.min+sliderRange.max/100*(cAgeRange.max-cAgeRange.min))};
+	}
+	
+	//Calculate the range of the requested range, returns object with range
+	function getSliderRange(rangeId){
+		var rangeElement = document.getElementsByClassName('range'+rangeId+" multirange original")[0];
+		return {min:rangeElement.valueLow, max:rangeElement.valueHigh};
+	}
 	//Takes in the name of the model(same as the string in the drop-down)
 	function changeModel(model){
 		console.log("Model changed to "+model);
@@ -105,20 +174,22 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		updateButtonIcons();
 		drawer.redraw();
 	}
+	//Checks the modal style and changes the icons
 	function updateButtonIcons(){
 		var buttons = document.getElementById("buttons").childNodes;
 		for(var i=0;i<buttons.length;i++){
 			//Get the element ids
 			var region = parseInt(buttons[i].id.split("button")[1]);
-			if(typeof drawer.chem_icons[region-1][drawer.model] !== 'undefined'){
+			if(typeof drawer.chem_icons[region-1][0][drawer.model] !== 'undefined'){
 				var current_button = buttons[i];
-				current_button.style.backgroundImage = 'url(' + drawer.chem_icons[region-1][drawer.model] + ')';
+				current_button.style.backgroundImage = 'url(' + drawer.chem_icons[region-1][0][drawer.model] + ')';
 			}
 			else{
 				console.log("Model "+drawer.model+" does not have an icon!");
 				break;
 			}
 		}
+		writeRegionInfo();
 	}
 	function changeSelectedRegion(regionNum){
 		drawer.selected_region=regionNum;
@@ -126,6 +197,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		//console.log(drawer.region_averages[regionNum-1]);
 		
 		drawer.redraw();
+		writeRegionInfo();
 	}
 	
 	//This creates an ndarray which changes the 3 dimension to the types of regions that exist
@@ -224,85 +296,200 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		console.log(chemdata);
 		readFile("data/JhuMniSSTypeIILabelLookupTable_edited.txt");
 	}
+	
+	//This function tests if the completeAgeRange exists and if not, creates it from data
+	function getCompleteAgeRange(){
+		//Test if the complete age range exists
+		if(!drawer.complete_age_range){
+			var sheet = chemdata.Sheets["Age"];
+			var min = 10000000;
+			var max = -1;
+			//There are only 2 columns, of which only one is needed... for now...
+			for(var row = 2;row<=80;row++){
+				var value = sheet["B"+row].w;
+				var num_value = parseFloat(value);
+				if(num_value>max)
+					max = num_value;
+				if(num_value<min)
+					min = num_value;
+			}
+			console.log("Age:("+min+","+max+")");
+			drawer.complete_age_range = {min:min, max:max};
+		}
+		return drawer.complete_age_range;
+	}
+	
+	//We will need 
 	function setupRegionShapes(){
+		
+		//If the ageRange is empty then we will use the complete_age_range
+		//Basically, if there is no argument given then the function assumes we want all ages
+		if(!drawer.current_age_range[0])
+			drawer.current_age_range[0] = getCompleteAgeRange();
+		if(!drawer.current_age_range[1])
+			drawer.current_age_range[1] = getCompleteAgeRange();
+		
+		//We have our ageRange, let's convert it to an index array(array with the indexes we want)
+		
+		//console.log(iArray);
+		
 		//Let's create shapes and assign them to the appropriate div
 		//Let's make sure this thing works
-		console.log(lookup);
+		//console.log(lookup);
+		//asd
+		
 		//We want there to be objects in the chemregions array
 		initChemRegions();
 		
 		//Let's get the ranges for all the possible chemicals(just the first subject)
 		var ranges = {min:10000000, max:-1};
-		//These ranges will be used for all icons
-		//Start by iterating through all sheet types
+		//Get teh global range from the entire sheet
 		for(var i=0;i<5;i++){
 			//Let's get the sheet name
 			var sheetName = chemdata.SheetNames[i];
-			ranges = getRange(sheetName,ranges);
-			getChemValues(sheetName);
-			
+			ranges = getRange(sheetName,ranges);//This may become depreciated
 		}
-		console.log(ranges);
-		console.log(drawer.chem_regions);
 		//We will store the data in a 130 size array, each will be an object which contains the values for each chemical
 		
-		//Set all the backgrounds
-		var buttons = document.getElementById("buttons").childNodes;
-		for(var i=0;i<buttons.length;i++){
-			//Draw the pentagon to the iconcanvas
-			iconcanvas.width = 112
-			iconcanvas.height = 112;
-			iconcontext.clearRect(0, 0, 112, 112);
-			//iconcontext.drawImage(pentaCanvas,0 , 0, 112, 112, 0, 0, 112, 112);
-			
-			//Get the element ids
-			var region = parseInt(buttons[i].id.split("button")[1]);
-			//We have the region id, use that to get the chemical values
-			var r_data = drawer.chem_regions[region-1];
-			//Calculate the ratios, inserting zeros for null data
-			var ratios = new Array(5);
-			for(var j=0;j<5;j++){
-				var sheetName = chemdata.SheetNames[j];
-				var c_data = r_data[sheetName];
-				if(c_data !== 'no data'&&c_data !== "<Min#"){
-					ratios[j] = (c_data)/(ranges.max);
-				}
-				else{
-					ratios[j] = 0;
-				}
+		for(var rangeNum=0;rangeNum<2;rangeNum++){
+			//Get the chemvalues for the range number
+			for(var i=0;i<5;i++){
+				var iArray = ageRangeToIndices(drawer.current_age_range[rangeNum]);
+				var sheetName = chemdata.SheetNames[i];
+				getChemValues(sheetName, iArray);
 			}
-			//Draw the pentagon stuffs
-			drawPentagon(iconcanvas,iconcontext,52,-1/2*Math.PI,112,'#99ff99','#2F4F4F',ratios);
+			console.log(drawer.chem_regions);
 			
-			//Put them in the icons array
-			var dataURL = iconcanvas.toDataURL();
-			drawer.chem_icons[region-1]["Star"] = dataURL;
+			//Set all the backgrounds
+			var buttons = document.getElementById("buttons").childNodes;
+			for(var i=0;i<buttons.length;i++){
+				//Draw the pentagon to the iconcanvas
+				iconcanvas.width = 112
+				iconcanvas.height = 112;
+				iconcontext.clearRect(0, 0, 112, 112);
+				//iconcontext.drawImage(pentaCanvas,0 , 0, 112, 112, 0, 0, 112, 112);
+				
+				//Get the element ids
+				var region = parseInt(buttons[i].id.split("button")[1]);
+				//We have the region id, use that to get the chemical values
+				var r_data = drawer.chem_regions[region-1][0];
+				//Calculate the ratios, inserting zeros for null data
+				var ratios = new Array(5);
+				for(var j=0;j<5;j++){
+					var sheetName = chemdata.SheetNames[j];
+					var c_data = r_data[sheetName];
+					if(c_data !== 'no data'&&c_data !== "<Min#"){
+						ratios[j] = (c_data)/(ranges.max);
+					}
+					else{
+						ratios[j] = 0;
+					}
+				}
+				//Draw the pentagon stuffs
+				drawPentagon(iconcanvas,iconcontext,52,-1/2*Math.PI,112,'#99ff99','#2F4F4F',ratios);
+				
+				//Put them in the icons array
+				var dataURL = iconcanvas.toDataURL();
+				drawer.chem_icons[region-1][rangeNum]["Star"] = dataURL;
+				
+				//Creating the bar icons
+				iconcanvas.width = 112
+				iconcanvas.height = 112;
+				iconcontext.clearRect(0, 0, 112, 112);
+				
+				drawBars(iconcanvas,iconcontext,112,'#2F4F4F',ratios);
+				//Put them in the icons array
+				var dataURL = iconcanvas.toDataURL();
+				drawer.chem_icons[region-1][rangeNum]["Bars"] = dataURL;
+				
+				//Creating the spatial icons
+				iconcanvas.width = 112
+				iconcanvas.height = 112;
+				iconcontext.clearRect(0, 0, 112, 112);
+				
+				drawSpatial(iconcanvas,iconcontext,112,'#2F4F4F',ratios);
+				//Put them in the icons array
+				var dataURL = iconcanvas.toDataURL();
+				drawer.chem_icons[region-1][rangeNum]["Spatial"] = dataURL;
+				
+				//Creating the spatial icons
+				iconcanvas.width = 112
+				iconcanvas.height = 112;
+				iconcontext.clearRect(0, 0, 112, 112);
+				
+				drawSBars(iconcanvas,iconcontext,112,'#2F4F4F',ratios);
+				//Put them in the icons array
+				var dataURL = iconcanvas.toDataURL();
+				drawer.chem_icons[region-1][rangeNum]["Staggered Bars"] = dataURL;
+				
+			}
+		}
+		updateButtonIcons();
+		drawer.redraw();
+		writeRegionInfo();
+	}
+	//Draws the staggered bars
+	function drawSBars(canvas,ctx,canvasw,bordercolor,data){
+		//Let's start by drawing the bottom line
+		ctx.fillStyle = bordercolor;
+		var axis_length = 100;
+		var axis_width = 8;
+		var axis_x = (canvasw-axis_length)/2;
+		var axis_y = canvasw-8;
+		var max_bar_length = canvasw-axis_width;
+		var bar_ratio = 1.5;
+		ctx.fillRect(axis_x,axis_y,axis_length,axis_width);
+		
+		//First we need to draw the LARGEST ratio and work backwards
+		//Or... we could sort some indices using some magic
+		var len = data.length;
+		var indices = new Array(len);
+		for (var i = 0; i < len; ++i) indices[i] = i;
+		indices.sort(function (a, b) { return data[a] < data[b] ? -1 : data[a] > data[b] ? 1 : a < b ? -1 : 1; });
+		
+		for(var i=len-1;i>=0;i--){
+			//Get the index
+			var index = indices[i];
 			
-			//Creating the bar icons
-			iconcanvas.width = 112
-			iconcanvas.height = 112;
-			iconcontext.clearRect(0, 0, 112, 112);
+			//Get the data
+			var ratio = data[index];
 			
-			drawBars(iconcanvas,iconcontext,112,'#2F4F4F',ratios);
-			//Put them in the icons array
-			var dataURL = iconcanvas.toDataURL();
-			drawer.chem_icons[region-1]["Bars"] = dataURL;
+			//Draw the thing using the index and the ratio
 			
-			//Creating the spatial icons
-			iconcanvas.width = 112
-			iconcanvas.height = 112;
-			iconcontext.clearRect(0, 0, 112, 112);
-			
-			drawSpatial(iconcanvas,iconcontext,112,'#2F4F4F',ratios);
-			//Put them in the icons array
-			var dataURL = iconcanvas.toDataURL();
-			drawer.chem_icons[region-1]["Spatial"] = dataURL;
-			
+			ctx.beginPath();
+			ctx.fillStyle = drawer.chem_colors[index];
+			ctx.fillRect(axis_x+((axis_length*(len-bar_ratio)/(len-1)))*index/len,axis_y-ratio*max_bar_length,axis_length*bar_ratio/len,ratio*max_bar_length);
+			ctx.strokeStyle = bordercolor;
+			ctx.stroke();
 		}
 		
-		updateButtonIcons();
+		/*
+		//Draw the rectangles on the left first
+		ctx.fillStyle = drawer.chem_colors[0];
+		ctx.fillRect(canvasw/2-2-data[0]*bar_length,canvasw/2-1.5*bar_width,data[0]*bar_length,bar_width);
+		ctx.rect(canvasw/2-2-data[0]*bar_length,canvasw/2-1.5*bar_width,data[0]*bar_length,bar_width);
+		
+		ctx.fillStyle = drawer.chem_colors[1];
+		ctx.fillRect(canvasw/2-2-data[1]*bar_length,canvasw/2-.5*bar_width,data[1]*bar_length,bar_width);
+		ctx.rect(canvasw/2-2-data[1]*bar_length,canvasw/2-.5*bar_width,data[1]*bar_length,bar_width);
+		
+		ctx.fillStyle = drawer.chem_colors[2];
+		ctx.fillRect(canvasw/2-2-data[2]*bar_length,canvasw/2+.5*bar_width,data[2]*bar_length,bar_width);
+		ctx.rect(canvasw/2-2-data[2]*bar_length,canvasw/2+.5*bar_width,data[2]*bar_length,bar_width);
+		
+		//Draw the rectangles on the right side
+		ctx.fillStyle = drawer.chem_colors[3];
+		ctx.fillRect(canvasw/2+2,canvasw/2-bar_width,data[3]*bar_length,bar_width);
+		ctx.rect(canvasw/2+2,canvasw/2-bar_width,data[3]*bar_length,bar_width);
+		
+		ctx.fillStyle = drawer.chem_colors[4];
+		ctx.fillRect(canvasw/2+2,canvasw/2,data[4]*bar_length,bar_width);
+		ctx.rect(canvasw/2+2,canvasw/2,data[4]*bar_length,bar_width);
+		*/
+		
 		
 	}
+	
 	//Draws spatial icon
 	function drawSpatial(canvas,ctx,canvasw,bordercolor,data){
 		
@@ -450,9 +637,9 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 	
 	function initChemRegions(){
 		for(var i=0;i<drawer.chem_regions.length;i++)
-			drawer.chem_regions[i]={};
+			drawer.chem_regions[i]={0:{},1:{}};
 		for(var i=0;i<drawer.chem_icons.length;i++)
-			drawer.chem_icons[i]={};
+			drawer.chem_icons[i]={0:{},1:{}};
 	}
 	//Given a number, converts from numeric-base10 to alpha-base26
 	function numToAlpha(a) {
@@ -486,10 +673,14 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		return total;
 	}
 	
+	
+	
 	//Populates the chem_regions array with appropriate objects
-	function getChemValues(sheetName){
-		//Get the sheetnames
+	function getChemValues(sheetName, indices){
+		//Get the sheet
 		var sheet = chemdata.Sheets[sheetName];
+		//var min = currentRange['min'];
+		//var	max = currentRange['max'];
 		//Gonna hardcode the number of columns
 		for(var i=2;i<=108;i++){
 			var column = numToAlpha(i);
@@ -497,25 +688,46 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 			var total = 0;
 			var count = 0;
 			//Calculate the average
-			for(var col = 2;col<=80;col++){
-				var value = sheet[column+""+col].w;
-				if(value !== 'no data'&&value !== "<Min#"){
-					total += parseFloat(value);
-					count++;
+			if(!indices){
+				for(var row = 2;row<=80;row++){
+					var value = sheet[column+""+row].w;
+					if(value !== 'no data'&&value !== "<Min#"){
+						total += parseFloat(value);
+						count++;
+					}
 				}
-				
-			}
-			drawer.chem_regions[lookup[title]-1]["region"] = title;
-			if(count != 0){
-				drawer.chem_regions[lookup[title]-1][sheetName] = Math.round(total/count);
 			}
 			else{
-				drawer.chem_regions[lookup[title]-1][sheetName] = "Invalid Values";
+				for(var index = 0;index<indices.length;index++){
+					var value = sheet[column+""+indices[index]].w;
+					if(value !== 'no data'&&value !== "<Min#"){
+						total += parseFloat(value);
+						count++;
+					}
+					
+				}
+			}
+					
+			drawer.chem_regions[lookup[title]-1][0]["region"] = title;
+			if(count != 0){
+				var num_value = Math.round(total/count);
+				drawer.chem_regions[lookup[title]-1][0][sheetName] = num_value;
+				//TODO Calculate the average using this function to normalize it based on displayed values
+				//if(num_value>max)
+				//	max = num_value;
+				//if(num_value<min)
+				//	min = num_value;
+				
+			}
+			else{
+				drawer.chem_regions[lookup[title]-1][0][sheetName] = "Invalid Values";
 			}
 		}
+		//return {min:min, max:max};
 	}
 	
 	//Given a sheetname, returns the lowest and highest values in an object
+	//WARNING, THIS MIGHT BECOME DEPRECIATED
 	function getRange(sheetName,currentRange){
 		//Get the sheet
 		var sheet = chemdata.Sheets[sheetName];
@@ -529,19 +741,22 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		//console.log(sheet);
 		for(var i=2;i<=108;i++){
 			var column = numToAlpha(i);
-			var value = sheet[column+"2"].w;
-			if(value !== 'no data'&&value !== "<Min#"){
-				var num_value = parseFloat(value);
-				if(num_value>max)
-					max = num_value;
-				if(num_value<min)
-					min = num_value;
+			for(var row = 2;row<=80;row++){
+				var value = sheet[column+""+row].w;
+				if(value !== 'no data'&&value !== "<Min#"){
+					var num_value = parseFloat(value);
+					if(num_value>max)
+						max = num_value;
+					if(num_value<min)
+						min = num_value;
+				}
+				else{
+					//console.log("Encountered unparsable data from sheet "+sheetName+" column "+column+"2");
+				}
 			}
-			else{
-				//console.log("Encountered unparsable data from sheet "+sheetName+" column "+column+"2");
-			}
+			
 		}
-		console.log(""+sheetName+":("+min+","+max+")");
+		//console.log(""+sheetName+":("+min+","+max+")");
 		return {min:min, max:max};
 	}
 	
@@ -694,6 +909,19 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
     {
 		overlaycanvas.width = width;
 		overlaycanvas.height = height;
+		console.log("Overlay size set to: ("+width+","+height+")");
+		var dropdown = document.getElementById("dropdown-menu");
+		dropdown.style.top = ""+(height-22)+"px";
+		dropdown.style.left = "6px";
+		
+		var range0 = document.getElementById("range0");
+		range0.style.top = ""+(height-46)+"px";
+		range0.style.left = "6px";
+		
+		var range1 = document.getElementById("range1");
+		range1.style.top = ""+(height-64)+"px";
+		range1.style.left = "6px";
+		
     }
 
     function draw_node(node, size, left, top)
@@ -831,10 +1059,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		context.putImageData(image_data, 0, 0);
 		
 		//We need to write the text after the image is drawn or out text will be covered
-		writeRegionInfo();
-		
-		
-		
+		//writeRegionInfo();
 		
     }
 	
@@ -842,7 +1067,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 	function writeRegionInfo(){
 		//Clear the canvas first
 		overlaycontext.clearRect(0,0,overlaycanvas.width,overlaycanvas.height);
-		var r_data = drawer.chem_regions[drawer.selected_region-1];
+		var r_data = drawer.chem_regions[drawer.selected_region-1][0];
 		//Write out the region name first
 		overlaycontext.font = "14px Arial";
 		overlaycontext.fillText("Region: "+r_data.region,5,20);
@@ -854,6 +1079,30 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 			overlaycontext.fillStyle = '#000000';
 			overlaycontext.fillText(sheetName+": "+r_data[sheetName],5,20*(i+2));
 		}
+		
+		//Write out the age range
+		writeAgeRanges();
+		var img = new Image();
+		var img2 = new Image();
+		img.onload = function(){
+			overlaycontext.globalAlpha = 0.4;
+			overlaycontext.drawImage(img,20,140); // Or at whatever offset you like
+			overlaycontext.globalAlpha = 1.0;
+		};
+		img2.onload = function(){
+			overlaycontext.globalAlpha = 0.4;
+			overlaycontext.drawImage(img2,20,140); // Or at whatever offset you like
+			overlaycontext.globalAlpha = 1.0;
+		};
+		img2.src = drawer.chem_icons[drawer.selected_region-1][1][drawer.model]
+		img.src = drawer.chem_icons[drawer.selected_region-1][0][drawer.model];
+	}
+	function writeAgeRanges(){
+		overlaycontext.clearRect(0,overlaycanvas.height-80,overlaycanvas.width,overlaycanvas.height);
+		overlaycontext.font = "8px Arial";
+		overlaycontext.fillText("Ages: "+drawer.current_age_range[0].min+" - "+drawer.current_age_range[0].max,5,overlaycanvas.height-25);
+		overlaycontext.fillText("Ages: "+drawer.current_age_range[1].min+" - "+drawer.current_age_range[1].max,5,overlaycanvas.height-69);
+		
 	}
 	
 	function updateButtonLocs(){

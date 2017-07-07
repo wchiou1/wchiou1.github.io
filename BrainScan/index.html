@@ -5,9 +5,10 @@
 	<script type="text/javascript" src="lib/keypress-2.1.4.min.js"></script>
 	<script type="text/javascript" src="lib/gol.js"></script>
 	<script type="text/javascript" src="lib/jquery-2.2.4.js"></script>
-	<script type="text/javascript" src="lib/voronoi.min.js"></script>
+	<script type="text/javascript" src="lib/multirange.js"></script>
 	<script type="text/javascript" src="src/utils.js"></script>
 	<script type="text/javascript" src="src/file_drop.js"></script>
+	
 	
 	<script src="src/life.js"></script>
 	<script src="src/formats.js"></script>
@@ -16,6 +17,7 @@
 	<script lang="javascript" src="src/xlsx.full.min.js"></script>
 	<script type="text/javascript" src="src/bundle.js"></script>
 	<link rel="stylesheet" href="style.css" type="text/css">
+	<link rel="stylesheet" href="lib/multirange.css" type="text/css">
 	
 </head>
 <body>
@@ -29,7 +31,14 @@
 			<a id="star">Star</a>
 			<a id="bars">Bars</a>
 			<a id="spatial">Spatial</a>
+			<a id="sbars">Staggered Bars</a>
 		</div>
+	</div>
+	<div id="range0">
+		<input type="range" class="range0" multiple value="0,100">
+	</div>
+	<div id="range1">
+		<input type="range" class="range1" multiple value="0,100">
 	</div>
 </body>
 </html>

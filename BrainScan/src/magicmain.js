@@ -109,116 +109,8 @@ function MagicMain(brain_pattern,regions,chemdata)
 	init_ui();
 
 	drawer.set_size(window.innerWidth-2, window.innerHeight-2);
-	drawer.set_overlay(150,150);
+	drawer.set_overlay(150,340);
 	reset_settings();
-
-
-	// This gets called, when a pattern is loaded.
-	// It has to be called at least once before anything can happen.
-	// Since we always load a pattern, it's not necessary at this point.
-	//life.clear_pattern();
-
-	// production setup
-	// loads a pattern defined by ?pattern=filename (without extension)
-	// or a random small pattern instead
-	var query = location.search.substr(1).split("&"),
-		param,
-		parameters = {};
-
-	for(var i = 0; i < query.length; i++)
-	{
-		param = query[i].split("=");
-
-		parameters[param[0]] = param[1];
-	}
-
-	if(parameters["step"] && /^\d+$/.test(parameters["step"]))
-	{
-		var step_parameter = Math.round(Math.log(Number(parameters["step"])) / Math.LN2);
-
-		life.set_step(step_parameter);
-	}
-
-	let pattern_parameter = parameters["pattern"];
-	let pattern_parameter_looks_good = pattern_parameter && /^[a-z0-9_\.]+$/.test(pattern_parameter);
-
-	let gist = parameters["gist"];
-	if(gist && /^[a-fA-F0-9]+$/.test(gist))
-	{
-		show_overlay("loading_popup");
-		let callback_name = "finish_load_gist" + (2147483647 * Math.random() | 0);
-		let jsonp_url = "https://api.github.com/gists/" + gist + "?callback=" + callback_name;
-
-		window[callback_name] = function(result)
-		{
-			let files = result["data"]["files"];
-
-			if(files)
-			{
-				for(let filename of Object.keys(files))
-				{
-					let file = files[filename];
-					let direct_url = file["raw_url"];
-					let view_url = "https://copy.sh/life/?gist=" + gist;
-					setup_pattern(file["content"], undefined, direct_url, view_url, filename);
-				}
-			}
-			else
-			{
-				if(pattern_parameter_looks_good)
-				{
-					try_load_pattern(pattern_parameter);
-				}
-				else
-				{
-					load_random();
-				}
-			}
-		};
-		let script = document.createElement("script");
-		script.src = jsonp_url;
-		document.getElementsByTagName("head")[0].appendChild(script)
-	}
-	else if(pattern_parameter_looks_good)
-	{
-		if(parameters["meta"] === "1")
-		{
-			try_load_meta();
-		}
-		else
-		{
-			// a pattern name has been given as a parameter
-			// try to load it, fallback to random pattern
-
-			try_load_pattern(pattern_parameter);
-		}
-	}
-	else
-	{
-		load_random();
-	}
-
-	if(parameters["noui"] === "1")
-	{
-		var elements = [
-			"statusbar", "about_button", "examples_menu",
-			"import_button", "settings_button", "zoomout_button",
-			"zoomin_button", "clear_button", "superstep_button",
-			"step_button", "rewind_button"
-		];
-
-		for(var i = 0; i < elements.length; i++)
-		{
-			$(elements[i]).style.display = "none";
-		}
-	}
-
-	if(parameters["fps"] && /^\d+$/.test(parameters["fps"]))
-	{
-		max_fps = +parameters["fps"];
-	}
-
-	
 
 	//Functions
 
@@ -231,8 +123,9 @@ function MagicMain(brain_pattern,regions,chemdata)
 		addEventHandler(document.getElementById("star"),'click',function(){changeModel(drawer,"Star");});
 		addEventHandler(document.getElementById("bars"),'click',function(){changeModel(drawer,"Bars");});
 		addEventHandler(document.getElementById("spatial"),'click',function(){changeModel(drawer,"Spatial");});
+		addEventHandler(document.getElementById("sbars"),'click',function(){changeModel(drawer,"Staggered Bars");});
 	
-		//Iterate through them(130)
+		//Iterate through buttons(130)
 		for(var i=0;i<drawer.region_averages.length;i++){
 			//First check if the average even exists
 			if(!isNaN(drawer.region_averages[i].x)||!isNaN(drawer.region_averages[i].y)){
@@ -246,11 +139,33 @@ function MagicMain(brain_pattern,regions,chemdata)
 			else
 				console.log("No average found for region "+(i+1));
 		}
+		
+		//Setup events for the dual slider
+		var range0 = document.getElementById('range0');
+		addEventHandler(range0,'click',function(){rangeClick(drawer,0);});
+		addEventHandler(range0,'mousemove',function(){rangeMD(drawer,0);});
+		/*var multiranges0 = document.getElementsByClassName('multirange range0');
+		console.log(multiranges0);
+		addEventHandler(multiranges0[0],'onmouseup',function(){rangeClick(drawer,0);});
+		addEventHandler(multiranges0[0],'onmousemove',function(){rangeMD(drawer,0);});
+		addEventHandler(multiranges0[1],'onmouseup',function(){rangeClick(drawer,0);});
+		addEventHandler(multiranges0[1],'onmousemove',function(){rangeMD(drawer,0);});*/
+		
+		var range1 = document.getElementById('range1');
+		addEventHandler(range1,'click',function(){rangeClick(drawer,1);});
+		addEventHandler(range1,'mousemove',function(){rangeMD(drawer,1);});
+		
 
 		function cancel(e) {
 		   e.preventDefault(); 
 		}
 		
+	}
+	function rangeMD(drawer,rangeId){
+		drawer.updateAgeRange(rangeId);
+	}
+	function rangeClick(drawer,rangeId){
+		drawer.performRangeChange(rangeId);
 	}
 	function changeModel(drawer,model){
 		console.log(drawer);
@@ -716,24 +631,6 @@ function MagicMain(brain_pattern,regions,chemdata)
 
     document.addEventListener("DOMContentLoaded", window.onload, false);
 
-
-    function rle_link(id)
-    {
-        if(location.hostname === "localhost")
-        {
-            return pattern_path + id + ".rle";
-        }
-        else
-        {
-            return location.protocol + "//copy.sh/life/" + pattern_path + id + ".rle";
-        }
-    }
-
-    function view_link(id)
-    {
-        return location.protocol + "//copy.sh/life/?pattern=" + id;
-    }
-
     /**
      * @param {function()=} callback
      */
@@ -774,77 +671,6 @@ function MagicMain(brain_pattern,regions,chemdata)
     }
 
 
-    /**
-     * @param {string=} pattern_source_url
-     * @param {string=} view_url
-     * @param {string=} title
-     */
-    function setup_pattern(pattern_text, pattern_id, pattern_source_url, view_url, title)
-    {
-        var result = formats.parse_pattern(pattern_text.trim());
-
-        if(result.error)
-        {
-            set_text($("import_info"), result.error);
-            return;
-        }
-
-        stop(function()
-        {
-            var bounds = life.get_bounds(result.field_x, result.field_y);
-
-            if(title && !result.title)
-            {
-                result.title = title;
-            }
-
-            if(pattern_id && !result.title)
-            {
-                result.title = pattern_id;
-            }
-
-            life.clear_pattern();
-            life.make_center(result.field_x, result.field_y, bounds);
-            life.setup_field(result.field_x, result.field_y, bounds);
-
-            life.save_rewind_state();
-
-            if(result.rule_s && result.rule_b)
-            {
-                life.set_rules(result.rule_s, result.rule_b);
-            }
-            else
-            {
-                life.set_rules(1 << 2 | 1 << 3, 1 << 3);
-            }
-
-           
-
-            fit_pattern();
-            drawer.redraw(life.root,brain_pattern);
-
-            //set_text($("pattern_name"), result.title || "no name");
-            set_title(result.title);
-
-            if(!pattern_source_url && pattern_id)
-            {
-                pattern_source_url = rle_link(pattern_id);
-            }
-
-            if(!view_url && pattern_id)
-            {
-                view_url = view_link(pattern_id);
-            }
-
-            current_pattern = {
-                title : result.title,
-                comment : result.comment,
-                urls : result.urls,
-                view_url : view_url,
-                source_url: pattern_source_url,
-            };
-        });
-    }
 
     function fit_pattern()
     {
