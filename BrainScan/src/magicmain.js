@@ -144,8 +144,9 @@ function MagicMain(brain_pattern,regions,chemdata)
 		
 		//Setup events for the dual slider
 		var range0 = document.getElementById('range0');
-		addEventHandler(range0,'click',function(){rangeClick(drawer,0);});
+		addEventHandler(range0,'mouseup',function(){rangeClick(drawer,0);});
 		addEventHandler(range0,'mousemove',function(){rangeMD(drawer,0);});
+		addEventHandler(range0,'mouseleave',function(){rangeClick(drawer,0);});
 		/*var multiranges0 = document.getElementsByClassName('multirange range0');
 		console.log(multiranges0);
 		addEventHandler(multiranges0[0],'onmouseup',function(){rangeClick(drawer,0);});
@@ -154,9 +155,9 @@ function MagicMain(brain_pattern,regions,chemdata)
 		addEventHandler(multiranges0[1],'onmousemove',function(){rangeMD(drawer,0);});*/
 		
 		var range1 = document.getElementById('range1');
-		addEventHandler(range1,'click',function(){rangeClick(drawer,1);});
+		addEventHandler(range1,'mouseup',function(){rangeClick(drawer,1);});
 		addEventHandler(range1,'mousemove',function(){rangeMD(drawer,1);});
-		
+		addEventHandler(range1,'mouseleave',function(){rangeClick(drawer,1);});
 
 		function cancel(e) {
 		   e.preventDefault(); 
