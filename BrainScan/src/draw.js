@@ -902,7 +902,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
                 image_data_data[i] = 0xFF << 24;
             }
         }
-		
+		drawer.redraw();
     }
 	
 	function set_overlay(width, height)

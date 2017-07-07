@@ -118,6 +118,8 @@ function MagicMain(brain_pattern,regions,chemdata)
 		//Get the averages from the drawer
 		console.log("Loading "+drawer.region_averages.length+" regions");
 		
+		window.addEventListener('resize', function(){resizeMainCanvas();}, true);
+		
 		var drop_down = document.getElementById("model-changer");
 		addEventHandler(drop_down,'click',function(){handleDropdown();});
 		addEventHandler(document.getElementById("star"),'click',function(){changeModel(drawer,"Star");});
@@ -160,6 +162,9 @@ function MagicMain(brain_pattern,regions,chemdata)
 		   e.preventDefault(); 
 		}
 		
+	}
+	function resizeMainCanvas(){
+		drawer.set_size(window.innerWidth-2, window.innerHeight-2);
 	}
 	function rangeMD(drawer,rangeId){
 		drawer.updateAgeRange(rangeId);
