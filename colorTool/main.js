@@ -1,6 +1,6 @@
 
 
-var version="Generating color maps 3"
+var version="Version 1.0"
 
 var canvas = document.getElementById("glcanvas");
 var gl;
