@@ -39,7 +39,8 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		regions=arg_regions,
 		chemdata=arg_chemdata,
 		lookup = {},
-
+		chem_order,
+		selected_chem_index = -1,
         drawer = this;
 
 	this.model="Star";
@@ -91,6 +92,8 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 					lookup[parts[1].replace("_"," ")] = parseInt(parts[0]);
 				}
 				console.log("Reading done");
+				//Set the chem order
+				chem_order = [0,1,2,3,4];
 				setupRegionShapes();
 				
 		},
@@ -319,7 +322,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		return drawer.complete_age_range;
 	}
 	
-	//We will need 
+	//We will need asd
 	function setupRegionShapes(){
 		
 		//If the ageRange is empty then we will use the complete_age_range
@@ -358,7 +361,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 				var sheetName = chemdata.SheetNames[i];
 				getChemValues(sheetName, iArray);
 			}
-			console.log(drawer.chem_regions);
+			//console.log(drawer.chem_regions);
 			
 			//Set all the backgrounds
 			var buttons = document.getElementById("buttons").childNodes;
@@ -428,6 +431,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		drawer.redraw();
 		writeRegionInfo();
 	}
+	
 	//Draws the staggered bars
 	function drawSBars(canvas,ctx,canvasw,bordercolor,data){
 		//Let's start by drawing the bottom line
@@ -438,26 +442,30 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		var axis_y = canvasw-8;
 		var max_bar_length = canvasw-axis_width;
 		var bar_ratio = 1.5;
+		var ordered_data = new Array(5);
+		for(var i=0;i<5;i++){
+			ordered_data[i] = data[chem_order[i]];
+		}
 		ctx.fillRect(axis_x,axis_y,axis_length,axis_width);
 		
 		//First we need to draw the LARGEST ratio and work backwards
 		//Or... we could sort some indices using some magic
-		var len = data.length;
+		var len = ordered_data.length;
 		var indices = new Array(len);
 		for (var i = 0; i < len; ++i) indices[i] = i;
-		indices.sort(function (a, b) { return data[a] < data[b] ? -1 : data[a] > data[b] ? 1 : a < b ? -1 : 1; });
+		indices.sort(function (a, b) { return ordered_data[a] < ordered_data[b] ? -1 : ordered_data[a] > ordered_data[b] ? 1 : a < b ? -1 : 1; });
 		
 		for(var i=len-1;i>=0;i--){
 			//Get the index
 			var index = indices[i];
 			
 			//Get the data
-			var ratio = data[index];
+			var ratio = ordered_data[index];
 			
 			//Draw the thing using the index and the ratio
 			
 			ctx.beginPath();
-			ctx.fillStyle = drawer.chem_colors[index];
+			ctx.fillStyle = drawer.chem_colors[chem_order[index]];
 			ctx.fillRect(axis_x+((axis_length*(len-bar_ratio)/(len-1)))*index/len,axis_y-ratio*max_bar_length,axis_length*bar_ratio/len,ratio*max_bar_length);
 			ctx.strokeStyle = bordercolor;
 			ctx.stroke();
@@ -524,11 +532,11 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		//112^2-112^2/(1+1) + 112*d/(1+1) - 112^2/(1+1) + 112^2/(1+1+1+1) - b*c + 112*b/(1+1) - 112^2/(1+1) + 112^2 -112^2/(1+1) = 112^2/(1+1+1+1+1)
 		
 		
-		var nx=canvasw*data[0]/(data[0]+data[1]);
-		var wy=canvasw*data[0]/(data[0]+data[3]);
-		var sx=canvasw*data[3]/(data[3]+data[4]);
-		var ey=canvasw*data[1]/(data[1]+data[4]);
-		var cArea = canvasw*canvasw*data[2]/totalRatio;
+		var nx=canvasw*data[chem_order[0]]/(data[chem_order[0]]+data[chem_order[1]]);
+		var wy=canvasw*data[chem_order[0]]/(data[chem_order[0]]+data[chem_order[3]]);
+		var sx=canvasw*data[chem_order[3]]/(data[chem_order[3]]+data[chem_order[4]]);
+		var ey=canvasw*data[chem_order[1]]/(data[chem_order[1]]+data[chem_order[4]]);
+		var cArea = canvasw*canvasw*data[chem_order[2]]/totalRatio;
 		var margin;
 		//We need to establish the coefficients for NSEW
 		//These coefficients are the MAX distance the cardinal can go from the EDGE
@@ -569,7 +577,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 			
 			ctx.strokeStyle = bordercolor;
 			//Let's start by drawing the NW shape
-			ctx.fillStyle = drawer.chem_colors[0];
+			ctx.fillStyle = drawer.chem_colors[chem_order[0]];
 			ctx.beginPath();
 			ctx.moveTo(0,0);
 			ctx.lineTo(N.x,0);
@@ -582,7 +590,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 			ctx.stroke();
 			
 			//Let's draw the NE shape
-			ctx.fillStyle = drawer.chem_colors[1];
+			ctx.fillStyle = drawer.chem_colors[chem_order[1]];
 			ctx.beginPath();
 			ctx.moveTo(canvasw,0);
 			ctx.lineTo(canvasw,E.y);
@@ -595,7 +603,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 			ctx.stroke();
 			
 			//Let's draw the center shape
-			ctx.fillStyle = drawer.chem_colors[2];
+			ctx.fillStyle = drawer.chem_colors[chem_order[2]];
 			ctx.beginPath();
 			ctx.moveTo(N.x,N.y);//N
 			ctx.lineTo(E.x,E.y);//E
@@ -607,7 +615,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 			ctx.stroke();
 			
 			//Let's draw the SW shape
-			ctx.fillStyle = drawer.chem_colors[3];
+			ctx.fillStyle = drawer.chem_colors[chem_order[3]];
 			ctx.beginPath();
 			ctx.moveTo(0,canvasw);
 			ctx.lineTo(0,W.y);
@@ -620,7 +628,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 			ctx.stroke();
 			
 			//Let's draw the SE shape
-			ctx.fillStyle = drawer.chem_colors[4];
+			ctx.fillStyle = drawer.chem_colors[chem_order[4]];
 			ctx.beginPath();
 			ctx.moveTo(canvasw,canvasw);
 			ctx.lineTo(S.x,canvasw);
@@ -767,29 +775,35 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		var middle_length = 80;
 		var bar_length = canvasw/2-6;
 		var bar_width = 16;
+		var i;
 		ctx.fillRect(canvasw/2-3,canvasw/2-middle_length/2,6,middle_length);
 
 		//Draw the rectangles on the left first
-		ctx.fillStyle = drawer.chem_colors[0];
-		ctx.fillRect(canvasw/2-2-data[0]*bar_length,canvasw/2-1.5*bar_width,data[0]*bar_length,bar_width);
-		ctx.rect(canvasw/2-2-data[0]*bar_length,canvasw/2-1.5*bar_width,data[0]*bar_length,bar_width);
+		i = chem_order[0];
+		ctx.fillStyle = drawer.chem_colors[i];
+		ctx.fillRect(canvasw/2-2-data[i]*bar_length,canvasw/2-1.5*bar_width,data[i]*bar_length,bar_width);
+		ctx.rect(canvasw/2-2-data[i]*bar_length,canvasw/2-1.5*bar_width,data[i]*bar_length,bar_width);
 		
-		ctx.fillStyle = drawer.chem_colors[1];
-		ctx.fillRect(canvasw/2-2-data[1]*bar_length,canvasw/2-.5*bar_width,data[1]*bar_length,bar_width);
-		ctx.rect(canvasw/2-2-data[1]*bar_length,canvasw/2-.5*bar_width,data[1]*bar_length,bar_width);
+		i = chem_order[1];
+		ctx.fillStyle = drawer.chem_colors[i];
+		ctx.fillRect(canvasw/2-2-data[i]*bar_length,canvasw/2-.5*bar_width,data[i]*bar_length,bar_width);
+		ctx.rect(canvasw/2-2-data[i]*bar_length,canvasw/2-.5*bar_width,data[i]*bar_length,bar_width);
 		
-		ctx.fillStyle = drawer.chem_colors[2];
-		ctx.fillRect(canvasw/2-2-data[2]*bar_length,canvasw/2+.5*bar_width,data[2]*bar_length,bar_width);
-		ctx.rect(canvasw/2-2-data[2]*bar_length,canvasw/2+.5*bar_width,data[2]*bar_length,bar_width);
+		i = chem_order[2];
+		ctx.fillStyle = drawer.chem_colors[i];
+		ctx.fillRect(canvasw/2-2-data[i]*bar_length,canvasw/2+.5*bar_width,data[i]*bar_length,bar_width);
+		ctx.rect(canvasw/2-2-data[i]*bar_length,canvasw/2+.5*bar_width,data[i]*bar_length,bar_width);
 		
 		//Draw the rectangles on the right side
-		ctx.fillStyle = drawer.chem_colors[3];
-		ctx.fillRect(canvasw/2+2,canvasw/2-bar_width,data[3]*bar_length,bar_width);
-		ctx.rect(canvasw/2+2,canvasw/2-bar_width,data[3]*bar_length,bar_width);
+		i = chem_order[3];
+		ctx.fillStyle = drawer.chem_colors[i];
+		ctx.fillRect(canvasw/2+2,canvasw/2-bar_width,data[i]*bar_length,bar_width);
+		ctx.rect(canvasw/2+2,canvasw/2-bar_width,data[i]*bar_length,bar_width);
 		
-		ctx.fillStyle = drawer.chem_colors[4];
-		ctx.fillRect(canvasw/2+2,canvasw/2,data[4]*bar_length,bar_width);
-		ctx.rect(canvasw/2+2,canvasw/2,data[4]*bar_length,bar_width);
+		i = chem_order[4];
+		ctx.fillStyle = drawer.chem_colors[i];
+		ctx.fillRect(canvasw/2+2,canvasw/2,data[i]*bar_length,bar_width);
+		ctx.rect(canvasw/2+2,canvasw/2,data[i]*bar_length,bar_width);
 		
 		
 		ctx.strokeStyle = bordercolor;
@@ -804,7 +818,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		
 		//Draw the circles at the corners
 		for(var i=0;i<5;i++){
-			pent_ctx.fillStyle = drawer.chem_colors[i];
+			pent_ctx.fillStyle = drawer.chem_colors[chem_order[i]];
 			pent_ctx.beginPath();
 			pent_ctx.arc(size*Math.cos(2/5*pie*i+aoffset)+canvasw/2,size*Math.sin(2/5*pie*i+aoffset)+canvasw/2+offset,6,0,2*Math.PI);
 			pent_ctx.closePath();
@@ -813,12 +827,12 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		
 		//Draw the shape first
 		pent_ctx.beginPath();
-		pent_ctx.moveTo(data[0]*size*Math.cos(0+aoffset)+canvasw/2,data[0]*size*Math.sin(0+aoffset)+canvasw/2+offset);
-		pent_ctx.lineTo(data[1]*size*Math.cos(2/5*pie+aoffset)+canvasw/2,data[1]*size*Math.sin(2/5*pie+aoffset)+canvasw/2+offset);
-		pent_ctx.lineTo(data[2]*size*Math.cos(4/5*pie+aoffset)+canvasw/2,data[2]*size*Math.sin(4/5*pie+aoffset)+canvasw/2+offset);
-		pent_ctx.lineTo(data[3]*size*Math.cos(6/5*pie+aoffset)+canvasw/2,data[3]*size*Math.sin(6/5*pie+aoffset)+canvasw/2+offset);
-		pent_ctx.lineTo(data[4]*size*Math.cos(8/5*pie+aoffset)+canvasw/2,data[4]*size*Math.sin(8/5*pie+aoffset)+canvasw/2+offset);
-		pent_ctx.lineTo(data[0]*size*Math.cos(0+aoffset)+canvasw/2,data[0]*size*Math.sin(0+aoffset)+canvasw/2+offset);
+		pent_ctx.moveTo(data[chem_order[0]]*size*Math.cos(0+aoffset)+canvasw/2,data[chem_order[0]]*size*Math.sin(0+aoffset)+canvasw/2+offset);
+		pent_ctx.lineTo(data[chem_order[1]]*size*Math.cos(2/5*pie+aoffset)+canvasw/2,data[chem_order[1]]*size*Math.sin(2/5*pie+aoffset)+canvasw/2+offset);
+		pent_ctx.lineTo(data[chem_order[2]]*size*Math.cos(4/5*pie+aoffset)+canvasw/2,data[chem_order[2]]*size*Math.sin(4/5*pie+aoffset)+canvasw/2+offset);
+		pent_ctx.lineTo(data[chem_order[3]]*size*Math.cos(6/5*pie+aoffset)+canvasw/2,data[chem_order[3]]*size*Math.sin(6/5*pie+aoffset)+canvasw/2+offset);
+		pent_ctx.lineTo(data[chem_order[4]]*size*Math.cos(8/5*pie+aoffset)+canvasw/2,data[chem_order[4]]*size*Math.sin(8/5*pie+aoffset)+canvasw/2+offset);
+		pent_ctx.lineTo(data[chem_order[0]]*size*Math.cos(0+aoffset)+canvasw/2,data[chem_order[0]]*size*Math.sin(0+aoffset)+canvasw/2+offset);
 		pent_ctx.closePath();
 		pent_ctx.fillStyle = fillcolor;
 		pent_ctx.fill();
@@ -1073,8 +1087,9 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		overlaycontext.fillText("Region: "+r_data.region,5,20);
 		//Write out the detailed values
 		for(var i=0;i<5;i++){
-			var sheetName = chemdata.SheetNames[i];
-			overlaycontext.fillStyle=drawer.chem_colors[i];
+			var index = chem_order[i];
+			var sheetName = chemdata.SheetNames[index];
+			overlaycontext.fillStyle=drawer.chem_colors[index];
 			overlaycontext.fillRect(3,20*(i+1)+7,144,16);
 			overlaycontext.fillStyle = '#000000';
 			overlaycontext.fillText(sheetName+": "+r_data[sheetName],5,20*(i+2));
@@ -1085,18 +1100,128 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
 		var img = new Image();
 		var img2 = new Image();
 		img.onload = function(){
-			overlaycontext.globalAlpha = 0.4;
+			overlaycontext.globalAlpha = 0.5;
 			overlaycontext.drawImage(img,20,140); // Or at whatever offset you like
 			overlaycontext.globalAlpha = 1.0;
 		};
 		img2.onload = function(){
-			overlaycontext.globalAlpha = 0.4;
+			overlaycontext.globalAlpha = 0.5;
 			overlaycontext.drawImage(img2,20,140); // Or at whatever offset you like
 			overlaycontext.globalAlpha = 1.0;
 		};
 		img2.src = drawer.chem_icons[drawer.selected_region-1][1][drawer.model]
 		img.src = drawer.chem_icons[drawer.selected_region-1][0][drawer.model];
 	}
+	
+	overlaycanvas.onmousedown = function(e){
+		selected_chem_index = getChemHoverIndex(e);
+		console.log(selected_chem_index);
+	}
+	
+	overlaycanvas.onmousemove = function(e){
+		var hover_index = getChemHoverIndexFuzzy(e);
+		drawTempChemOrder(hover_index);
+	}
+	
+	overlaycanvas.onmouseup = handleOverlayMouseSet;
+	overlaycanvas.onmouseout = handleOverlayMouseSet;
+	function handleOverlayMouseSet(e){
+		if(selected_chem_index == -1)
+			return;
+		var hover_index = getChemHoverIndexFuzzy(e);
+		//Let's switch the two indices
+		console.log("Switching index "+selected_chem_index+" with "+ hover_index);
+		var result_order = new Array(5);
+		var chem_index = 0;
+		for(var i=0;i<5;i++){
+			if(i == hover_index){
+				result_order[i] = chem_order[selected_chem_index];
+				continue;
+			}
+			if(chem_index==selected_chem_index)
+				chem_index++;
+			result_order[i] = chem_order[chem_index];
+			chem_index++;
+		}
+
+		chem_order = result_order;
+		
+		selected_chem_index = -1;
+		setupRegionShapes();
+		writeRegionInfo();
+	}
+	function getChemHoverIndex(e){
+		var x = e.clientX;
+		var y = e.clientY;
+		var chem_index = -1;
+		//Set the selected chem index global variable
+		
+		//Check if the coordinates are within any of the chem fields
+		for(var i=0;i<5;i++){
+			if(y>=20*(i+1)+5&&y<=20*(i+1)+5+20){//Checking y value
+				chem_index = i;
+			}
+		}
+		return chem_index;
+	}
+	
+	function getChemHoverIndexFuzzy(e){
+		var x = e.clientX;
+		var y = e.clientY;
+		var chem_index = -1;
+		//Set the selected chem index global variable
+		//Check if the coordinates are within any of the chem fields
+		//Check the upper region
+		if(y>=0&&y<=20*(1)+5+20)//Checking y value
+			chem_index = 0;
+		for(var i=1;i<4;i++){
+			if(y>=20*(i+1)+5&&y<=20*(i+1)+5+20){//Checking y value
+				chem_index = i;
+			}
+		}
+		if(y>=20*(5)+5)
+			chem_index = 4;
+		return chem_index;
+	}
+	
+	//This function will draw the TEMPORARY chem order on the overlay display
+	function drawTempChemOrder(hover){
+		//Selected is the current CLICKED on index
+		//Hover is the current HOVERED OVER index
+		if(selected_chem_index == -1)
+			return;
+		console.log("Temp Drawing");
+		overlaycontext.clearRect(0,20*(1)+7,overlaycanvas.width,20*(6)+7-(20*(1)+7));
+		overlaycontext.font = "14px Arial";
+		var r_data = drawer.chem_regions[drawer.selected_region-1][0];
+		var chem_index = 0;
+		//Write out the detailed values
+		for(var i=0;i<5;i++){
+			if(i == hover){
+				//Fill in a blank spot
+				var index = chem_order[selected_chem_index];
+				var sheetName = chemdata.SheetNames[index];
+				overlaycontext.fillStyle=drawer.chem_colors[index];
+				overlaycontext.fillRect(3,20*(i+1)+7,144,16);
+				overlaycontext.fillStyle = '#000000';
+				overlaycontext.fillText(sheetName+": "+r_data[sheetName],5,20*(i+2));
+				continue;
+			}
+			if(chem_index==selected_chem_index)
+				chem_index++;
+			var index = chem_order[chem_index];
+			var sheetName = chemdata.SheetNames[index];
+			overlaycontext.fillStyle=drawer.chem_colors[index];
+			overlaycontext.fillRect(3,20*(i+1)+7,144,16);
+			overlaycontext.fillStyle = '#000000';
+			overlaycontext.fillText(sheetName+": "+r_data[sheetName],5,20*(i+2));
+			chem_index++;
+		}
+		
+		//Just draw the chem colors in the order as the global array
+		//And skip the selected value
+	}
+	
 	function writeAgeRanges(){
 		overlaycontext.clearRect(0,overlaycanvas.height-80,overlaycanvas.width,overlaycanvas.height);
 		overlaycontext.font = "8px Arial";
@@ -1281,5 +1406,7 @@ function LifeCanvasDrawer(arg_life,arg_brain_pattern,arg_regions,arg_chemdata)
             };
         }
     }
+	
+	
 }
 

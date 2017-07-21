@@ -311,11 +311,9 @@ function MagicMain(brain_pattern,regions,chemdata)
 			return false;
 		};
 
-
 		drawer.canvas.onmousedown = function(e)
 		{
 			hideDropdown();
-			
 			
 			if(e.which === 3 || e.which === 2)
 			{
