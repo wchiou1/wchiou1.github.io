@@ -914,6 +914,13 @@ function start() {
 	var element = $('#dicomImage').get(0);
     cornerstone.enable(element);
 	
+	cornerstoneTools.mouseInput.enable(element);
+	cornerstoneTools.mouseWheelInput.enable(element);
+	cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
+	cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+	cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+	cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
+	
 	dicomCanvas = element.getElementsByTagName('canvas')[0];
 
 	canvas2 = document.getElementById("glcanvas2");
@@ -2842,6 +2849,8 @@ function handleDicomFileSelect(evt){
 	console.log(file);
 	dicomLoaded = false;
 	var imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
+	loading=imgFileNames.length;
+	updateLoader();
 	loadAndViewImage(imageId,file.name);
 	
 }
@@ -2860,20 +2869,13 @@ function loadAndViewImage(imageId,filename) {
 		$('#toggleVOILUT').attr("checked",viewport.voiLUT !== undefined);
 		cornerstone.displayImage(element, image, viewport);
 		
-		if(loaded === false) {
-			cornerstoneTools.mouseInput.enable(element);
-			cornerstoneTools.mouseWheelInput.enable(element);
-			cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
-			cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
-			cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
-			cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
-			loaded = true;
-		}
 		requestAnimationFrame(function(timestamp){
 			var temp = dicomCanvas.getContext("2d").getImageData(0,0,256,256);
 			console.log(temp);
 			temp.name = filename;
 			readImage(temp);
+			loading=0;
+			updateLoader();
 		});
 		function getTransferSyntax() {
 			var value = image.data.string('x00020010');
