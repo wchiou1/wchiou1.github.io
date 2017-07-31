@@ -8,6 +8,7 @@ var imageCanvas;
 var ctx;
 var canvas2;
 var gl2;
+var dicomCanvas;
 
 var mvMatrix;
 var shaderProgram={};
@@ -909,6 +910,12 @@ var Shape={};
 $(document).on('load',FileListenerInit());
 function start() {
 	console.log("version:"+version);
+	
+	var element = $('#dicomImage').get(0);
+    cornerstone.enable(element);
+	
+	dicomCanvas = element.getElementsByTagName('canvas')[0];
+
 	canvas2 = document.getElementById("glcanvas2");
 	
 	addEventHandler(window,"resize",on_resize(resize));
@@ -1043,6 +1050,7 @@ function initButtons(){
 	var labbutton = document.getElementById("button5");
 	var modalbutton = document.getElementById("button6");
 	var modalbutton2 = document.getElementById("button7");
+	var dicombutton = document.getElementById("button8");
 	var invertbutton1=document.getElementById("invert1");
 	var invertbutton2=document.getElementById("invert2");
 	
@@ -1069,7 +1077,7 @@ function initButtons(){
 	//tubebutton.style.height = offset30+"px";
 	
 	resetbutton.style.left = imgIconX-offset30+"px";
-	resetbutton.style.top = imgIconY+iconViewHeight+110*screenscale+"px";
+	resetbutton.style.top = imgIconY-125*screenscale+"px";
 	//resetbutton.style.width = iconViewWidth+offset60+"px";
 	//resetbutton.style.height = offset30+"px";
 	
@@ -1109,6 +1117,9 @@ function initButtons(){
 	modalbutton2.style.top = imgIconY-55*screenscale+"px";
 	//modalbutton2.style.width = iconViewWidth+offset60+"px";
 	//modalbutton2.style.height = offset30+"px";
+	
+	dicombutton.style.left = imgIconX-offset30+"px";
+	dicombutton.style.top = imgIconY+iconViewHeight+110*screenscale+"px";
 
 }
 function initViewport(){ 
@@ -1824,10 +1835,10 @@ function updateImgFilenameIndicator(mouseX,mouseY){
 	var hit=testImageIconHit(mouseX,mouseY);
 	//console.log(hit);
 	if(hit!=-1){
-		if(hit<imgFileNames.length)
-			drawText(imgFileNames[hit],imgIconX-20,imgIconY-10);
+		if(hit-10000<imgFileNames.length)
+			drawText(imgFileNames[hit-10000],imgIconX-20,imgIconY-10);
 		else
-			drawText(tubesFileNames[hit],imgIconX-20,imgIconY-10);
+			drawText(tubesFileNames[hit-10000-imgFileNames.length],imgIconX-20,imgIconY-10);
 	}
 }
 
@@ -2436,6 +2447,7 @@ function FileListenerInit(){
 			var select1 = document.getElementById('selector1');
 			var select2 = document.getElementById('selector2');
 			var select3 = document.getElementById('selector3');
+			var select4 = document.getElementById('selector4');
 			var button1 = document.getElementById('button1');
 			var button2 = document.getElementById('button2');
 			var button3 = document.getElementById('button3');
@@ -2445,6 +2457,7 @@ function FileListenerInit(){
 			var screenshot2=document.getElementById("screenshot2");
 			var button6 = document.getElementById('button6');
 			var button7 = document.getElementById('button7');
+			var button8 = document.getElementById('button8');
 			var hideLab= document.getElementById('hideLab');
 			var invert1 = document.getElementById("invert1");
 			var invert2 = document.getElementById("invert2");
@@ -2475,6 +2488,7 @@ function FileListenerInit(){
 			addEventHandler(select1,'change', handleImageFileSelect);
 			addEventHandler(select2,'change', handleColorFileSelect);
 			addEventHandler(select3,'change', handleTubesFileSelect);
+			addEventHandler(select4,'change', handleDicomFileSelect);
 			addEventHandler(button1,'click', function(){select1.click();});
 			addEventHandler(button2,'click', function(){select2.click();});
 			addEventHandler(button3,'click', function(){select3.click();});
@@ -2482,6 +2496,7 @@ function FileListenerInit(){
 			addEventHandler(button5,'click', handleLabButton);
 			addEventHandler(button6,'click', handleColorModalButton);
 			addEventHandler(button7,'click', handleImgModalButton);
+			addEventHandler(button8,'click', function(){select4.click();});
 			addEventHandler(screenshot1,'click', function(){downloadView(0);});
 			addEventHandler(screenshot2,'click', function(){downloadView(1);});
 			addEventHandler(hideLab,'click', handleLabButton);
@@ -2532,6 +2547,7 @@ function readFiles(files,type){
 }
 
 function readImage(file){
+	//We have an issue with reading the dicom file, it's crashing 
     function addImage(bitmap){
         targ.height=bitmap.height;
         targ.width=bitmap.width;
@@ -2658,6 +2674,7 @@ function readOneFileFromServer(directory,filename,type){
 }
 
 function readTextToImage(text,filename,file){
+	console.log(filename);
 	var image2DArray=[];
 	var imageHeight= undefined;
 	var imageWidth= undefined;
@@ -2818,6 +2835,108 @@ function handleColorFileSelect(evt) {
 function handleTubesFileSelect(evt){
 	var files = evt.target.files;
     readFiles(files,"tubes");
+}
+
+function handleDicomFileSelect(evt){
+	var file = evt.target.files[0];
+	console.log(file);
+	dicomLoaded = false;
+	var imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
+	loadAndViewImage(imageId,file.name);
+	
+}
+var dicomLoaded = false;
+var loaded = false;
+
+function loadAndViewImage(imageId,filename) {
+	var element = $('#dicomImage').get(0);
+	//try {
+	var start = new Date().getTime();
+	cornerstone.loadImage(imageId).then(function(image) {
+		console.log("Dicom Image Loaded");
+		console.log(image);
+		var viewport = cornerstone.getDefaultViewportForImage(element, image);
+		$('#toggleModalityLUT').attr("checked",viewport.modalityLUT !== undefined);
+		$('#toggleVOILUT').attr("checked",viewport.voiLUT !== undefined);
+		cornerstone.displayImage(element, image, viewport);
+		
+		if(loaded === false) {
+			cornerstoneTools.mouseInput.enable(element);
+			cornerstoneTools.mouseWheelInput.enable(element);
+			cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
+			cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+			cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+			cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
+			loaded = true;
+		}
+		requestAnimationFrame(function(timestamp){
+			var temp = dicomCanvas.getContext("2d").getImageData(0,0,256,256);
+			console.log(temp);
+			temp.name = filename;
+			readImage(temp);
+		});
+		function getTransferSyntax() {
+			var value = image.data.string('x00020010');
+			return value + ' [' + uids[value] + ']';
+		}
+
+		function getSopClass() {
+			var value = image.data.string('x00080016');
+			return value + ' [' + uids[value] + ']';
+		}
+
+		function getPixelRepresentation() {
+			var value = image.data.uint16('x00280103');
+			if(value === undefined) {
+				return;
+			}
+			return value + (value === 0 ? ' (unsigned)' : ' (signed)');
+		}
+
+		function getPlanarConfiguration() {
+			var value = image.data.uint16('x00280006');
+			if(value === undefined) {
+				return;
+			}
+			return value + (value === 0 ? ' (pixel)' : ' (plane)');
+		}
+
+		$('#transferSyntax').text(getTransferSyntax());
+		$('#sopClass').text(getSopClass());
+		$('#samplesPerPixel').text(image.data.uint16('x00280002'));
+		$('#photometricInterpretation').text(image.data.string('x00280004'));
+		$('#numberOfFrames').text(image.data.string('x00280008'));
+		$('#planarConfiguration').text(getPlanarConfiguration());
+		$('#rows').text(image.data.uint16('x00280010'));
+		$('#columns').text(image.data.uint16('x00280011'));
+		$('#pixelSpacing').text(image.data.string('x00280030'));
+		$('#bitsAllocated').text(image.data.uint16('x00280100'));
+		$('#bitsStored').text(image.data.uint16('x00280101'));
+		$('#highBit').text(image.data.uint16('x00280102'));
+		$('#pixelRepresentation').text(getPixelRepresentation());
+		$('#windowCenter').text(image.data.string('x00281050'));
+		$('#windowWidth').text(image.data.string('x00281051'));
+		$('#rescaleIntercept').text(image.data.string('x00281052'));
+		$('#rescaleSlope').text(image.data.string('x00281053'));
+		$('#basicOffsetTable').text(image.data.elements.x7fe00010.basicOffsetTable ? image.data.elements.x7fe00010.basicOffsetTable.length : '');
+		$('#fragments').text(image.data.elements.x7fe00010.fragments ? image.data.elements.x7fe00010.fragments.length : '');
+		$('#minStoredPixelValue').text(image.minPixelValue);
+		$('#maxStoredPixelValue').text(image.maxPixelValue);
+		var end = new Date().getTime();
+		var time = end - start;
+		$('#totalTime').text(time + "ms");
+		$('#loadTime').text(image.loadTimeInMS + "ms");
+		$('#decodeTime').text(image.decodeTimeInMS + "ms");
+
+		
+		
+	}, function(err) {
+		alert(err);
+	});
+	/*}
+	 catch(err) {
+	 alert(err);
+	 }*/
 }
 
 function handleResetButton(evt){
