@@ -2870,7 +2870,7 @@ function loadAndViewImage(imageId,filename) {
 		cornerstone.displayImage(element, image, viewport);
 		
 		requestAnimationFrame(function(timestamp){
-			var temp = dicomCanvas.getContext("2d").getImageData(0,0,256,256);
+			var temp = dicomCanvas.getContext("2d").getImageData(0,0,dicomCanvas.width,dicomCanvas.height);
 			console.log(temp);
 			temp.name = filename;
 			readImage(temp);
