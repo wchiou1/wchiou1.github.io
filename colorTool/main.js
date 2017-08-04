@@ -2867,6 +2867,7 @@ function loadAndViewImage(imageId,filename) {
 		var viewport = cornerstone.getDefaultViewportForImage(element, image);
 		$('#toggleModalityLUT').attr("checked",viewport.modalityLUT !== undefined);
 		$('#toggleVOILUT').attr("checked",viewport.voiLUT !== undefined);
+		
 		cornerstone.displayImage(element, image, viewport);
 		
 		requestAnimationFrame(function(timestamp){
