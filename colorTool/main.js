@@ -2864,9 +2864,22 @@ function loadAndViewImage(imageId,filename) {
 	cornerstone.loadImage(imageId).then(function(image) {
 		console.log("Dicom Image Loaded");
 		console.log(image);
+		element.width = image.width;
+		element.height = image.height;
+		element.style.left = "-"+image.width+"px";
+		element.style.width = image.width+"px";
+		element.style.height = image.height+"px";
+		dicomCanvas.width = image.width;
+		dicomCanvas.height = image.height;
+		dicomCanvas.style.left = "-"+image.width+"px";
+		dicomCanvas.style.width = image.width+"px";
+		dicomCanvas.style.height = image.height+"px";
+		
 		var viewport = cornerstone.getDefaultViewportForImage(element, image);
 		$('#toggleModalityLUT').attr("checked",viewport.modalityLUT !== undefined);
 		$('#toggleVOILUT').attr("checked",viewport.voiLUT !== undefined);
+		//We gotta resize the canvas according to the dimensions of the image
+		
 		
 		cornerstone.displayImage(element, image, viewport);
 		
