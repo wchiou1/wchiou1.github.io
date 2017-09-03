@@ -1,0 +1,3 @@
+Primary objective: 
+-Rip out all features not required for filtertool
+-Get a Low filter functional in colortool, we will worry about rgb later

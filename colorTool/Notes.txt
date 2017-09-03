@@ -1,0 +1,1 @@
+Primary objective: Get a Low filter functional in colortool, we will worry about rgb later
