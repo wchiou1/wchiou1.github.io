@@ -131,11 +131,11 @@ select{
 	z-index: 1;
 }
 .rgbbutton:hover{
-	outline: 2px solid white;
+	outline: 2px solid black;
 	cursor: default;
 }
 .rgbbutton:active {
-	outline: 2px solid #666666;
+	outline: 2px solid white;
 } 
 #r1, #r2{
 	background-color: #ff0000;
