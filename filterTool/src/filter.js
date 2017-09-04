@@ -128,7 +128,6 @@ function processImage(anImage, id) {
 		 * and draws out the result to the spectrum canvas.
 		 */
 		function applySpec(type) {
-			console.log(Number(document.getElementById("cutoff1").value));
 			var radius;
 			if(id===1)
 				radius=Number(document.getElementById("cutoff1").value);
@@ -137,7 +136,7 @@ function processImage(anImage, id) {
 			var bandwidth = 0,
 				sharpness = 0,
 				butterOrder = 0,
-				filterStyle = "Ideal";
+				filterStyle = "Gaussian";
 
 			operate(aFFT, Filtering.shiftQuads);
 

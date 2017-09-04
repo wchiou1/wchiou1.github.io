@@ -259,10 +259,14 @@ function operate(aFFT, operation, valueA, valueB, valueC, valueD) {
                         if (radiusXY > radius) {
                             real[point] = imag[point] = 0;
                         }
-                    } else {
-                        real[point] = real[point] * (1 / (1 + Math.pow(radiusXY / radius, 2 * order)));
-                        imag[point] = imag[point] * (1 / (1 + Math.pow(radiusXY / radius, 2 * order)));
+                    } else if(style === 'Butterworth'){
+                        real[point] = real[point] * (1 / (1 + Math.pow(radius / radiusXY, 2 * order)));
+                        imag[point] = imag[point] * (1 / (1 + Math.pow(radius / radiusXY, 2 * order)));
                     }
+					else{
+						real[point] = real[point] * (1 - Math.exp(-1 * Math.pow(radius,2)/(2 * Math.pow(radiusXY,2))));
+                        imag[point] = imag[point] * (1 - Math.exp(-1 * Math.pow(radius,2)/(2 * Math.pow(radiusXY,2))));
+					}
                 }
             }
         },
@@ -283,10 +287,14 @@ function operate(aFFT, operation, valueA, valueB, valueC, valueD) {
                         if (radiusXY < radius) {
                             real[point] = imag[point] = 0;
                         }
-                    } else {
+                    } else if(style === 'Butterworth'){
                         real[point] = real[point] * (1 / (1 + Math.pow(radius / radiusXY, 2 * order)));
                         imag[point] = imag[point] * (1 / (1 + Math.pow(radius / radiusXY, 2 * order)));
                     }
+					else{
+						real[point] = real[point] * Math.exp(-1 * Math.pow(radius,2)/(2 * Math.pow(radiusXY,2)));
+                        imag[point] = imag[point] * Math.exp(-1 * Math.pow(radius,2)/(2 * Math.pow(radiusXY,2)));
+					}
                 }
             }
         },
