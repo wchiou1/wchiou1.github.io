@@ -37,6 +37,7 @@ var colorscaleList;
 var dataList;
 
 //Color stuffs
+var rgbToggle = [[true,true,true],[true,true,true]];
 var colorMaps = [];//2d array of objects which stores the colors
 var iconHeight = 50;
 var iconWidth = 50;
@@ -1144,6 +1145,9 @@ function initViewport(){
 	viewports.length=0;
 	viewports.push(	new Viewport(x1,y,temp,temp));
 	viewports.push(	new Viewport(x2,y,temp,temp));
+	
+	
+	
 	var screenshot1=document.getElementById("screenshot1");
 	var screenshot2=document.getElementById("screenshot2");
 	screenshot1.style.top=(y+temp+20)+"px";
@@ -1191,6 +1195,23 @@ function initViewport(){
 	var pass2 = document.getElementById("pass2");
 	pass2.style.top=(y+temp+100)+"px";
 	pass2.style.left=(x2-45)+"px";
+	
+	var r1 = document.getElementById("r1");
+	var g1 = document.getElementById("g1");
+	var b1 = document.getElementById("b1");
+	r1.style.top=(y+temp+100+52)+"px";
+	g1.style.top=(y+temp+100+52+52)+"px";
+	b1.style.top=(y+temp+100+52+52+52)+"px";
+	r1.style.left=g1.style.left=b1.style.left=(x1-52)+"px";
+	
+	var r2 = document.getElementById("r2");
+	var g2 = document.getElementById("g2");
+	var b2 = document.getElementById("b2");
+	r2.style.top=(y+temp+100+52)+"px";
+	g2.style.top=(y+temp+100+52+52)+"px";
+	b2.style.top=(y+temp+100+52+52+52)+"px";
+	r2.style.left=g2.style.left=b2.style.left=(x2-52)+"px";
+
 }
 
 function initBuffers(){
@@ -2458,6 +2479,12 @@ function FileListenerInit(){
 			var invert2 = document.getElementById("invert2");
 			var pass1 = document.getElementById("pass1");
 			var pass2 = document.getElementById("pass2");
+			var r1 = document.getElementById("r1");
+			var g1 = document.getElementById("g1");
+			var b1 = document.getElementById("b1");
+			var r2 = document.getElementById("r2");
+			var g2 = document.getElementById("g2");
+			var b2 = document.getElementById("b2");
 			var expandLab=document.getElementById("expandLab");
 			var strinkLab=document.getElementById("strinkLab");
 			if(canvas2.height*1.1>canvas.height)expandLab.style.visibility="hidden";
@@ -2501,12 +2528,33 @@ function FileListenerInit(){
 			addEventHandler(invert2,'click', function(){handleInvertButton(1);});
 			addEventHandler(pass1,'click', function(){handlePassButton(0);});
 			addEventHandler(pass2,'click', function(){handlePassButton(1);});
+			addEventHandler(r1,'click', function(){handleRGBButton(0,'r');});
+			addEventHandler(r2,'click', function(){handleRGBButton(1,'r');});
+			addEventHandler(g1,'click', function(){handleRGBButton(0,'g');});
+			addEventHandler(g2,'click', function(){handleRGBButton(1,'g');});
+			addEventHandler(b1,'click', function(){handleRGBButton(0,'b');});
+			addEventHandler(b2,'click', function(){handleRGBButton(1,'b');});
 			addEventHandler(expandLab,'click', function(){resizeCanvas2(1.1);});
 			addEventHandler(strinkLab,'click', function(){resizeCanvas2(1/1.1);});
 		});
 	} else {
 	  alert('Your browser does not support the HTML5 FileReader.');
 	}
+}
+
+function handleRGBButton(id,rgb){
+	//We want to change the background of the correct button and change the boolean of the correct array
+	var rgbIndex = rgb === 'r' ? 0: rgb === 'g' ? 1: 2;
+	var rgbButton = document.getElementById(rgb+(id+1));
+	if(rgbToggle[id][rgbIndex]){
+		rgbButton.style.filter = "brightness(50%)";
+		rgbToggle[id][rgbIndex]=false;
+	}
+	else{
+		rgbButton.style.filter = "brightness(100%)";
+		rgbToggle[id][rgbIndex]=true;
+	}
+	updateFilterView(id);
 }
 
 function readFiles(files,type){
@@ -2549,6 +2597,7 @@ function readImage(file){
     function addImage(bitmap){
         targ.height=bitmap.height;
         targ.width=bitmap.width;
+		console.log(""+targ.height+","+targ.width);
         ctx.clearRect(0,0,targ.width,targ.height);
         ctx.drawImage(bitmap,0,0);
         var img=ctx.getImageData(0,0,targ.width,targ.height);

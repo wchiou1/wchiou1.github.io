@@ -178,9 +178,9 @@ function processImage(anImage, id) {
 			for (var y = 0; y < specHeight; y++) {
 				i = y * specWidth;
 				for (var x = 0; x < specWidth; x++) {
-					rVal = aFFT.rReal[i + x];
-					gVal = aFFT.gReal[i + x];
-					bVal = aFFT.bReal[i + x];
+					rVal = aFFT.rReal[i + x] * rgbToggle[id][0];
+					gVal = aFFT.gReal[i + x] * rgbToggle[id][1];
+					bVal = aFFT.bReal[i + x] * rgbToggle[id][2];
 					rVal = rVal > 255 ? 255 : rVal < 0 ? 0 : rVal;
 					gVal = gVal > 255 ? 255 : gVal < 0 ? 0 : gVal;
 					bVal = bVal > 255 ? 255 : bVal < 0 ? 0 : bVal;
